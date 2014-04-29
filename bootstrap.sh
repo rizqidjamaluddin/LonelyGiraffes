@@ -75,6 +75,7 @@ cd /vagrant
 composer update -vvv
 
 # node already installed; do other node installs here
+sudo npm install -g grunt-cli
 
 # if laravel refuses to start properly, adjust the permissions afterwards:
 # chmod -R o+w /vagrant/app/storage
