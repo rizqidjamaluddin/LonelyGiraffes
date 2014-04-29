@@ -1,0 +1,15 @@
+/bootstrap/compiled.php
+/vendor
+/public/packages
+/public/storage/images
+/node_modules
+composer.phar
+composer.lock
+.DS_Store
+Thumbs.db
+.sass-cache
+*~
+/.idea
+_ide_helper.php
+/reports
+.vagrant
