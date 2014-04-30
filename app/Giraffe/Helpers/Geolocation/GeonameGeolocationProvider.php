@@ -75,10 +75,10 @@ class GeonameGeolocationProvider implements GeolocationProviderInterface
     public function guessPlace($hint)
     {
         // look for matching states...
-        $stateSearch = DB::table($this->table)
-            ->where('state', 'LIKE', $hint . '%')
-            ->distinct()
-            ->take(3)
+        $stateSearch = DB::table($this->stateTable)
+            ->where('name', 'LIKE', $hint . '%')
+            ->orderBy('population', 'desc')
+            ->take(5)
             ->get();
 
         // ... and look for matching cities.
@@ -90,7 +90,7 @@ class GeonameGeolocationProvider implements GeolocationProviderInterface
 
         $suggestions = [];
         foreach ($stateSearch as $state) {
-            $suggestions[] = Location::make([$city->lat, $city->long], $city->country, $city->state, $city->city);
+            $suggestions[] = $this->getPlace($state->country, $state->name);
         }
 
         foreach ($citySearch as $city) {
