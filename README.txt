@@ -11,10 +11,6 @@ INSTALL:
 5. Access box terminal via SSH by typing "vagrant SSH".
 6. Access MySQL from GUIs by looking on port 2222, using a private key; this key is stored in ~/.vagrant.d/insecure_private_key.
 7. Within the box, the application is stored in ./vagrant.
-8. To use phpunit, do these commands:
-        sudo composer global require 'phpunit/phpunit=3.7.*'
-        printf 'PATH="~/.composer/vendor/bin:$PATH"' > ~/.bash_profile
-   Run 'phpunit' from ./vagrant to do unit tests.
 
 BRANCHING MODEL:
 master:     Source of production pulls. Merge from staging will be done during production pulls; only touch for hotfixes.
