@@ -75,7 +75,16 @@ cd /vagrant
 composer update -vvv
 
 # node already installed; do other node installs here
+echo ">>> Installing Grunt command line interface"
 sudo npm install -g grunt-cli
+
+# install node dependencies
+echo ">>> Installing project dependencies via Node"
+npm install
+
+# run necessary things for grunt
+echo ">>> Running Grunt for development machine"
+grunt development
 
 # if laravel refuses to start properly, adjust the permissions afterwards:
 # chmod -R o+w /vagrant/app/storage
