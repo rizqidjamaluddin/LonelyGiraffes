@@ -60,31 +60,34 @@ sudo mv composer.phar /usr/local/bin/composer
 # Add global phpunit - do the next 2 lines if it says phpunit isn't installed
 sudo composer global require 'phpunit/phpunit=3.7.*'
 printf 'PATH="~/.composer/vendor/bin:$PATH"' > ~/.bash_profile
-
+source ~/.bash_profile
 
 # Start redis
-
 echo ">>> Starting Redis"
 sudo redis-server /etc/redis/redis.conf
 
 # Create main db
 mysql -u root -proot -e 'create database lg'
 
-# update dependencies
+# Update dependencies
 cd /vagrant
 composer update -vvv
 
-# node already installed; do other node installs here
+# Node already installed; do other node installs here
 echo ">>> Installing Grunt command line interface"
 sudo npm install -g grunt-cli
 
-# install node dependencies
+# Install node dependencies
 echo ">>> Installing project dependencies via Node"
 npm install
 
-# run necessary things for grunt
+# Run necessary things for grunt
 echo ">>> Running Grunt for development machine"
 grunt development
+
+# Run unit tests
+echo ">>> Running PHPUnit"
+phpunit
 
 # if laravel refuses to start properly, adjust the permissions afterwards:
 # chmod -R o+w /vagrant/app/storage
