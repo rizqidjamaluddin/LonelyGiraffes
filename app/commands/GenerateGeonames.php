@@ -41,6 +41,8 @@ class GenerateGeonames extends Command {
         $pdo = DB::getPdo();
         $country_list = [];
         $state_list = [];
+        $total_countries = 0;
+        $total_states = 0;
 
         $path = __DIR__ . '/../data/geonames-cities-15000.txt';
         $filesize = File::size($path);
@@ -69,35 +71,42 @@ class GenerateGeonames extends Command {
                     ':code' => $code,
                     ':name' => $country_name
                 ]);
+            $total_countries++;
         }
+
+        $this->info(sprintf("... %116s", "Finished importing countries ($total_countries total)"));
 
 
 
 
         $this->info('> Creating administration district list table...');
-        $countries = new SplFileObject(__DIR__ . '/../data/geonames-states.txt');
+        $states = new SplFileObject(__DIR__ . '/../data/geonames-states.txt');
         DB::statement('drop table if exists `lookup_geoname_states`');
         DB::statement('CREATE TABLE `lookup_geoname_states` (
            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
            `country_code` char(2) DEFAULT NULL,
            `state_code` varchar(20) DEFAULT NULL,
+           `population` bigint(20) DEFAULT NULL,
+           `country` varchar(200) DEFAULT NULL,
            `name` varchar(200) DEFAULT NULL,
            PRIMARY KEY (`id`),
            KEY `code` (`country_code`, `state_code`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8');
         $this->info('> Importing administration district list table...');
-        $country_statement = $pdo->prepare('INSERT INTO `lookup_geoname_states` (`country_code`, `state_code`, `name`) VALUES (:country_code, :state_code, :name)');
-        while (!$countries->eof()) {
-            $row = $countries->fgets();
+        $state_statement = $pdo->prepare('INSERT INTO `lookup_geoname_states` (`country_code`, `state_code`, `name`) VALUES (:country_code, :state_code, :name)');
+        while (!$states->eof()) {
+            $row = $states->fgets();
             $row = explode("\t", $row);
             list($country_code, $state_code) = explode('.', $row[0]);
             $state_list[$row[0]] = $row[1];
-            $country_statement->execute([
+            $state_statement->execute([
                     ':country_code' => $country_code,
                     ':state_code' => $state_code,
                     ':name' => $row[1]
                 ]);
+            $total_states++;
         }
+        $this->info(sprintf("... %116s", "Finished importing administration districts ($total_states total)"));
 
         $this->info('> Creating import table...');
         DB::statement('drop table if exists `lookup_geoname_places`');
@@ -141,10 +150,6 @@ class GenerateGeonames extends Command {
         $prepared = $pdo->prepare($sql);
 
         while (!$file->eof()) {
-            $counter++;
-            if ($counter % 1000 == 0) {
-                $this->comment("Processing #$counter (". (microtime(true) - $start) ."s) | Memory use: " . memory_get_usage());
-            }
 
             $row = $file->fgets();
             if (trim($row) == '') {
@@ -178,8 +183,53 @@ class GenerateGeonames extends Command {
                 dd($e);
             }
 
+            $counter++;
+            if ($counter % 1000 == 0) {
+                $this->comment(sprintf("%-30s %70s",
+                        "Processing #$counter",
+                        "{$row[1]}, " . $composite_state_code . ", " . trim($country_list[$row[8]])));
+            }
+
         }
-        $this->info("Import successful, $counter rows over " . (microtime(true) - $start) . " seconds");
+
+        $this->info("Main import successful, $counter rows over " . (microtime(true) - $start) . " seconds.");
+
+        $this->info("Trimming and updating administration district table with city population data...");
+        $this->comment("States with no cities will be trimmed.");
+
+        $trimmed = 0;
+        $populated = 0;
+        $total_population = 0;
+
+        for ($i = 1; $i <= $total_states; $i++) {
+           $state = DB::table('lookup_geoname_states')->find($i);
+            $pop = DB::select('SELECT sum(population) AS pop FROM `lookup_geoname_places` WHERE `state_code` = ? AND `country_code` = ?',
+                [$state->state_code, $state->country_code])[0]->pop;
+
+            if (!$pop) {
+                // if the population is 0 or not found, delete the state.
+                DB::table('lookup_geoname_states')->delete($i);
+                $trimmed++;
+            } else {
+                // otherwise, update the population and country columns.
+                $country = DB::table('lookup_countries')->where('code', $state->country_code)->pluck('name');
+                DB::table('lookup_geoname_states')->where('id', $i)->update(['population' => $pop, 'country' => $country]);
+                $populated++;
+                $total_population += (int) $pop;
+            }
+
+
+            if ($i % 250 == 0) {
+                $this->comment(sprintf("%-40s %60s",
+                    "Processing #$i of {$total_states}", number_format($total_population) . " people counted"));
+            }
+        }
+
+        $this->info('Finished updating administration district table.');
+        $this->comment("Trimmed $trimmed states for not being represented ($populated states remain).");
+        $this->comment("This database accounts for " . number_format($total_population) . " people in the world.");
+
+        $this->info('Operation complete.');
 	}
 
 	/**
