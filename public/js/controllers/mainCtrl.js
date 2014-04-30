@@ -1,4 +1,4 @@
-(function() {
+(function(window, angular) {
 	"use strict";
 
 	angular.module("lg").controller('mainCtrl', ['$scope', function($scope) {
