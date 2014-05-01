@@ -5,7 +5,7 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.1.*",
-        "anlutro/l4-repository": "0.6.*"
+        "dingo/api": "0.*"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
