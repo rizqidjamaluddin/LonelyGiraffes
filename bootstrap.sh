@@ -1,31 +1,15 @@
 #!/usr/bin/env bash
 
 echo ">>> Starting Lonely Giraffes install scripts"
- 
-# Update
-echo ">>> Update apt-get"
-sudo apt-get update
- 
-# Install MySQL without prompt
-echo ">>> Install MySQL"
+
+echo ">>> Setting dependencies"
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
-
-# Install base items
-echo ">>> Installing Base Items"
-sudo apt-get install -y vim tmux curl wget  build-essential chrpath libssl-dev python-software-properties redis-server libfontconfig1-dev
-  
-# Add repo for PHP5 and nodejs
-echo ">>> Adding PPA's and Installing Server Items"
 sudo add-apt-repository -y ppa:ondrej/php5
 sudo add-apt-repository -y ppa:chris-lea/node.js
-
-# Update again, probably for good measure
 sudo apt-get update
- 
-# Install the Rest
-sudo apt-get install -y git-core php5 apache2 libapache2-mod-php5 php5-mysql php5-curl php5-gd php5-mcrypt php5-xdebug mysql-server nodejs
- 
+sudo apt-get install -y vim tmux curl wget  build-essential chrpath libssl-dev python-software-properties redis-server libfontconfig1-dev git-core php5 apache2 libapache2-mod-php5 php5-mysql php5-curl php5-gd php5-mcrypt php5-xdebug mysql-server nodejs
+
 # xdebug Config
 echo ">>> Configuring Server"
 cat << EOF | sudo tee -a /etc/php5/mods-available/xdebug.ini
