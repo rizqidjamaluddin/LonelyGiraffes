@@ -19,6 +19,7 @@ class CreateNotificationsTable extends Migration {
             $table->string('service');
             $table->string('message');
             $table->string('metadata');
+            $table->softDeletes();
 			$table->timestamps();
 		});
 	}
