@@ -1,4 +1,4 @@
-<?php  namespace Giraffe\Helpers;
+<?php  namespace Giraffe\Helpers\Geolocation;
 
 use Giraffe\Helpers\Geolocation\GeolocationProviderInterface;
 
@@ -35,7 +35,7 @@ class LocationHelper
 
     }
 
-    public function getAdjacentCells($cell)
+    public function getAdjacentCells($cell, $radius = 1)
     {
 
     }
