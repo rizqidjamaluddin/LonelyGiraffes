@@ -8,12 +8,13 @@ module.exports = function(grunt) {
 			 */
 			development: {
 				command: [
-					"composer self-update",
-					"composer update",
-					"composer install",
+					"sudo composer self-update",
+					"sudo composer update",
+					"sudo composer install",
 					"php artisan migrate",
 					"php artisan db:seed",
-					"lgdb:geonames"
+					"lgdb:geonames",
+					"grunt jasmine"
 				].join("&&"),
 				options: {
 					stdout: true
@@ -30,18 +31,32 @@ module.exports = function(grunt) {
 					stdout: true
 				}
 			}
+		},
+
+		/**
+		 * Jasmine unit testing
+		 * @type {Object}
+		 */
+		jasmine: {
+			pivotal: {
+				src: 'js/**/*.js',
+				options: {
+					specs: 'public/tests/unit/*spec.js'
+				}
+			}
 		}
 	});
 
 	/**
-	 * Load task for shell commands
+	 * Load tasks
 	 */
 	grunt.loadNpmTasks('grunt-shell');
+	grunt.loadNpmTasks('grunt-contrib-jasmine');
 
 	/**
 	 * Development task
 	 */
 	grunt.registerTask('development', ["shell:development"]);
 	grunt.registerTask('sass', ["shell:sass"]);
-
+	grunt.registerTask('default', ['jasmine']);
 };

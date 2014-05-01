@@ -3,6 +3,7 @@
 /public/packages
 /public/storage/images
 /node_modules
+/.grunt
 composer.phar
 composer.lock
 .DS_Store
