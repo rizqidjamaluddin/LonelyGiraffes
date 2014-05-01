@@ -20,9 +20,6 @@ use Giraffe\Helpers\Geolocation\GeolocationProviderInterface;
 class LocationHelper
 {
 
-    /**
-     * @var Geolocation\GeolocationProviderInterface
-     */
     private $geolocationProvider;
 
     public function __construct(GeolocationProviderInterface $geolocationProvider)
