@@ -11,7 +11,7 @@ use stdClass;
  *
  * @package Giraffe\Repositories
  */
-abstract class BaseEloquentRepository implements BaseRepositoryInterface
+abstract class BaseEloquentRepository implements BaseRepository
 {
 
     /**

@@ -2,7 +2,7 @@
 
 use stdClass;
 
-interface BaseRepositoryInterface
+interface BaseRepository
 {
     public function getById($id);
     public function getByHash($hash);
