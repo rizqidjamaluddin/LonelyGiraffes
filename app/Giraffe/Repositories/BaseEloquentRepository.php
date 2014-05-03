@@ -2,6 +2,7 @@
 
 use anlutro\LaravelRepository\NotFoundException;
 use Eloquent;
+use Giraffe\Exceptions\NotFoundModelException;
 use stdClass;
 
 /**
@@ -28,7 +29,7 @@ abstract class BaseEloquentRepository implements BaseRepository
      {
          $model = $this->model->find($id);
          if (!$model) {
-             throw new NotFoundException();
+             throw new NotFoundModelException();
          }
          return $model;
      }
@@ -37,7 +38,7 @@ abstract class BaseEloquentRepository implements BaseRepository
      {
          $model = $this->model->where('hash', '=', $hash)->first();
          if (!$model) {
-             throw new NotFoundException();
+             throw new NotFoundModelException();
          }
          return $model;
      }
