@@ -2,7 +2,10 @@
 
 use anlutro\LaravelRepository\NotFoundException;
 use Eloquent;
+use Giraffe\Exceptions\DuplicateCreationException;
+use Giraffe\Exceptions\InvalidCreationException;
 use Giraffe\Exceptions\NotFoundModelException;
+use Illuminate\Database\QueryException;
 use stdClass;
 
 /**
@@ -45,7 +48,18 @@ abstract class BaseEloquentRepository implements BaseRepository
 
      public function create(array $attributes)
      {
-         return $this->model->create($attributes);
+         try {
+             $model = $this->model->create($attributes);
+         } catch (QueryException $e) {
+             // error code for "duplicate in unique column"
+             if ($e->errorInfo[0] == 23000) {
+                throw new DuplicateCreationException;
+             }
+
+             throw new InvalidCreationException;
+         }
+
+         return $model;
      }
 
      public function deleteById($id)
