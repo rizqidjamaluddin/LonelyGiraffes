@@ -4,6 +4,7 @@ use stdClass;
 
 interface BaseRepository
 {
+    public function get($idOrHash);
     public function getById($id);
     public function getByHash($hash);
 
