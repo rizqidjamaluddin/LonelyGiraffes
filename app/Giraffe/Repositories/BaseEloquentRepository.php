@@ -2,6 +2,7 @@
 
 use anlutro\LaravelRepository\NotFoundException;
 use Eloquent;
+use Giraffe\Exceptions\NotFoundModelException;
 use stdClass;
 
 /**
@@ -24,20 +25,40 @@ abstract class BaseEloquentRepository implements BaseRepositoryInterface
         $this->model = $model;
     }
 
+    /**
+     * @param string|int|Eloquent $idOrHash
+     *
+     * @return mixed
+     */
+    public function get($idOrHash)
+    {
+
+        if ($idOrHash instanceof Eloquent) {
+            return $idOrHash;
+        }
+
+        // is_numeric and other detectors may return false positives with hashes.
+        // instead, attempt to load by ID, and if that fails, load by hash.
+        try {
+            $model = $this->getById($idOrHash);
+            return $model;
+        } catch (NotFoundModelException $e) {
+            return $this->getByHash($idOrHash);
+        }
+    }
+
      public function getById($id)
      {
-         $model = $this->model->find($id);
-         if (!$model) {
-             throw new NotFoundException();
+         if (!$model = $this->model->find($id)) {
+             throw new NotFoundModelException();
          }
          return $model;
      }
 
      public function getByHash($hash)
      {
-         $model = $this->model->where('hash', '=', $hash)->first();
-         if (!$model) {
-             throw new NotFoundException();
+         if (!$model = $this->model->where('hash', '=', $hash)->first()) {
+             throw new NotFoundModelException();
          }
          return $model;
      }
