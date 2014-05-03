@@ -1,5 +1,7 @@
 <?php  namespace Giraffe\Exceptions; 
-class InvalidLocationException extends \Exception
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+class InvalidLocationException extends NotFoundHttpException
 {
 
 } 

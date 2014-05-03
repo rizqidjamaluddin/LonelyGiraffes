@@ -1,7 +1,7 @@
 <?php  namespace Giraffe\Exceptions; 
 
-use Exception;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class NotFoundModelException extends Exception
+class NotFoundModelException extends NotFoundHttpException
 {
 } 
