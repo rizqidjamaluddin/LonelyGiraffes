@@ -75,7 +75,6 @@ abstract class BaseEloquentRepository implements BaseRepository
              if ($e->errorInfo[0] == 23000) {
                 throw new DuplicateCreationException;
              }
-
              throw new InvalidCreationException;
          }
 
@@ -84,12 +83,18 @@ abstract class BaseEloquentRepository implements BaseRepository
 
      public function deleteById($id)
      {
-         return $this->model->destroy($id);
+         if (!$this->model->destroy($id)) {
+             throw new NotFoundModelException;
+         };
+         return;
      }
 
      public function deleteByHash($hash)
      {
-         return $this->model->where('hash', '=', $hash)->delete();
+         if (!$this->model->where('hash', '=', $hash)->delete()) {
+             throw new NotFoundModelException;
+         };
+         return;
      }
 
      public function deleteMany(array $ids)
