@@ -21,10 +21,17 @@
  *
  * Nouns may be plural or singular.
  *
+ * Important: Gatekeeper DOES NOT do authentication. It does not check to make sure the user is who they claim to be.
+ * It's meant for access control and rights management.
+ *
  * @package Giraffe\Helpers\Rights
  */
 class Gatekeeper
 {
+
+    const REQUEST_NOT_SET    = 0;
+    const REQUEST_PERMISSION = 1;
+
 
     /**
      * @var array
@@ -33,13 +40,11 @@ class Gatekeeper
 
     protected $request = null;
 
-    protected $authenticated = false;
-    protected $authentication = [];
-
     public function __construct()
     {
 
     }
+
 
     public function iAm($userIdentifier)
     {
