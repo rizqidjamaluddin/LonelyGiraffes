@@ -10,11 +10,6 @@
  * $gatekeeper->iAm($user);
  * $gatekeeper->mayI('edit', 'posts');
  *
- * Authenticating:
- * $gatekeeper->iAm($generic_user_identifier)->pleaseLogMeIn();
- * $gatekeeper->iAm($generic_user_identifier)->andMyPasswordIs($password)->pleaseLogMeIn();
- * $gatekeeper->myTokenIs($identification_token);
- *
  * Planned (assuming user already set using iAm()):
  * $gatekeeper->put($mod_to_be)->into('moderators')->please();
  * $gatekeeper->remove($inactive_person)->from('moderators')->please();
@@ -51,18 +46,6 @@ class Gatekeeper
 
     }
 
-    public function myTokenIs($token)
-    {
-
-    }
-
-    public function myTokenSays($token){ return $this->myTokenIs($token); }
-
-    public function andMyPasswordIs($password)
-    {
-
-    }
-
 
 
 
@@ -80,11 +63,6 @@ class Gatekeeper
      * Execute command and clear the query details.
      */
     public function please()
-    {
-
-    }
-
-    public function pleaseLogMeIn()
     {
 
     }
