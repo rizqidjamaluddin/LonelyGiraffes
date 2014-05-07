@@ -10,7 +10,7 @@ class GatekeeperTest extends TestCase
     /**
      * @test
      */
-    public function it_can_recognize_users_by_id()
+    public function it_can_recognize_users()
     {
         $provider = Mockery::mock(self::PROVIDER);
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
@@ -61,13 +61,21 @@ class GatekeeperTest extends TestCase
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'message')->andReturn(false);
+        $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(false);
+        $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'create', 'user')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
         $gatekeeper->iAm(1);
         $this->assertTrue($gatekeeper->mayI('edit', 'message')->please());
+        $gatekeeper = App::make(self::TEST);
         $this->assertTrue($gatekeeper->mayI('edit', 'message')->please());
+        $gatekeeper = App::make(self::TEST);
         $this->assertFalse($gatekeeper->mayI('delete', 'message')->please());
+        $gatekeeper = App::make(self::TEST);
+        $this->assertFalse($gatekeeper->mayI('delete', 'user')->please());
+        $gatekeeper = App::make(self::TEST);
+        $this->assertTrue($gatekeeper->mayI('create', 'user')->please());
 
     }
 }
