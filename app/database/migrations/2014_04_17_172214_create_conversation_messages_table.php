@@ -17,6 +17,8 @@ class CreateConversationMessagesTable extends Migration {
 			$table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->string('body');
+            $table->string('html_body');
+
 			$table->timestamps();
             $table->softDeletes();
 		});

@@ -19,6 +19,7 @@ class CreateShoutsTable extends Migration {
             $table->integer('user_id')->unsigned();
             $table->string('name');
             $table->text('body');
+            $table->text('html_body');
 			$table->timestamps();
             $table->softDeletes();
 
