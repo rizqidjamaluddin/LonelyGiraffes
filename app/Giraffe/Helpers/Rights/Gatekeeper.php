@@ -50,12 +50,13 @@ class Gatekeeper
     public function __construct(GatekeeperProvider $gatekeeperProvider)
     {
         $this->provider = $gatekeeperProvider;
+        $this->request = self::REQUEST_NOT_SET;
     }
 
     public function iAm($userIdentifier)
     {
-        $this->authenticated = true;
         $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+        $this->authenticated = true;
         return $this;
     }
 
@@ -64,12 +65,15 @@ class Gatekeeper
 
     public function mayI($verb, $noun)
     {
-        
+        $this->request = self::REQUEST_PERMISSION;
+        $this->query['verb'] = $verb;
+        $this->query['noun'] = $noun;
+        return $this;
     }
 
     public function andMayI($verb, $noun)
     {
-
+        return $this->mayI($verb, $noun);
     }
 
     /**
@@ -77,8 +81,37 @@ class Gatekeeper
      */
     public function please()
     {
-
+        return $this->resolve();
     }
+
+    // -- Resolving requests --
+
+    protected function resolve()
+    {
+        $result = null;
+
+        switch ($this->request) {
+            case self::REQUEST_PERMISSION : {
+                $result = $this->resolveRequestPermission();
+                break;
+            }
+        }
+
+        $this->reset();
+        return $result;
+    }
+
+    protected function resolveRequestPermission()
+    {
+        return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+    }
+
+    protected function reset()
+    {
+        $this->request = self::REQUEST_NOT_SET;
+        $this->query = Array();
+    }
+
 
     // -- Utilities --
 
