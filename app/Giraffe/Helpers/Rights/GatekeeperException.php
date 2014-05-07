@@ -1,6 +1,6 @@
 <?php  namespace Giraffe\Helpers\Rights;
 
-class GatekeeperException 
+class GatekeeperException extends \Exception
 {
 
 } 
