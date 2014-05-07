@@ -40,15 +40,23 @@ class Gatekeeper
 
     protected $request = null;
 
-    public function __construct()
+    protected $authenticated = false;
+    protected $authenticatedUser;
+    /**
+     * @var GatekeeperProvider
+     */
+    private $provider;
+
+    public function __construct(GatekeeperProvider $gatekeeperProvider)
     {
-
+        $this->provider = $gatekeeperProvider;
     }
-
 
     public function iAm($userIdentifier)
     {
-
+        $this->authenticated = true;
+        $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+        return $this;
     }
 
 
@@ -71,5 +79,12 @@ class Gatekeeper
     {
 
     }
-    
+
+    // -- Utilities --
+
+    public function fetchMyModel()
+    {
+        return $this->authenticatedUser;
+    }
+
 }
