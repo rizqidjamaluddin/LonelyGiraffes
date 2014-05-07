@@ -19,4 +19,9 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
     {
         return $this->userRepository->get($user);
     }
+
+    public function checkIfUserMay($user, $verb, $noun)
+    {
+
+    }
 }
