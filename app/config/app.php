@@ -112,6 +112,7 @@ return array(
         'Clockwork\Support\Laravel\ClockworkServiceProvider',
 
         'Dingo\Api\ApiServiceProvider',
+        'Mews\Purifier\PurifierServiceProvider',
 
         'Giraffe\GiraffeServiceProvider',
 	),
@@ -150,7 +151,6 @@ return array(
 		'ClassLoader'     => 'Illuminate\Support\ClassLoader',
 		'Config'          => 'Illuminate\Support\Facades\Config',
 		// 'Controller'      => 'Illuminate\Routing\Controller',
-        'Controller'      => 'Dingo\Api\Routing\Controller',
 		'Cookie'          => 'Illuminate\Support\Facades\Cookie',
 		'Crypt'           => 'Illuminate\Support\Facades\Crypt',
 		'DB'              => 'Illuminate\Support\Facades\DB',
@@ -182,6 +182,9 @@ return array(
 		'View'            => 'Illuminate\Support\Facades\View',
 
         'API'             => 'Dingo\Api\Facades\API',
+        'Controller'      => 'Dingo\Api\Routing\Controller',
+
+        'Purifier' => 'Mews\Purifier\Facades\Purifier',
 	),
 
 );
