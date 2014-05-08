@@ -65,6 +65,45 @@ class ParsedownPurifierParserTest extends TestCase
     /**
      * @test
      */
+    public function it_can_handle_mixed_html_and_markdown()
+    {
+        $parser = App::make(self::TEST);
+        $raw = "Some **markdown bold** with some <strong>HTML bold</strong>.\n\nSecond paragraph; &amp; and & should be fixed!";
+        $expected = '<p>Some <strong>markdown bold</strong> with some <strong>HTML bold</strong>.</p>'.
+            "\n<p>Second paragraph; &amp; and &amp; should be fixed!</p>";
+
+        $parsed = $parser->parseRich($raw);
+        $this->assertEquals($parsed, $expected);
+
+        $parsed = $parser->parseComment($raw);
+        $this->assertEquals($parsed, $expected);
+
+        $parsed = $parser->parseTrusted($raw);
+        $this->assertEquals($parsed, $expected);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_handle_unescpaed_entities()
+    {
+        $parser = App::make(self::TEST);
+        $raw = '**Bold** text, a mismatched <3 sitting in the middle, and <strong>a classic HTML bold</strong>.';
+        $expected = '<p><strong>Bold</strong> text, a mismatched &lt;3 sitting in the middle, and <strong>a classic HTML bold</strong>.</p>';
+
+        $parsed = $parser->parseRich($raw);
+        $this->assertEquals($parsed, $expected);
+
+        $parsed = $parser->parseComment($raw);
+        $this->assertEquals($parsed, $expected);
+
+        // trusted parse is not tested, because behavior of invalid HTML is undefined. Trusted data is assumed
+        // to be clean.
+    }
+
+    /**
+     * @test
+     */
     public function it_splits_multiline_text_into_paragraphs_except_single_line_breaks()
     {
         $parser = App::make(self::TEST);
