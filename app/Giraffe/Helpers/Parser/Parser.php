@@ -2,6 +2,12 @@
 
 class Parser
 {
+
+    /**
+     * Simply return HTML-safe versions if not enabled.
+     */
+    const ENABLED = true;
+
     /**
      * @var ParserDriver
      */
@@ -12,8 +18,21 @@ class Parser
         $this->parserDriver = $parserDriver;
     }
 
-    public function parse($input)
+    public function parseRich($input)
     {
-        return $this->parserDriver;
+        if (!self::ENABLED) return e($input);
+        return $this->parserDriver->parseRich($input);
+    }
+
+    public function parseComment($input)
+    {
+        if (!self::ENABLED) return e($input);
+        return $this->parserDriver->parseComment($input);
+    }
+
+    public function parseTrusted($input)
+    {
+        if (!self::ENABLED) return e($input);
+        return $this->parserDriver->parseTrusted($input);
     }
 } 
