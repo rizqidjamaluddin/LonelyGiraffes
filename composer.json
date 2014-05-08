@@ -5,7 +5,9 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.1.*",
-        "dingo/api": "0.*"
+        "dingo/api": "0.*",
+        "mews/purifier": "dev-master",
+        "erusev/parsedown": "dev-master"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
