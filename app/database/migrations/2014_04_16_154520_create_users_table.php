@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration {
 		Schema::create('users', function(Blueprint $table)
 		{
 			$table->increments('id');
-            $table->string('hash', 32);
+            $table->string('public_id')->unique();
             $table->string('nickname')->nullable();
             $table->string('firstname');
             $table->string('lastname');
@@ -30,8 +30,6 @@ class CreateUsersTable extends Migration {
 			$table->timestamps();
             $table->softDeletes();
 
-
-            $table->unique('hash');
             $table->unique('email');
             $table->unique('token');
 		});
