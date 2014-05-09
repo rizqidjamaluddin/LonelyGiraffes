@@ -130,9 +130,17 @@ class Gatekeeper
         return $this->authenticatedUser;
     }
 
+    /**
+     * Disarm access control features. User given all permissions.
+     *
+     * Do NOT use this in production code. Intended for testing only.
+     *
+     * @return $this
+     */
     public function disarm()
     {
         $this->enable = false;
+        return $this;
     }
 
 }
