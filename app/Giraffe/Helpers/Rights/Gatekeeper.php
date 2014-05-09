@@ -113,7 +113,11 @@ class Gatekeeper
      */
     protected function resolveRequestPermission()
     {
-        return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+        if ($this->authenticated) {
+            return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+        } else {
+            return $this->provider;
+        }
     }
 
     protected function reset()

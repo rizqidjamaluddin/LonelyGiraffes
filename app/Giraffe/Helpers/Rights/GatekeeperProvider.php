@@ -20,4 +20,12 @@ interface GatekeeperProvider
      * @return bool
      */
     public function checkIfUserMay($user, $verb, $noun);
+
+    /**
+     * @param $verb
+     * @param $noun
+     *
+     * @return mixed
+     */
+    public function checkIfGuestMay($verb, $noun);
 } 
