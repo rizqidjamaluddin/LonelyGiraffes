@@ -61,7 +61,9 @@ class Gatekeeper
 
     public function iAm($userIdentifier)
     {
-        $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+        if ($this->enable) {
+            $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+        }
         $this->authenticated = true;
         return $this;
     }
@@ -98,8 +100,11 @@ class Gatekeeper
 
         switch ($this->request) {
             case self::REQUEST_PERMISSION : {
+                if (!$this->enable) {
+                    $result = true;
+                    break;
+                }
                 $result = $this->resolveRequestPermission();
-                if (!$this->enable) $result = true;
                 break;
             }
         }

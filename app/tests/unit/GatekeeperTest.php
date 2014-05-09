@@ -12,6 +12,7 @@ class GatekeeperTest extends TestCase
      */
     public function it_can_recognize_users()
     {
+        $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
         App::instance(self::PROVIDER, $provider);
@@ -26,6 +27,7 @@ class GatekeeperTest extends TestCase
      */
     public function it_should_allow_a_user_to_do_a_verb_on_an_entity()
     {
+        $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
@@ -41,6 +43,7 @@ class GatekeeperTest extends TestCase
      */
     public function it_should_be_a_singleton()
     {
+        $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
         App::instance(self::PROVIDER, $provider);
@@ -57,6 +60,7 @@ class GatekeeperTest extends TestCase
      */
     public function it_should_reset_after_each_question()
     {
+        $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
@@ -77,5 +81,32 @@ class GatekeeperTest extends TestCase
         $gatekeeper = App::make(self::TEST);
         $this->assertTrue($gatekeeper->mayI('create', 'user')->please());
 
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_disarmed_for_testing_needs()
+    {
+        $this->refreshApplication();
+        // set up a fake mock to make sure it's not actually being called
+        $provider = Mockery::mock(self::PROVIDER);
+        $provider->shouldReceive('getUserModel')->with(1)->andThrow('Exception');
+        $provider->shouldReceive('checkIfUserMay')->withAnyArgs()->andReturn(false);
+        App::instance(self::PROVIDER, $provider);
+        $gatekeeper = App::make(self::TEST);
+
+
+        $gatekeeper->disarm();
+
+        $this->assertTrue($gatekeeper->mayI('create', 'message')->please());
+        $this->assertTrue($gatekeeper->mayI('update', 'message')->please());
+        $this->assertTrue($gatekeeper->mayI('delete', 'user')->please());
+
+        $gatekeeper->iAm('1')->disarm();
+
+        $this->assertTrue($gatekeeper->mayI('create', 'message')->please());
+        $this->assertTrue($gatekeeper->mayI('update', 'message')->please());
+        $this->assertTrue($gatekeeper->mayI('delete', 'user')->please());
     }
 }
