@@ -23,6 +23,11 @@ abstract class BaseEloquentRepository implements BaseRepository
      */
     protected $model;
 
+    /**
+     * @var bool
+     */
+    protected $hasHash = false;
+
     public function __construct(Eloquent $model)
     {
         $this->model = $model;
@@ -60,6 +65,10 @@ abstract class BaseEloquentRepository implements BaseRepository
 
      public function getByHash($hash)
      {
+         if (!$this->hasHash) {
+             throw new NotFoundModelException();
+         }
+
          if (!$model = $this->model->where('hash', '=', $hash)->first()) {
              throw new NotFoundModelException();
          }
