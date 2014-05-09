@@ -42,6 +42,12 @@ class Gatekeeper
 
     protected $authenticated = false;
     protected $authenticatedUser;
+
+    /**
+     * @var bool
+     */
+    protected $enable = true;
+
     /**
      * @var GatekeeperProvider
      */
@@ -93,6 +99,7 @@ class Gatekeeper
         switch ($this->request) {
             case self::REQUEST_PERMISSION : {
                 $result = $this->resolveRequestPermission();
+                if (!$this->enable) $result = true;
                 break;
             }
         }
@@ -101,6 +108,9 @@ class Gatekeeper
         return $result;
     }
 
+    /**
+     * @return bool
+     */
     protected function resolveRequestPermission()
     {
         return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
@@ -118,6 +128,11 @@ class Gatekeeper
     public function fetchMyModel()
     {
         return $this->authenticatedUser;
+    }
+
+    public function disarm()
+    {
+        $this->enable = false;
     }
 
 }
