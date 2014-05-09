@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Repositories; 
 
+use Giraffe\Exceptions\NotFoundModelException;
 use Giraffe\Models\UserModel;
 use Giraffe\Models\UserSettingModel;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,6 +18,35 @@ class UserRepository extends BaseEloquentRepository
     {
         parent::__construct($userModel);
         $this->userSettingModel = $userSettingModel;
+    }
+
+    /**
+     * Extend the base get() method to accept a user's public_id
+     *
+     * @param \Eloquent|int|string $identifier
+     * @return mixed|void
+     */
+    public function get($identifier){
+        try {
+            $model = $this->getByPublicId($identifier);
+        } catch (NotFoundModelException $e) {
+            return parent::get($identifier);
+        }
+        return $model;
+    }
+
+    /**
+     * @param string $id
+     *
+     * @throws \Giraffe\Exceptions\NotFoundModelException
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    public function getByPublicId($id)
+    {
+        if (!$model = $this->model->where('public_id', '=', $id)->first()) {
+            throw new NotFoundModelException();
+        }
+        return $model;
     }
 
     /**
