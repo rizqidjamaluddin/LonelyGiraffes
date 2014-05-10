@@ -1,7 +1,5 @@
 <?php  namespace Giraffe\Helpers\Geolocation;
 
-use Giraffe\Helpers\Geolocation\GeolocationProviderInterface;
-
 /**
  * Class LocationHelper
  *
@@ -22,7 +20,7 @@ class LocationHelper
 
     private $geolocationProvider;
 
-    public function __construct(GeolocationProviderInterface $geolocationProvider)
+    public function __construct(GeolocationProvider $geolocationProvider)
     {
         $this->geolocationProvider = $geolocationProvider;
     }

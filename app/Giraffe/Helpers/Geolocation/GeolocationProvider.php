@@ -2,7 +2,7 @@
 
 use stdClass;
 
-interface GeolocationProviderInterface
+interface GeolocationProvider
 {
 
     /**

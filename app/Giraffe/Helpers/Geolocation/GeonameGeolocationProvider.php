@@ -9,7 +9,7 @@ use Giraffe\Exceptions\NotFoundLocationException;
  * @link http://www.geonames.org/
  * @package Giraffe\Helpers\Geolocation
  */
-class GeonameGeolocationProvider implements GeolocationProviderInterface
+class GeonameGeolocationProvider implements GeolocationProvider
 {
 
     protected $table = 'lookup_geoname_places';
