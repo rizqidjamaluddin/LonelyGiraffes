@@ -25,8 +25,8 @@ class CreatePostsTable extends Migration {
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('country')->nullable();
-            $table->decimal('lat', 18, 12)->nullable();
-            $table->decimal('long', 18, 12)->nullable();
+//            $table->decimal('lat', 18, 12)->nullable();
+//            $table->decimal('long', 18, 12)->nullable();
             $table->string('cell')->nullable();
 
 

@@ -1,6 +1,6 @@
 <?php  namespace Giraffe\Helpers\Geolocation;
 
-use Giraffe\Helpers\Geolocation\GeolocationProviderInterface;
+use Giraffe\Exceptions\NotImplementedException;
 
 /**
  * Class LocationHelper
@@ -22,14 +22,15 @@ class LocationHelper
 
     private $geolocationProvider;
 
-    public function __construct(GeolocationProviderInterface $geolocationProvider)
+    public function __construct(GeolocationProvider $geolocationProvider)
     {
         $this->geolocationProvider = $geolocationProvider;
     }
 
-    public function convertPlaceToCell($country, $city)
+    public function convertPlaceToCell($country, $state, $city)
     {
-
+        throw new NotImplementedException;
+        return 1;
     }
 
     public function getAdjacentCells($cell, $radius = 1)

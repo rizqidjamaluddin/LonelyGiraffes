@@ -21,12 +21,13 @@ class CreateEventsTable extends Migration {
             $table->text('body');
             $table->text('html_body');
 
+            $table->string('url');
             $table->string('location');
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('country')->nullable();
-            $table->decimal('lat', 18, 12)->nullable();
-            $table->decimal('long', 18, 12)->nullable();
+//            $table->decimal('lat', 18, 12)->nullable();
+//            $table->decimal('long', 18, 12)->nullable();
             $table->string('cell')->nullable();
 
             $table->timestamp('timestamp');

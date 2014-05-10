@@ -8,4 +8,9 @@ class PostModel extends Eloquent {
 
     protected $table = 'posts';
 	protected $fillable = ['user_id', 'postable_type', 'postable_id', 'city', 'state', 'country', 'lat', 'long', 'cell'];
+
+    public function postable()
+    {
+        return $this->morphTo();
+    }
 }

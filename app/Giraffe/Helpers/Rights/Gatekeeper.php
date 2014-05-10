@@ -42,6 +42,12 @@ class Gatekeeper
 
     protected $authenticated = false;
     protected $authenticatedUser;
+
+    /**
+     * @var bool
+     */
+    protected $enable = true;
+
     /**
      * @var GatekeeperProvider
      */
@@ -55,7 +61,9 @@ class Gatekeeper
 
     public function iAm($userIdentifier)
     {
-        $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+        if ($this->enable) {
+            $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+        }
         $this->authenticated = true;
         return $this;
     }
@@ -92,6 +100,10 @@ class Gatekeeper
 
         switch ($this->request) {
             case self::REQUEST_PERMISSION : {
+                if (!$this->enable) {
+                    $result = true;
+                    break;
+                }
                 $result = $this->resolveRequestPermission();
                 break;
             }
@@ -101,9 +113,16 @@ class Gatekeeper
         return $result;
     }
 
+    /**
+     * @return bool
+     */
     protected function resolveRequestPermission()
     {
-        return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+        if ($this->authenticated) {
+            return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+        } else {
+            return $this->provider;
+        }
     }
 
     protected function reset()
@@ -118,6 +137,19 @@ class Gatekeeper
     public function fetchMyModel()
     {
         return $this->authenticatedUser;
+    }
+
+    /**
+     * Disarm access control features. User given all permissions.
+     *
+     * Do NOT use this in production code. Intended for testing only.
+     *
+     * @return $this
+     */
+    public function disarm()
+    {
+        $this->enable = false;
+        return $this;
     }
 
 }

@@ -22,6 +22,11 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
 
     public function checkIfUserMay($user, $verb, $noun)
     {
+        return false;
+    }
 
+    public function checkIfGuestMay($verb, $noun)
+    {
+        // TODO: Implement checkIfGuestMay() method.
     }
 }
