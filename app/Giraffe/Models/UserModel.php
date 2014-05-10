@@ -9,9 +9,11 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 /**
  * Class UserModel
  *
+ * @property $id int
  * @property $setting UserSettingModel
- *
- * @package Giraffe\Models
+ * @property $country string
+ * @property $state string
+ * @property $city string
  */
 class UserModel extends Eloquent implements UserInterface, RemindableInterface {
 

@@ -88,16 +88,16 @@
         },
         {
             "name": "dingo/api",
-            "version": "v0.3.0",
+            "version": "v0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "b17bd084c82bb1fbba2ab9dc85da3c2aa63e9087"
+                "reference": "de5d1dfa3d779ece8dee60390107f5cef48425dd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/b17bd084c82bb1fbba2ab9dc85da3c2aa63e9087",
-                "reference": "b17bd084c82bb1fbba2ab9dc85da3c2aa63e9087",
+                "url": "https://api.github.com/repos/dingo/api/zipball/de5d1dfa3d779ece8dee60390107f5cef48425dd",
+                "reference": "de5d1dfa3d779ece8dee60390107f5cef48425dd",
                 "shasum": ""
             },
             "require": {
@@ -150,7 +150,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-05-08 05:08:32"
+            "time": "2014-05-08 12:19:31"
         },
         {
             "name": "erusev/parsedown",
@@ -2057,7 +2057,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
+                    "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],

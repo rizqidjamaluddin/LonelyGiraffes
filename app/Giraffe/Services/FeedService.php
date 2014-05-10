@@ -1,9 +1,11 @@
 <?php  namespace Giraffe\Services;
 
 use Eloquent;
+use Giraffe\Helpers\Geolocation\LocationHelper;
 use Giraffe\Helpers\Parser\Parser;
 use Giraffe\Helpers\Rights\Gatekeeper;
 use Giraffe\Models\PostModel;
+use Giraffe\Models\UserModel;
 use Giraffe\Repositories\PostRepository;
 use Giraffe\Repositories\ShoutRepository;
 use Giraffe\Repositories\UserRepository;
@@ -31,20 +33,25 @@ class FeedService
      * @var \Giraffe\Helpers\Parser\Parser
      */
     private $parser;
+    /**
+     * @var \Giraffe\Helpers\Geolocation\LocationHelper
+     */
+    private $locationHelper;
 
     public function __construct(
         Gatekeeper $gatekeeper,
         Parser $parser,
+        LocationHelper $locationHelper,
         PostRepository $postRepository,
         UserRepository $userRepository,
         ShoutRepository $shoutRepository
-        )
-    {
+    ) {
         $this->gatekeeper = $gatekeeper;
         $this->postRepository = $postRepository;
         $this->userRepository = $userRepository;
         $this->shoutRepository = $shoutRepository;
         $this->parser = $parser;
+        $this->locationHelper = $locationHelper;
     }
 
     public function addCommentOnPost($user, $post, $comment)
@@ -71,28 +78,50 @@ class FeedService
     {
         $this->gatekeeper->mayI('create', 'post');
 
+        /** @var UserModel $user */
         $user = $this->userRepository->get($user);
 
         // figure out location
-
+        if (array_key_exists('location', $metadata)) {
+            $country = array_key_exists('country', $metadata['location']) ? $metadata['location']['country'] : null;
+            $state = array_key_exists('state', $metadata['location']) ? $metadata['location']['state'] : null;
+            $city = array_key_exists('city', $metadata['location']) ? $metadata['location']['city'] : null;
+            $cell = $this->locationHelper->convertPlaceToCell($country, $state, $city);
+        } else {
+            // use user's location if none given
+            $country = property_exists($user, 'country') ? $user->country : null;
+            $state = property_exists($user, 'state') ? $user->state : null;
+            $city = property_exists($user, 'city') ? $user->city : null;
+            $cell = property_exists($user, 'cell') ? $user->cell : null;
+        }
 
 
         $type = array_key_exists('type', $metadata) ? $metadata['type'] : null;
         switch ($type) {
-            default: {
+            default:
+                {
                 $htmlBody = $this->parser->parseComment($post);
-                $postable = $this->shoutRepository->create([
+                $postable = $this->shoutRepository->create(
+                    [
                         'user_id'   => $user->id,
                         'body'      => $post,
                         'html_body' => $htmlBody
-                    ]);
+                    ]
+                );
                 break;
-            }
+                }
         }
 
-        $post = $this->postRepository->createWithPostable([
-                'user_id' => $user->id
-            ], $postable);
+        $post = $this->postRepository->createWithPostable(
+            [
+                'user_id' => $user->id,
+                'country' => $country,
+                'state'   => $state,
+                'city'    => $city,
+                'cell'    => $cell
+            ],
+            $postable
+        );
         return $post;
     }
 

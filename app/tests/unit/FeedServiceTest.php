@@ -24,22 +24,22 @@ class FeedServiceTest extends TestCase
         $userRepository = Mockery::mock(self::USER_REPOSITORY);
         $userRepository->shouldReceive('get')
             ->with('1')
-            ->andReturn(json_decode("{'id': 1}"));
+            ->andReturn(json_decode('{"id": 1, "country": "United States"}'));
         App::instance(self::USER_REPOSITORY, $userRepository);
 
         $shoutRepository = Mockery::mock(self::SHOUT_REPOSITORY);
         $shoutRepository->shouldReceive('create')
             ->with(['user_id' => 1, 'body' => 'Lorem ipsum', 'html_body' => '<p>Lorem ipsum</p>'])
-            ->andReturn(json_decode('{"id": 1, "country": "United States"}'));
+            ->andReturn(json_decode('{"id": 1}'));
         App::instance(self::SHOUT_REPOSITORY, $shoutRepository);
 
         $postRepository = Mockery::mock(self::POST_REPOSITORY);
         $postRepository->shouldReceive('createWithPostable')
-            ->with(['user_id' => 1], Mockery::any())
+            ->withAnyArgs()
             ->andReturn(json_decode('{"id": 2, "postable": {"body": "Lorem ipsum"}}'));
         $postRepository->shouldReceive('get')
             ->withAnyArgs()
-            ->andReturn(json_decode('{"id": 2, "postable": {"body": "Lorem ipsum"}}'));
+            ->andReturn(json_decode('{"id": 2, "postable": {"body": "Lorem ipsum"}, "country": "United States"}'));
         App::instance(self::POST_REPOSITORY, $postRepository);
 
         $feed = App::make(self::TEST);
