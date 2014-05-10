@@ -1,11 +1,10 @@
 <?php  namespace Giraffe\Services;
 
 use Eloquent;
+use Giraffe\Contracts\Postable;
 use Giraffe\Helpers\Geolocation\LocationHelper;
 use Giraffe\Helpers\Parser\Parser;
 use Giraffe\Helpers\Rights\Gatekeeper;
-use Giraffe\Models\PostModel;
-use Giraffe\Models\UserModel;
 use Giraffe\Repositories\PostRepository;
 use Giraffe\Repositories\ShoutRepository;
 use Giraffe\Repositories\UserRepository;
@@ -26,10 +25,6 @@ class FeedService
      */
     private $userRepository;
     /**
-     * @var \Giraffe\Repositories\ShoutRepository
-     */
-    private $shoutRepository;
-    /**
      * @var \Giraffe\Helpers\Parser\Parser
      */
     private $parser;
@@ -43,15 +38,13 @@ class FeedService
         Parser $parser,
         LocationHelper $locationHelper,
         PostRepository $postRepository,
-        UserRepository $userRepository,
-        ShoutRepository $shoutRepository
+        UserRepository $userRepository
     ) {
         $this->gatekeeper = $gatekeeper;
-        $this->postRepository = $postRepository;
         $this->userRepository = $userRepository;
-        $this->shoutRepository = $shoutRepository;
         $this->parser = $parser;
         $this->locationHelper = $locationHelper;
+        $this->postRepository = $postRepository;
     }
 
     public function addCommentOnPost($user, $post, $comment)
