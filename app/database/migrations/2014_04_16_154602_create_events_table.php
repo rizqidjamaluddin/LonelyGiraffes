@@ -21,6 +21,7 @@ class CreateEventsTable extends Migration {
             $table->text('body');
             $table->text('html_body');
 
+            $table->string('url');
             $table->string('location');
             $table->string('city')->nullable();
             $table->string('state')->nullable();
