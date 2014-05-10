@@ -57,6 +57,9 @@ class FeedService
      *
      * Expected metadata:
      * type: Type of post, defaults to shout if not set or unknown
+     * place: {country, state, city}, {country, state}, {country}
+     * location: (Event) human-readable location of event
+     * url: (Event) URL of event
      *
      * @param        $user
      * @param string $post
@@ -69,6 +72,11 @@ class FeedService
         $this->gatekeeper->mayI('create', 'post');
 
         $user = $this->userRepository->get($user);
+
+        // figure out location
+
+
+
         $type = array_key_exists('type', $metadata) ? $metadata['type'] : null;
         switch ($type) {
             default: {
@@ -82,7 +90,9 @@ class FeedService
             }
         }
 
-        $post = $this->postRepository->createWithPostable(['user_id' => $user->id], $postable);
+        $post = $this->postRepository->createWithPostable([
+                'user_id' => $user->id
+            ], $postable);
         return $post;
     }
 

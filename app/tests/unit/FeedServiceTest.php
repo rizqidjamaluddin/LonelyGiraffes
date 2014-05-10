@@ -4,11 +4,8 @@ class FeedServiceTest extends TestCase
 {
 
     const POST_REPOSITORY = 'Giraffe\Repositories\PostRepository';
-
     const TEST = 'Giraffe\Services\FeedService';
-
     const SHOUT_REPOSITORY = 'Giraffe\Repositories\ShoutRepository';
-
     const USER_REPOSITORY = 'Giraffe\Repositories\UserRepository';
 
     public function disarm()
@@ -33,7 +30,7 @@ class FeedServiceTest extends TestCase
         $shoutRepository = Mockery::mock(self::SHOUT_REPOSITORY);
         $shoutRepository->shouldReceive('create')
             ->with(['user_id' => 1, 'body' => 'Lorem ipsum', 'html_body' => '<p>Lorem ipsum</p>'])
-            ->andReturn(json_decode('{"id": 1}'));
+            ->andReturn(json_decode('{"id": 1, "country": "United States"}'));
         App::instance(self::SHOUT_REPOSITORY, $shoutRepository);
 
         $postRepository = Mockery::mock(self::POST_REPOSITORY);
@@ -49,6 +46,9 @@ class FeedServiceTest extends TestCase
         $post = $feed->createPost('1', 'Lorem ipsum', []);
         $postModel = $feed->getPost($post);
 
+        // assert post properly saved
         $this->assertEquals($postModel->postable->body, 'Lorem ipsum');
+        // assert post takes user location if not explicitly set
+        $this->assertEquals($postModel->country, 'United States');
     }
 }
