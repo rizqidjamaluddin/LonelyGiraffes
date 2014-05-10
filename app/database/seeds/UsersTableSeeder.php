@@ -28,7 +28,7 @@ class UsersTableSeeder extends Seeder {
             }
 
 			UserModel::create([
-                'hash' => Str::random('32'),
+                'public_id' => strtolower($first),
                 'nickname' => $nick,
                 'firstname' => $first,
                 'lastname' => $last,
