@@ -11,6 +11,12 @@ class GiraffeServiceProvider extends ServiceProvider {
 
 
         $this->app->singleton('Giraffe\Helpers\Parser\ParserDriver', 'Giraffe\Helpers\Parser\ParsedownPurifierParserDriver');
+        $this->app->singleton('Giraffe\Helpers\Logger\Log');
+    }
+
+    public function boot()
+    {
+        $this->app->make('Giraffe\Helpers\Logger\Log')->boot();
     }
 
 }
