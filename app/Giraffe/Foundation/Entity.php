@@ -1,7 +1,6 @@
 <?php  namespace Giraffe\Foundation;
 
 use App;
-use Exception;
 use Giraffe\Exceptions\DirtyEntityException;
 use Giraffe\Exceptions\InvalidEntityPropertyException;
 
@@ -11,10 +10,10 @@ use Giraffe\Exceptions\InvalidEntityPropertyException;
  * Base domain-level entity.
  *
  * Properties can be accessed normally; setting values should use custom methods built on entity implementations.
- * Setters are NOT automatically available.
+ * Setters are NOT automatically available. Please invoke ->setProperty() in the setters.
  * $entity = $userRepository->find($id);
- * echo 'Old username: ' . $entity->username;
- * $entity->setUsername($new_username);
+ * echo 'Old username: ' . $entity->username; 
+ * $entity->setUsername($new_username);         // implement this
  * $userRepository->save($entity);
  *
  * Aggregates are registered in the aggregates field, in property => RepositoryClass form:
@@ -26,11 +25,6 @@ use Giraffe\Exceptions\InvalidEntityPropertyException;
  */
 abstract class Entity
 {
-    /**
-     * @var string
-     */
-    protected $className = null;
-
     /**
      * @var array
      */
@@ -117,8 +111,7 @@ abstract class Entity
 
     public function getName()
     {
-        if (is_null($this->className)) throw new Exception('Entity name not given');
-        return $this->className;
+        return get_class($this);
     }
 
     function __get($property)
