@@ -16,11 +16,4 @@ class PostRepository extends BaseEloquentRepository
         $this->postModel = $postModel;
     }
 
-    public function createWithPostable($attributes, $postable)
-    {
-        $post = parent::create($attributes);
-        $post->postable()->associate($postable);
-        return $post;
-    }
-
 } 
