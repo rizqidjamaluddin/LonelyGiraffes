@@ -12,10 +12,15 @@
  *
  * For repositories related to other entities, implement a method on the child repository:
  * $postEntity = $postRepository->find($id);
- * $commentCollection = $commentRepository->findForPost($postEntity);
- * $commentCollection = $commentRepository->findFor($postEntity); // convenience function
+ * $commentCollection = $commentRepository->findForPost($postEntity); // implement this
+ * $commentCollection = $commentRepository->findFor($postEntity);     // provided shortcut to the above
  *
- * Entities will also internally use this when accessing related properties.
+ * Entities will also internally use ->findFor when accessing related properties:
+ * $commentCollection = $postEntity->comments;
+ *
+ * This is different in that this method always pulls in the whole collection, whereas custom repository methods
+ * would allow for more complex behavior:
+ * $newestComment = $commentRepository->findNewestForPost($postEntity);
  *
  * @package Giraffe\Foundation
  */
