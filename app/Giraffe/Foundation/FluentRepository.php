@@ -48,15 +48,16 @@ abstract class FluentRepository extends Repository
 
     protected function saveEntity(Entity $entity)
     {
+        // do an insert for entities with no ID
+        if (!$entity->id) {
+            return DB::table($this->tableName)->insert($entity->getProperties());
+        }
+
         // pass on clean entities
         if (!$entity->isDirty()) return $entity;
 
         DB::table($this->tableName)->update($entity->getProperties());
         return $entity;
     }
-
-    /*
-     * -- Related class operations
-     */
 
 }

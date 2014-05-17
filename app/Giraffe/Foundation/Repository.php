@@ -72,10 +72,42 @@ abstract class Repository
     }
 
     /**
-     * Save an entity.
+     * Save an entity. Remember to convert any specific data types into their persistence forms (e.g. from a Carbon
+     * object to their SQL format).
      *
      * @param Entity $entity
      * @return mixed
      */
     abstract protected function saveEntity(Entity $entity);
-} 
+
+    /**
+     * Translate from persistence to entity.
+     *
+     * Translate the stored version of an entity into the actual types desired by the entity. Set this per actual
+     * repository, because different persistence types may require different forms of translation. Conversion from
+     * native data types to value objects can also take place here.
+     *
+     * By default, no translation happens.
+     *
+     * @param Array $attributes
+     * @return array
+     */
+    protected function translateOut(Array $attributes)
+    {
+        return $attributes;
+    }
+
+    /**
+     * Translate from entity to persistence.
+     *
+     * Inverse of translateOut.
+     *
+     * @param array $attributes
+     *
+*@return array
+     */
+    protected function translateIn(Array $attributes)
+    {
+        return $attributes;
+    }
+}

@@ -3,6 +3,7 @@
 use App;
 use Giraffe\Exceptions\DirtyEntityException;
 use Giraffe\Exceptions\InvalidEntityPropertyException;
+use Serializable;
 
 /**
  * Class Entity
@@ -16,21 +17,29 @@ use Giraffe\Exceptions\InvalidEntityPropertyException;
  * $entity->setUsername($new_username);         // implement this
  * $userRepository->save($entity);
  *
- * Aggregates are registered in the aggregates field, in property => RepositoryClass form:
+ * Related entities are registered in the a field, in property => RepositoryClass form:
  * protected $relationEntities = ['comments' => 'CommentRepository'];
  *
- * Aggregate names should not conflict with field names; if they do, aggregates should be prioritized.
+ * Related property names should not conflict with field names; if they do, related entities should be prioritized.
  *
- *@package Giraffe\Foundation
+ * No magic handling for aggregates is provided. Load them like normal entities on your repository implementation.
+ *
+ * Need validation? Write a validator class and write your own isValid method or whatever!
+ *
+ * @property $id int
+ * @package Giraffe\Foundation
  */
-abstract class Entity
+abstract class Entity implements Serializable
 {
     /**
+     * List of property names. This differs from the properties array in that all fields are, by default, optional,
+     * so it's possible that an entity's property for a particular field will simply be null.
      * @var array
      */
     protected $fields = [];
 
     /**
+     * Main storage of entity properties.
      * @var array
      */
     protected $properties = [];
@@ -50,12 +59,8 @@ abstract class Entity
      */
     protected $relations = [];
 
-    public function __construct(Array $properties)
+    public function __construct()
     {
-        // fill in properties
-        foreach ($this->fields as $field) {
-            $this->properties[$field] = array_key_exists($field, $properties) ? $properties[$field] : null;
-        }
     }
 
     /**
@@ -141,15 +146,37 @@ abstract class Entity
         return null;
     }
 
-    function __sleep()
+    /**
+     * Recursively serialize all properties.
+     * Only properties (including aggregates) are serialized, not related classes. This prevents a cached entity from
+     * preserving a stale collection of other entities, which could go out of sync with different copies of themselves.
+     *
+     * @throws \Giraffe\Exceptions\DirtyEntityException
+     * @return string|void
+     */
+    public function serialize()
     {
-        // dirty entities cannot be serialized; save before serializing
-        if ($this->isDirty()) throw new DirtyEntityException;
+        if ($this->isDirty()) {
+            throw new DirtyEntityException;
+        }
+
+        $serializable = [];
+
+        foreach ($this->properties as $property => $value) {
+            $serializable[$property] = serialize($value);
+        }
+
+        return serialize($serializable);
+
     }
 
-    function __wakeup()
-    {
-        // TODO: Implement __wakeup() method.
-    }
 
-} 
+    public function unserialize($serialized)
+    {
+        $serialized = unserialize($serialized);
+
+        foreach ($this->fields as $field) {
+            $this->properties[$field] = array_key_exists($field, $serialized) ? $serialized[$field] : null;
+        }
+    }
+}
