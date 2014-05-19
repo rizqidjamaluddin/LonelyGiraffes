@@ -11,7 +11,24 @@
 |
 */
 
-Route::get('/', function()
-{
-	return View::make('hello');
-});
+Route::get(
+     '/',
+         function () {
+             return View::make('hello');
+         }
+);
+
+Route::api(
+     ['version' => 'v1'],
+         function () {
+             Route::get('posts', ['uses' => 'PostController@index']);
+             Route::post('posts/{resource}/comments', ['uses' => 'PostController@addComment']);
+
+             Route::get('events', ['uses' => 'EventController@index']);
+             Route::get('events/{resource}', ['uses' => 'EventController@index']);
+             Route::delete('events/{resource}', ['uses' => 'EventController@delete']);
+
+             Route::get('shouts', ['uses' => 'ShoutController@index']);
+             Route::post('shouts', ['uses' => 'ShoutController@store']);
+         }
+);
