@@ -11,16 +11,18 @@
 |
 */
 
-Route::get(
-     '/',
-         function () {
-             return View::make('hello');
-         }
-);
+Route::get('/', function(){
+        return View::make('hello');
+    });
+
+Route::get('test', function(){
+        return 'test';
+    });
 
 Route::api(
      ['version' => 'v1'],
          function () {
+
              Route::get('posts', ['uses' => 'PostController@index']);
              Route::post('posts/{resource}/comments', ['uses' => 'PostController@addComment']);
 
@@ -28,7 +30,9 @@ Route::api(
              Route::get('events/{resource}', ['uses' => 'EventController@index']);
              Route::delete('events/{resource}', ['uses' => 'EventController@delete']);
 
-             Route::get('shouts', ['uses' => 'ShoutController@index']);
+             Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
              Route::post('shouts', ['uses' => 'ShoutController@store']);
+
+
          }
 );
