@@ -2,7 +2,7 @@
 
 class ParsedownPurifierParserTest extends TestCase
 {
-    const TEST = 'Giraffe\Helpers\Parser\ParsedownPurifierParserDriver';
+    const TEST = 'Giraffe\Parser\ParsedownPurifierParserDriver';
 
     /**
      * @test

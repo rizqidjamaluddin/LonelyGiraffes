@@ -1,15 +1,15 @@
 <?php
 
-use Giraffe\Services\UserService;
+use Giraffe\Users\UserService;
 
 /**
- * @coversDefaultClass \Giraffe\Services\UserService
+ * @coversDefaultClass \Giraffe\Users\UserService
  */
 class UserServiceTest extends TestCase
 {
 
     /**
-     * @var Giraffe\Services\UserService
+     * @var \Giraffe\Users\UserService
      */
     private $userService;
 
@@ -23,7 +23,7 @@ class UserServiceTest extends TestCase
         }");
 
         // mocking
-        $userRepository = Mockery::mock('Giraffe\Repositories\UserRepository');
+        $userRepository = Mockery::mock('Giraffe\Users\UserRepository');
         $userRepository->shouldReceive('getByIdWithSettings')->with(1)->andReturn($data_for_user_id_1);
         $userRepository->shouldReceive('setUserNicknameSettingById')->with(2, true)->andReturn(true);
         $userRepository->shouldReceive('deleteByIdWithEmailConfirmation')->with(3, 'not-user3@example.com')->andReturn(false);
@@ -31,8 +31,8 @@ class UserServiceTest extends TestCase
         $userRepository->shouldReceive('reactivateById')->with(3)->andReturn(true);
 
         // init
-        App::instance('Giraffe\Repositories\UserRepository', $userRepository);
-        $this->userService = App::make('Giraffe\Services\UserService');
+        App::instance('Giraffe\Users\UserRepository', $userRepository);
+        $this->userService = App::make('Giraffe\Users\UserService');
     }
 
     /**

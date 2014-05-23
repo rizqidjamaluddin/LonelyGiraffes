@@ -3,9 +3,9 @@
 class GatekeeperTest extends TestCase
 {
 
-    const TEST = 'Giraffe\Helpers\Rights\Gatekeeper';
-    const PROVIDER = 'Giraffe\Helpers\Rights\GatekeeperProvider';
-    const GATEKEEPER_EXCEPTION = 'Giraffe\Helpers\Rights\GatekeeperException';
+    const TEST = 'Giraffe\Authorization\Gatekeeper';
+    const PROVIDER = 'Giraffe\Authorization\GatekeeperProvider';
+    const GATEKEEPER_EXCEPTION = 'Giraffe\Authorization\GatekeeperException';
 
     /**
      * @test

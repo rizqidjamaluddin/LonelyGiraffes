@@ -20,7 +20,7 @@ class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
     public function disarm()
     {
-        $gatekeeper = App::make('Giraffe\Helpers\Rights\Gatekeeper');
+        $gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
         $gatekeeper->disarm();
     }
 

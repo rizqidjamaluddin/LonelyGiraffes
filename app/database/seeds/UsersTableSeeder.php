@@ -3,7 +3,7 @@
 // Composer: "fzaninotto/faker": "v1.3.0"
 use Carbon\Carbon;
 use Faker\Factory as Faker;
-use Giraffe\Models\UserModel;
+use Giraffe\Users\UserModel;
 
 class UsersTableSeeder extends Seeder {
 

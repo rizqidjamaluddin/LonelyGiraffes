@@ -3,9 +3,9 @@
 class ShoutServiceTest extends TestCase
 {
 
-    const SHOUT_REPOSITORY = 'Giraffe\Repositories\ShoutRepository';
-    const TEST = 'Giraffe\Services\FeedService';
-    const USER_REPOSITORY = 'Giraffe\Repositories\UserRepository';
+    const SHOUT_REPOSITORY = 'Giraffe\Shouts\ShoutRepository';
+    const TEST = 'Giraffe\Feed\FeedService';
+    const USER_REPOSITORY = 'Giraffe\Users\UserRepository';
 
     /**
      * @test
