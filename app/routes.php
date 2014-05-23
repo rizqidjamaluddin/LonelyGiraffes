@@ -23,6 +23,7 @@ Route::api(
      ['version' => 'v1'],
          function () {
 
+             // additional feeds use query strings; GET /posts?feed=buddies
              Route::get('posts', ['uses' => 'PostController@index']);
              Route::post('posts/{resource}/comments', ['uses' => 'PostController@addComment']);
 
@@ -30,9 +31,25 @@ Route::api(
              Route::get('events/{resource}', ['uses' => 'EventController@index']);
              Route::delete('events/{resource}', ['uses' => 'EventController@delete']);
 
-             Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
              Route::post('shouts', ['uses' => 'ShoutController@store']);
+             Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
 
+             Route::get('users/{resource}', ['uses' => 'UserController@show']);
+             Route::put('users/{resource}', ['uses' => 'UserController@update']);
+
+             Route::get('users/{resource}/buddies', ['uses' => 'BuddyController@show']);
+             Route::post('users/{resource}/buddies', ['uses' => 'BuddyController@create']);
+             Route::delete('users/{resource}/buddies/{buddy}', ['uses' => 'BuddyController@delete']);
+
+             Route::get('users/{resource}/conversations', ['uses' => 'ConversationController@index']);
+             Route::post('users/{resource}/conversations', ['uses' => 'ConversationController@create']);
+             Route::delete('users/{resource}/conversations/{conversation}', ['uses' => 'ConversationController@leave']);
+             Route::post('users/{resource}/conversations/{conversation}/messages', ['uses' => 'ConversationController@createMessage']);
+             Route::delete('users/{resource}/conversations/{conversation}/messages/{message}', ['uses' => 'ConversationController@deleteMessage']);
+             Route::post('users/{resource}/conversations/{conversation}/invite', ['uses' => 'ConversationController@invite']);
+
+             Route::get('users/{resource}/notifications', ['uses' => 'NotificationController@index']);
+             Route::delete('users/{resource}/notifications/{notification}', ['uses' => 'NotificationController@destroy']);
 
          }
 );
