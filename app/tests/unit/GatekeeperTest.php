@@ -109,4 +109,20 @@ class GatekeeperTest extends TestCase
         $this->assertTrue($gatekeeper->mayI('update', 'message')->please());
         $this->assertTrue($gatekeeper->mayI('delete', 'user')->please());
     }
+
+    /**
+     * @test
+     */
+    public function it_should_not_authenticate_a_null_user()
+    {
+        $this->refreshApplication();
+        $provider = Mockery::mock(self::PROVIDER);
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(null);
+        $provider->shouldReceive('checkIfUserMay')->with(null, 'delete', 'user')->andThrow('Exception');
+        $provider->shouldReceive('checkIfGuestMay')->with('delete', 'user')->andReturn(false);
+        App::instance(self::PROVIDER, $provider);
+        $gatekeeper = App::make(self::TEST);
+
+        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete','user')->please());
+    }
 }

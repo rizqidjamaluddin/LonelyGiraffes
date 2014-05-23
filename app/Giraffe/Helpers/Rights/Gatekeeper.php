@@ -63,6 +63,10 @@ class Gatekeeper
     {
         if ($this->enable) {
             $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+            if (!$this->authenticatedUser) {
+                // fail on a non-existent/null user
+                return $this;
+            }
         }
         $this->authenticated = true;
         return $this;
@@ -121,7 +125,7 @@ class Gatekeeper
         if ($this->authenticated) {
             return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
         } else {
-            return $this->provider;
+            return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun']);
         }
     }
 
