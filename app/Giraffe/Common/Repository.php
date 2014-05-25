@@ -4,7 +4,7 @@ use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\NotFoundModelException;
 use stdClass;
 
-interface BaseRepository
+interface Repository
 {
     /**
      * @param int|string|stdClass $idOrHash

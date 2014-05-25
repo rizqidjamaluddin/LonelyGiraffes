@@ -1,10 +1,10 @@
 <?php  namespace Giraffe\Feed;
 
-use Giraffe\Common\BaseEloquentRepository;
+use Giraffe\Common\EloquentRepository;
 use Giraffe\Contracts\Postable;
 use Giraffe\Feed\PostModel;
 
-class PostRepository extends BaseEloquentRepository
+class PostRepository extends EloquentRepository
 {
 
     /**

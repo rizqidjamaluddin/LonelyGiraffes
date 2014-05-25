@@ -1,9 +1,9 @@
 <?php  namespace Giraffe\Shouts;
 
-use Giraffe\Common\BaseEloquentRepository;
+use Giraffe\Common\EloquentRepository;
 use Giraffe\Shouts\ShoutModel;
 
-class ShoutRepository extends BaseEloquentRepository
+class ShoutRepository extends EloquentRepository
 {
 
     /**

@@ -1,33 +1,24 @@
 <?php  namespace Giraffe\Events;
 class EventService 
 {
-    public function acceptEventInvitation($invitation)
-    {
+    /**
+     * @var EventRepository
+     */
+    private $eventRepository;
 
+    public function __construct(EventRepository $eventRepository)
+    {
+        $this->eventRepository = $eventRepository;
     }
 
-    public function addCommentOnEvent($user, $event, $comment)
+    public function get($event)
     {
-
+        return $this->eventRepository->get($event);
     }
 
-    public function denyEventInvitation($invitation)
+    public function delete($event)
     {
-
-    }
-
-    public function getEvent($event)
-    {
-
-    }
-
-    public function requestEventInvitation($user, $event)
-    {
-
-    }
-
-    public function sendEventInvitation($user, $event, $invitedUser)
-    {
-
+        $event = $this->eventRepository->get($event);
+        return $this->eventRepository->delete($event);
     }
 } 

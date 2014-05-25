@@ -1,13 +1,13 @@
 <?php  namespace Giraffe\Users;
 
-use Giraffe\Common\BaseEloquentRepository;
+use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserSettingModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRepository extends BaseEloquentRepository
+class UserRepository extends EloquentRepository
 {
 
     /**

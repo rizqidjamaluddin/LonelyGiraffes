@@ -1,22 +1,20 @@
 <?php  namespace Giraffe\Common;
 
-use anlutro\LaravelRepository\NotFoundException;
 use Eloquent;
-use Giraffe\Exceptions\DuplicateCreationException;
 use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\NotFoundModelException;
-use Giraffe\Common\BaseRepository;
+use Giraffe\Common\Repository;
 use Illuminate\Database\QueryException;
 use stdClass;
 
 /**
- * Class BaseEloquentRepository
+ * Class EloquentRepository
  *
  * Basic repository with compatibility with eloquent-powered models.
  *
  * @package Giraffe\Repositories
  */
-abstract class BaseEloquentRepository implements BaseRepository
+abstract class EloquentRepository implements Repository
 {
 
     /**
@@ -91,12 +89,33 @@ abstract class BaseEloquentRepository implements BaseRepository
          return $model;
      }
 
+    public function delete($identifier)
+    {
+
+        if (is_array($identifier)) {
+            foreach ($identifier as $subIdentifier) {
+                $this->delete($subIdentifier);
+            }
+        }
+
+        if ($identifier instanceof Eloquent) {
+            return $identifier->delete();
+        }
+
+        try {
+            $delete = $this->deleteById($identifier);
+            return $delete;
+        } catch (NotFoundModelException $e) {
+            return $this->deleteByHash($identifier);
+        }
+    }
+
      public function deleteById($id)
      {
          if (!$this->model->destroy($id)) {
              throw new NotFoundModelException;
          };
-         return;
+         return true;
      }
 
      public function deleteByHash($hash)
@@ -104,7 +123,7 @@ abstract class BaseEloquentRepository implements BaseRepository
          if (!$this->model->where('hash', '=', $hash)->delete()) {
              throw new NotFoundModelException;
          };
-         return;
+         return true;
      }
 
      public function deleteMany(array $ids)

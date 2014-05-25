@@ -1,21 +1,12 @@
 <?php  namespace Giraffe\Feed;
 
-use Eloquent;
-use Giraffe\Contracts\Postable;
+use Giraffe\Common\Service;
 use Giraffe\Geolocation\LocationHelper;
 use Giraffe\Parser\Parser;
-use Giraffe\Authorization\Gatekeeper;
-use Giraffe\Feed\PostRepository;
-use Giraffe\Shouts\ShoutRepository;
 use Giraffe\Users\UserRepository;
 
-class FeedService
+class FeedService extends Service
 {
-
-    /**
-     * @var \Giraffe\Authorization\Gatekeeper
-     */
-    private $gatekeeper;
     /**
      * @var \Giraffe\Feed\PostRepository
      */
@@ -34,46 +25,17 @@ class FeedService
     private $locationHelper;
 
     public function __construct(
-        Gatekeeper $gatekeeper,
         Parser $parser,
         LocationHelper $locationHelper,
         PostRepository $postRepository,
         UserRepository $userRepository
     ) {
-        $this->gatekeeper = $gatekeeper;
+        parent::__construct();
         $this->userRepository = $userRepository;
         $this->parser = $parser;
         $this->locationHelper = $locationHelper;
         $this->postRepository = $postRepository;
     }
 
-    public function addCommentOnPost($user, $post, $comment)
-    {
 
-    }
-
-    public function getBuddyFeed($user)
-    {
-
-    }
-
-    public function getGlobalFeed($user)
-    {
-
-    }
-
-    public function getLocalFeed($user)
-    {
-
-    }
-
-    /**
-     * @param $post
-     *
-     * @return Eloquent
-     */
-    public function getPost($post)
-    {
-        return $this->postRepository->get($post);
-    }
 } 

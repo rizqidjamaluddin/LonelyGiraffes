@@ -28,7 +28,7 @@ Route::api(
              Route::post('posts/{resource}/comments', ['uses' => 'PostController@addComment']);
 
              Route::get('events', ['uses' => 'EventController@index']);
-             Route::get('events/{resource}', ['uses' => 'EventController@index']);
+             Route::get('events/{resource}', ['uses' => 'EventController@show']);
              Route::delete('events/{resource}', ['uses' => 'EventController@delete']);
 
              Route::post('shouts', ['uses' => 'ShoutController@store']);
