@@ -8,4 +8,10 @@ class EventRequestModel extends Eloquent {
 
     protected $table = 'event_requests';
 	protected $fillable = ['event_id', 'user_id', 'invitee_id'];
+
+    public function event()
+    {
+        return $this->belongsTo('Giraffe\Events\EventModel');
+    }
+
 }

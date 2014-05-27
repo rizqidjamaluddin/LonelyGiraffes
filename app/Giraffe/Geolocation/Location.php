@@ -1,9 +1,6 @@
 <?php  namespace Giraffe\Geolocation;
 
 use App;
-use Giraffe\Common\InvalidLocationException;
-use Giraffe\Common\NotImplementedException;
-use Giraffe\Helpers\Geolocation\GeolocationProviderInterface;
 use Illuminate\Support\Contracts\JsonableInterface;
 use JsonSerializable;
 

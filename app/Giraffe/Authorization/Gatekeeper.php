@@ -1,12 +1,15 @@
 <?php  namespace Giraffe\Authorization;
 
 use Giraffe\Authorization\GatekeeperProvider;
+use Illuminate\Support\Str;
+use stdClass;
 
 /**
  * Class Gatekeeper
  *
  * Basic use:
  * $gatekeeper->iAm($user)->andMayI('edit', 'posts')->please();
+ * $gatekeeper->iAm($user)->andMayI('edit', 'post')->for(['post' => $post])->please();
  *
  * Stateful:
  * $gatekeeper->iAm($user);
@@ -74,20 +77,23 @@ class Gatekeeper
         return $this;
     }
 
-
-
-
     public function mayI($verb, $noun)
     {
         $this->request = self::REQUEST_PERMISSION;
         $this->query['verb'] = $verb;
-        $this->query['noun'] = $noun;
+        $this->query['noun'] = Str::singular($noun);
         return $this;
     }
 
     public function andMayI($verb, $noun)
     {
         return $this->mayI($verb, $noun);
+    }
+
+    public function forThis(stdClass $model)
+    {
+        $this->query['model'] = $model;
+        return $this;
     }
 
     /**
@@ -125,9 +131,17 @@ class Gatekeeper
     protected function resolveRequestPermission()
     {
         if ($this->authenticated) {
-            return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+            if (array_key_exists('model', $this->query)) {
+                return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun'], $this->query['model']);
+            } else {
+                return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+            }
         } else {
-            return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun']);
+            if (array_key_exists('model', $this->query)) {
+                return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun'], $this->query['model']);
+            } else {
+                return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun']);
+            }
         }
     }
 

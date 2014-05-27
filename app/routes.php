@@ -34,8 +34,12 @@ Route::api(
              Route::get('events/{resource}/invites', ['uses' => 'EventController@indexInvite']);
              Route::post('events/{resource}/invites/{invitation}/accept', ['uses' => 'EventController@acceptInvite']);
              Route::delete('events/{resource}/invites/{invitation}', ['uses' => 'EventController@deleteInvite']);
-             Route::post('events/{resource}/invites/request', ['uses' => 'EventController@requestInvite']);
-             Route::post('events/{resource}/invites/issue', ['uses' => 'EventController@issueInvite']);
+             Route::post('events/{resource}/invites', ['uses' => 'EventController@createInvite']);
+
+             Route::get('events/{resource}/requests', ['uses' => 'EventController@indexRequest']);
+             Route::post('events/{resource}/requests', ['uses' => 'EventController@createRequest']);
+             Route::post('events/{resource}/requests/{request}/accept', ['uses' => 'EventController@acceptRequest']);
+             Route::delete('events/{resource}/requests/{request}', ['uses' => 'EventController@deleteRequest']);
 
              Route::post('shouts', ['uses' => 'ShoutController@store']);
              Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);

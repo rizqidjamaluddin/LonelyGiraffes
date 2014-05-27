@@ -20,7 +20,7 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
         return $this->userRepository->get($user);
     }
 
-    public function checkIfUserMay($user, $verb, $noun)
+    public function checkIfUserMay($user, $verb, $noun, $model = null)
     {
         return false;
     }

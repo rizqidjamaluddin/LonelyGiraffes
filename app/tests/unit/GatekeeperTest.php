@@ -123,6 +123,54 @@ class GatekeeperTest extends TestCase
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
-        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete','user')->please());
+        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->please());
+    }
+
+    /**
+     * Gatekeeper should use singular nouns, and convert any plurals into singular format.
+     *
+     * @test
+     */
+    public function it_can_accept_plural_and_singular_nouns()
+    {
+        $this->refreshApplication();
+        $provider = Mockery::mock(self::PROVIDER);
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(true);
+        $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user_note')->andReturn(true);
+        App::instance(self::PROVIDER, $provider);
+        $gatekeeper = App::make(self::TEST);
+
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'users')->please());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->please());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user_notes')->please());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user_note')->please());
+    }
+
+    /**
+     * You can pass gatekeeper a model using ->forThis($model).
+     *
+     * @test
+     */
+    public function it_can_accept_context_for_nouns()
+    {
+        $this->refreshApplication();
+
+        $user_to_delete = json_decode("{'id': 10}");
+        $user_we_cant_delete = json_decode("{'id': 11}");
+
+        $provider = Mockery::mock(self::PROVIDER);
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('checkIfUserMay')
+                 ->with(Mockery::any(), 'delete', 'user', $user_to_delete)
+                 ->andReturn(true);
+        $provider->shouldReceive('checkIfUserMay')
+                 ->with(Mockery::any(), 'delete', 'user', $user_we_cant_delete)
+                 ->andReturn(false);
+        App::instance(self::PROVIDER, $provider);
+        $gatekeeper = App::make(self::TEST);
+
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_to_delete)->please());
+        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_we_cant_delete)->please());
     }
 }
