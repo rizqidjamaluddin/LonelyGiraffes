@@ -51,15 +51,15 @@ Route::api(
              Route::post('users/{resource}/buddies', ['uses' => 'BuddyController@create']);
              Route::delete('users/{resource}/buddies/{buddy}', ['uses' => 'BuddyController@delete']);
 
-             Route::get('users/{resource}/conversations', ['uses' => 'ConversationController@index']);
-             Route::post('users/{resource}/conversations', ['uses' => 'ConversationController@create']);
-             Route::delete('users/{resource}/conversations/{conversation}', ['uses' => 'ConversationController@leave']);
-             Route::post('users/{resource}/conversations/{conversation}/messages', ['uses' => 'ConversationController@createMessage']);
-             Route::delete('users/{resource}/conversations/{conversation}/messages/{message}', ['uses' => 'ConversationController@deleteMessage']);
-             Route::post('users/{resource}/conversations/{conversation}/invite', ['uses' => 'ConversationController@invite']);
+             Route::get('conversations', ['uses' => 'ConversationController@index']);
+             Route::post('conversations', ['uses' => 'ConversationController@create']);
+             Route::delete('conversations/{conversation}', ['uses' => 'ConversationController@leave']);
+             Route::post('conversations/{conversation}/messages', ['uses' => 'ConversationController@createMessage']);
+             Route::delete('conversations/{conversation}/messages/{message}', ['uses' => 'ConversationController@deleteMessage']);
+             Route::post('conversations/{conversation}/invite', ['uses' => 'ConversationController@invite']);
 
-             Route::get('users/{resource}/notifications', ['uses' => 'NotificationController@index']);
-             Route::delete('users/{resource}/notifications/{notification}', ['uses' => 'NotificationController@destroy']);
+             Route::get('notifications', ['uses' => 'NotificationController@index']);
+             Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);
 
          }
 );
