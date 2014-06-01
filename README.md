@@ -28,7 +28,6 @@ TODO:
 - Installation instructions
 - Component versions
 - Code structure & standards
-- Install PhantomJS for Jasmine unit testing on Vagrant box (this seems a little difficult)
 
 NOTES:
 - Look into automation for development and production servers.
