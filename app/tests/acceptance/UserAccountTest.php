@@ -31,5 +31,15 @@ class UserAccountTest extends TestCase
             "gender"    => "M"
         ]);
         $this->assertResponseStatus(200);
+        return json_decode($response->getContent())->user->id;
+    }
+
+    /**
+     * @depends it_can_insert_a_new_user
+     */
+    public function it_can_find_a_user($id) {
+        $response = $this->call("GET", "api/users/" . $id);
+        $this->assertResponseStatus(200);
+        echo $response;
     }
 }
