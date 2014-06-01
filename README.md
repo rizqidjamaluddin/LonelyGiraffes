@@ -11,6 +11,7 @@ INSTALL:
 5. Access box terminal via SSH by typing "vagrant SSH".
 6. Access MySQL from GUIs by looking on port 2222, using a private key; this key is stored in ~/.vagrant.d/insecure_private_key.
 7. Within the box, the application is stored in ./vagrant.
+8. If NPM will not install your dependencies and you have empty directories, delete your node_modules directory all together and try again.
 
 BRANCHING MODEL:
 master:     Source of production pulls. Merge from staging will be done during production pulls; only touch for hotfixes.
