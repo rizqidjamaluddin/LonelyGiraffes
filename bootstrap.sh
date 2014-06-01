@@ -9,14 +9,12 @@ sudo apt-get update
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
  
-echo ">>> Installing Base Items"
- 
 # Install base items
+echo ">>> Installing Base Items"
 sudo apt-get install -y vim tmux curl wget build-essential python-software-properties redis-server
- 
-echo ">>> Adding PPA's and Installing Server Items"
- 
+  
 # Add repo for PHP5 and nodejs
+echo ">>> Adding PPA's and Installing Server Items"
 sudo add-apt-repository -y ppa:ondrej/php5
 sudo add-apt-repository -y ppa:chris-lea/node.js
 
@@ -24,11 +22,10 @@ sudo add-apt-repository -y ppa:chris-lea/node.js
 sudo apt-get update
  
 # Install the Rest
-sudo apt-get install -y git-core php5 apache2 libapache2-mod-php5 php5-mysql php5-curl php5-gd php5-mcrypt php5-xdebug mysql-server nodejs sqlite php5-sqlite
- 
-echo ">>> Configuring Server"
- 
+sudo apt-get install -y git-core php5 apache2 libapache2-mod-php5 php5-mysql php5-curl php5-gd php5-mcrypt php5-xdebug mysql-server nodejs
+  
 # xdebug Config
+echo ">>> Configuring Server"
 cat << EOF | sudo tee -a /etc/php5/mods-available/xdebug.ini
 xdebug.scream=0
 xdebug.cli_color=1
@@ -51,10 +48,9 @@ sed -i "s/display_errors = .*/display_errors = On/" /etc/php5/apache2/php.ini
 grep -E '^disable_functions' /etc/php5/cli/php.ini | sed -r 's/pcntl_(signal|fork|waitpid|signal_dispatch),//g' > /etc/php5/cli/conf.d/99-boris.ini
 
 sudo service apache2 restart
- 
-echo ">>> Installing Composer"
- 
+  
 # Composer
+echo ">>> Installing Composer"
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 # Add global phpunit - do the next 2 lines if it says phpunit isn't installed
@@ -67,11 +63,17 @@ echo ">>> Starting Redis"
 sudo redis-server /etc/redis/redis.conf
 
 # Create main db
+echo ">>> Create LG database"
 mysql -u root -proot -e 'create database lg'
 
 # Update dependencies
+echo ">>> Running Composer"
 cd /vagrant
 composer update -vvv
+
+# Run unit tests
+echo ">>> Running PHPUnit"
+phpunit
 
 # Node already installed; do other node installs here
 echo ">>> Installing Grunt command line interface"
@@ -83,11 +85,8 @@ npm install
 
 # Run necessary things for grunt
 echo ">>> Running Grunt for development machine"
+cd /vagrant/
 grunt development
-
-# Run unit tests
-echo ">>> Running PHPUnit"
-phpunit
 
 # if laravel refuses to start properly, adjust the permissions afterwards:
 # chmod -R o+w /vagrant/app/storage

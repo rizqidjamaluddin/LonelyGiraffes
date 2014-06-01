@@ -13,8 +13,7 @@ module.exports = function(grunt) {
 					"sudo composer install",
 					"php artisan migrate",
 					"php artisan db:seed",
-					"lgdb:geonames",
-					"grunt jasmine"
+					"lgdb:geonames"
 				].join("&&"),
 				options: {
 					stdout: true
@@ -31,19 +30,6 @@ module.exports = function(grunt) {
 					stdout: true
 				}
 			}
-		},
-
-		/**
-		 * Jasmine unit testing
-		 * @type {Object}
-		 */
-		jasmine: {
-			pivotal: {
-				src: 'js/**/*.js',
-				options: {
-					specs: 'public/tests/unit/*spec.js'
-				}
-			}
 		}
 	});
 
@@ -51,12 +37,10 @@ module.exports = function(grunt) {
 	 * Load tasks
 	 */
 	grunt.loadNpmTasks('grunt-shell');
-	grunt.loadNpmTasks('grunt-contrib-jasmine');
 
 	/**
 	 * Development task
 	 */
 	grunt.registerTask('development', ["shell:development"]);
 	grunt.registerTask('sass', ["shell:sass"]);
-	grunt.registerTask('default', ['jasmine']);
 };
