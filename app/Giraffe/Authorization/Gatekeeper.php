@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Authorization;
 
 use Giraffe\Authorization\GatekeeperProvider;
+use Giraffe\Common\NotFoundModelException;
 use Illuminate\Support\Str;
 use stdClass;
 
@@ -67,14 +68,19 @@ class Gatekeeper
     public function iAm($userIdentifier)
     {
         if ($this->enable) {
-            $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
-            if (!$this->authenticatedUser) {
-                // fail on a non-existent/null user
+            try {
+                $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
+                if (!$this->authenticatedUser) {
+                    // fail on a non-existent/null user
+                    return $this;
+                }
+            } catch (NotFoundModelException $e) {
                 return $this;
             }
         }
         $this->authenticated = true;
         return $this;
+
     }
 
     public function mayI($verb, $noun)
