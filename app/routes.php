@@ -44,6 +44,7 @@ Route::api(
              Route::post('shouts', ['uses' => 'ShoutController@store']);
              Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
 
+             Route::post('users', ['uses' => 'UserController@store']);
              Route::get('users/{resource}', ['uses' => 'UserController@show']);
              Route::put('users/{resource}', ['uses' => 'UserController@update']);
 

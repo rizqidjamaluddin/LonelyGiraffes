@@ -17,6 +17,21 @@ class UserService
     }
 
     /**
+     * @param  array $info
+     */
+    public function createUser($info) {
+        $info['public_id'] = \Str::random(30);
+        return $this->userRepository->create($info);
+    }
+
+    /**
+     * @param  int $user
+     */
+    public function getUser($id) {
+        return $this->userRepository->get($id);
+    }
+
+    /**
      * @param int    $user
      * @param string $email
      *
