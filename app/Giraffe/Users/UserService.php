@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Users;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
+use Illuminate\Database\Eloquent\Model;
 use stdClass;
 
 class UserService
@@ -10,22 +11,30 @@ class UserService
      * @var \Giraffe\Users\UserRepository
      */
     private $userRepository;
+    /**
+     * @var UserCreationValidator
+     */
+    private $creationValidator;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, UserCreationValidator $creationValidator)
     {
         $this->userRepository = $userRepository;
+        $this->creationValidator = $creationValidator;
     }
 
     /**
      * @param  array $info
+     * @return Model|static
      */
     public function createUser($info) {
         $info['public_id'] = \Str::random(30);
+        $this->creationValidator->validate($info);
         return $this->userRepository->create($info);
     }
 
     /**
-     * @param  int $user
+     * @param $id
+     * @return mixed|void
      */
     public function getUser($id) {
         return $this->userRepository->get($id);

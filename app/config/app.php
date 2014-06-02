@@ -2,6 +2,8 @@
 
 return array(
 
+    'cipher' => MCRYPT_RIJNDAEL_256,
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Debug Mode

@@ -4,10 +4,11 @@
 	"keywords": ["framework", "laravel"],
 	"license": "MIT",
 	"require": {
-		"laravel/framework": "4.1.*",
+		"laravel/framework": "4.2.*",
         "dingo/api": "0.*",
         "mews/purifier": "dev-master",
-        "erusev/parsedown": "dev-master"
+        "erusev/parsedown": "dev-master",
+        "respect/validation": "dev-master"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
@@ -15,6 +16,7 @@
         "way/generators": "dev-master",
         "itsgoingd/clockwork": "1.*",
         "mockery/mockery": "dev-master",
+        "hasbridge/json-schema-validator": "dev-master",
         "laracasts/testdummy": "1.*"
     },
 	"autoload": {
