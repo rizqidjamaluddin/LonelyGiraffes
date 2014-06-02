@@ -32,6 +32,10 @@ class UserService
         return $this->userRepository->create($info);
     }
 
+    public function deleteUser($id) {
+        return $this->userRepository->deleteById($id);
+    }
+
     /**
      * @param $id
      * @return mixed|void

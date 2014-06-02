@@ -45,6 +45,7 @@ Route::api(
              Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
 
              Route::post('users', ['uses' => 'UserController@store']);
+             Route::delete('users/{resource}', ['uses' => 'UserController@destroy']);
              Route::get('users/{resource}', ['uses' => 'UserController@show']);
              Route::put('users/{resource}', ['uses' => 'UserController@update']);
 

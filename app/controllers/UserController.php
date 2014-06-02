@@ -16,6 +16,10 @@ class UserController extends Controller
 		return $this->userService->createUser(Input::all());
 	}
 
+	public function destroy($id) {
+		return $this->userService->deleteUser($id);
+	}
+
 	public function show($id) {
 		return $this->userService->getUser($id);
 	}
