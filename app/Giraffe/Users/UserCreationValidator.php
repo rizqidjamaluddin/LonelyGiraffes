@@ -20,8 +20,9 @@ class UserCreationValidator
         } catch (InvalidArgumentException $e) {
             $errors = $e->findMessages(
               [
-                  'email' => '{{name}} is not a valid email',   // custom error message
-                  'length'                                      // use default error message
+                  'email' => '{{name}} is not a valid email',               // custom error message
+                  'password' => 'Password must be under 200 characters',    // shown if 'password' field fails to pass
+                  'length'                                                  // use default error message, shown if any 'length' test fails
               ]
             );
             throw new ValidationException('Could not create a new user.', $errors);
