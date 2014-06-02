@@ -1,13 +1,18 @@
 <?php
 
+use Giraffe\Users\UserService;
+
 class UserAccountTest extends TestCase
 {
+
+    public static function setUpBeforeClass()
+    {
+    }
 
     public function setUp()
     {
         parent::setUp();
         Artisan::call('migrate');
-        Artisan::call('db:seed');
     }
 
     /**
@@ -31,15 +36,28 @@ class UserAccountTest extends TestCase
             "gender"    => "M"
         ]);
         $this->assertResponseStatus(200);
-        return json_decode($response->getContent())->user->id;
+        $id = json_decode($response->getContent())->user->id;
+        return $id;
     }
 
     /**
-     * @depends it_can_insert_a_new_user
+     * @test
      */
-    public function it_can_find_a_user($id) {
-        $response = $this->call("GET", "api/users/" . $id);
+    public function it_can_find_a_user() {
+
+        /** @var Giraffe\Users\UserService $serv */
+        $serv = App::make('Giraffe\Users\UserService');
+        $model = $serv->createUser([
+              "email"     => "hello@something.com",
+              "password"  => "anewpassword",
+              "firstname" => "Sethen",
+              "lastname"  => "Maleno",
+              "gender"    => "M"
+          ]);
+
+        $response = $this->call("GET", "api/users/" . $model->id);
         $this->assertResponseStatus(200);
-        echo $response;
+        $json = json_decode($response->getContent());
+        $this->assertEquals($json->user->email, "hello@something.com");
     }
 }
