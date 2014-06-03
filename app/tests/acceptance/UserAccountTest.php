@@ -53,7 +53,6 @@ class UserAccountTest extends TestCase
             'lastname'  => 'Giraffe',
             'gender'    => 'M'
         ]);
-
         $this->assertResponseStatus(422);
     }
 
@@ -79,6 +78,27 @@ class UserAccountTest extends TestCase
         $this->assertEquals('Lonely', $responseContent->user->firstname);
         $this->assertEquals('Giraffe', $responseContent->user->lastname);
         $this->assertEquals('M', $responseContent->user->gender);
+    }
+
+    /**
+     * @test
+     */
+    public function users_can_change_password()
+    {
+        $service = App::make('Giraffe\Users\UserService');
+        $model = $service->createUser([
+              "email"     => 'hello@lonelygiraffes.com',
+              "password"  => 'password',
+              'firstname' => 'Lonely',
+              'lastname'  => 'Giraffe',
+              'gender'    => 'M'
+          ]);
+
+        $response = $this->call("PUT", "api/users/1", [
+             "password"  => 'password2'
+         ]);
+
+        $this->assertResponseStatus(200);
     }
 
     /**

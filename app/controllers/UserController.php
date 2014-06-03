@@ -5,9 +5,9 @@ use Giraffe\Users\UserService;
 
 class UserController extends Controller
 {
-	/**
-	 * @param UserRepository $userRepository [description]
-	 */
+    /**
+     * @param Giraffe\Users\UserService $userService
+     */
 	public function __construct(UserService $userService) {
 		$this->userService = $userService;
 	}
@@ -23,4 +23,15 @@ class UserController extends Controller
 	public function show($id) {
 		return $this->userService->getUser($id);
 	}
+
+    public function update($id)
+    {
+        $input = Input::all();
+        if (array_key_exists('password', $input)) {
+            return $this->userService->changePassword($id, $input['password']);
+        }
+
+        // handle other updates
+        return $this->userService->updateUser($id, $input);
+    }
 } 
