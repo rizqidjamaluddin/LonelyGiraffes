@@ -159,7 +159,7 @@ class GatekeeperTest extends TestCase
         $user_we_cant_delete = json_decode('{"id": 11}');
 
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')
                  ->with(Mockery::any(), 'delete', 'user', $user_to_delete)
                  ->andReturn(true);
