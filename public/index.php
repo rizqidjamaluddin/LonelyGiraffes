@@ -1,7 +1,5 @@
 <?php
 
-//ignore this - testing auto build
-
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
