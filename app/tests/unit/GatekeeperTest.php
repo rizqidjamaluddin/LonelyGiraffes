@@ -2,7 +2,6 @@
 
 class GatekeeperTest extends TestCase
 {
-
     const TEST = 'Giraffe\Authorization\Gatekeeper';
     const PROVIDER = 'Giraffe\Authorization\GatekeeperProvider';
     const GATEKEEPER_EXCEPTION = 'Giraffe\Authorization\GatekeeperException';
@@ -14,7 +13,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
@@ -29,7 +28,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
@@ -45,7 +44,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
@@ -62,7 +61,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'message')->andReturn(false);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(false);
@@ -135,7 +134,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(true);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user_note')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
@@ -156,8 +155,8 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
 
-        $user_to_delete = json_decode("{'id': 10}");
-        $user_we_cant_delete = json_decode("{'id': 11}");
+        $user_to_delete = json_decode('{"id": 10}');
+        $user_we_cant_delete = json_decode('{"id": 11}');
 
         $provider = Mockery::mock(self::PROVIDER);
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
