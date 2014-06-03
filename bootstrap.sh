@@ -22,7 +22,7 @@ sudo add-apt-repository -y ppa:chris-lea/node.js
 sudo apt-get update
  
 # Install the Rest
-sudo apt-get install -y git-core php5 apache2 libapache2-mod-php5 php5-mysql php5-curl php5-gd php5-mcrypt php5-xdebug mysql-server nodejs
+sudo apt-get install -y git-core php5 apache2 libapache2-mod-php5 php5-mysql php5-curl php5-gd php5-mcrypt php5-xdebug mysql-server nodejs sqlite php5-sqlite
   
 # xdebug Config
 echo ">>> Configuring Server"

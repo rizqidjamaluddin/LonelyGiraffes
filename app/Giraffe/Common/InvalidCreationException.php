@@ -1,8 +1,8 @@
 <?php  namespace Giraffe\Common;
 
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Dingo\Api\Exception\StoreResourceFailedException;
 
-class InvalidCreationException extends BadRequestHttpException
+class InvalidCreationException extends StoreResourceFailedException
 {
 
 } 

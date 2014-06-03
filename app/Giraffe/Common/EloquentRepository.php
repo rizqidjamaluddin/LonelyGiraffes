@@ -115,7 +115,7 @@ abstract class EloquentRepository implements Repository
          if (!$this->model->destroy($id)) {
              throw new NotFoundModelException;
          };
-         return true;
+         return $this->model->find($id);
      }
 
      public function deleteByHash($hash)

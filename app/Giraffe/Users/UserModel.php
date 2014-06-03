@@ -35,7 +35,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	protected $hidden = array('password');
 
-    protected $fillable = ['hash', 'nickname', 'firstname', 'lastname', 'email', 'password', 'token', 'cell',
+    protected $fillable = ['public_id', 'nickname', 'firstname', 'lastname', 'email', 'password', 'token', 'cell',
         'country', 'state', 'city', 'lat', 'long',
         'date_of_birth', 'gender'];
 
