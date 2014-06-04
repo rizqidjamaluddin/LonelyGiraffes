@@ -81,7 +81,7 @@ sudo npm install -g grunt-cli
 
 # Install node dependencies
 echo ">>> Installing project dependencies via Node"
-npm install
+sudo npm install
 
 # Run necessary things for grunt
 echo ">>> Running Grunt for development machine"
