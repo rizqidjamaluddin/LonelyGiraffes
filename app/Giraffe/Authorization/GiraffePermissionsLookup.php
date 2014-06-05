@@ -21,6 +21,7 @@ class GiraffePermissionsLookup
             $guest,
             [
                 'self' => [
+                    'test' => ['test'],
                     'post' => ['delete'],
                 ],
                 'global' => [
