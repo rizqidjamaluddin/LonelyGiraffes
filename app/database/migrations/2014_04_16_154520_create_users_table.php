@@ -38,6 +38,8 @@ class CreateUsersTable extends Migration {
 
             $table->unique('email');
             $table->unique('token');
+
+            $table->enum('role', ['member', 'mod', 'admin']);
 		});
 	}
 
