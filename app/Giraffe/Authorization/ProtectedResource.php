@@ -1,5 +1,7 @@
 <?php  namespace Giraffe\Authorization; 
 
+use Giraffe\Users\UserModel;
+
 interface ProtectedResource
 {
     /**
@@ -7,4 +9,8 @@ interface ProtectedResource
      */
     public function getResourceName();
 
+    /**
+     * @return UserModel
+     */
+    public function getOwner();
 } 
