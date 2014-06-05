@@ -23,6 +23,7 @@ class GiraffePermissionsLookup
                 'self' => [
                     'test' => ['test'],
                     'post' => ['delete'],
+                    'user' => ['deactivate'],
                 ],
                 'global' => [
                     'post' => ['comment']
@@ -45,6 +46,7 @@ class GiraffePermissionsLookup
                 'self' => [
                 ],
                 'global' => [
+                    'user' => ['deactivate'],
                 ],
             ]
         );

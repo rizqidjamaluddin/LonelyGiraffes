@@ -5,6 +5,8 @@ use Giraffe\Users\UserModel;
 interface ProtectedResource
 {
     /**
+     * Lowercase name of this resource.
+     *
      * @return string
      */
     public function getResourceName();

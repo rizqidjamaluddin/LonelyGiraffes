@@ -25,7 +25,7 @@ class UserRepository extends EloquentRepository
      * Extend the base get() method to accept a user's public_id
      *
      * @param \Eloquent|int|string $identifier
-     * @return mixed|void
+     * @return UserModel|null
      */
     public function get($identifier){
         try {
@@ -44,7 +44,7 @@ class UserRepository extends EloquentRepository
      */
     public function getByPublicId($id)
     {
-        if (!$model = $this->model->where('public_id', '=', $id)->first()) {
+        if (!$model = $this->model->where('nickname', '=', $id)->first()) {
             throw new NotFoundModelException();
         }
         return $model;

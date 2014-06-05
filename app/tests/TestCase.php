@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @method assertTrue($a)
+ * @method assertFalse($a)
+ * @method assertEqual($a, $b)
+ */
 class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
 	/**
