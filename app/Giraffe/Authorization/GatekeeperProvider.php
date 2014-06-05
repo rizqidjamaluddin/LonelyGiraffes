@@ -13,20 +13,21 @@ interface GatekeeperProvider
     public function getUserModel($user);
 
     /**
-     * @param      $user
-     * @param      $verb
-     * @param      $noun
-     * @param null $model
+     * @param \stdClass      $user
+     * @param                $verb
+     * @param                $noun
+     * @param null|\stdClass $model
      *
      * @return bool
      */
     public function checkIfUserMay($user, $verb, $noun, $model = null);
 
     /**
-     * @param $verb
-     * @param $noun
+     * @param           $verb
+     * @param           $noun
+     * @param \stdClass $model
      *
      * @return mixed
      */
-    public function checkIfGuestMay($verb, $noun);
+    public function checkIfGuestMay($verb, $noun, $model = null);
 } 
