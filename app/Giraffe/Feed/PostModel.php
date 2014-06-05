@@ -1,9 +1,15 @@
 <?php namespace Giraffe\Feed;
 
 use Eloquent;
+use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Users\UserModel;
 
-class PostModel extends Eloquent {
+/**
+ * @property $user UserModel
+ * @property $postable mixed
+ */
+class PostModel extends Eloquent implements ProtectedResource {
     use HasEloquentHash;
 
     protected $table = 'posts';
@@ -12,5 +18,20 @@ class PostModel extends Eloquent {
     public function postable()
     {
         return $this->morphTo();
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
+    }
+
+    public function getResourceName()
+    {
+        return "post";
+    }
+
+    public function getOwner()
+    {
+        return $this->user;
     }
 }

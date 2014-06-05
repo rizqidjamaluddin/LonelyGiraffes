@@ -1,6 +1,7 @@
 <?php namespace Giraffe\Users;
 
 use Eloquent;
+use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
@@ -24,7 +25,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  *
  * @property $role string
  */
-class UserModel extends Eloquent implements UserInterface, RemindableInterface {
+class UserModel extends Eloquent implements UserInterface, RemindableInterface, ProtectedResource {
 
     use HasEloquentHash;
 
@@ -59,7 +60,19 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface {
     }
 
 
+    /**
+     * ---------------- Protected Resource ----------------
+     */
 
+    public function getResourceName()
+    {
+        return "user";
+    }
+
+    public function getOwner()
+    {
+        return $this;
+    }
 
 
 
@@ -127,4 +140,5 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface {
     public function getRememberTokenName()
     {
         // TODO: Implement getRememberTokenName() method.
-    }}
+    }
+}
