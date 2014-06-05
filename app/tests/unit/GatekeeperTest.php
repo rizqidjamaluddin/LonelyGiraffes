@@ -1,8 +1,9 @@
 <?php
 
+use Giraffe\Authorization\ProtectedResource;
+
 class GatekeeperTest extends TestCase
 {
-
     const TEST = 'Giraffe\Authorization\Gatekeeper';
     const PROVIDER = 'Giraffe\Authorization\GatekeeperProvider';
     const GATEKEEPER_EXCEPTION = 'Giraffe\Authorization\GatekeeperException';
@@ -14,7 +15,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
@@ -29,13 +30,13 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
-        $this->assertTrue($gatekeeper->iAm(1)->mayI('edit', 'message')->please());
-        $this->assertTrue($gatekeeper->iAm(1)->andMayI('edit', 'message')->please());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('edit', 'message')->canI());
+        $this->assertTrue($gatekeeper->iAm(1)->andMayI('edit', 'message')->canI());
     }
 
     /**
@@ -45,7 +46,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
@@ -62,7 +63,7 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'message')->andReturn(false);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(false);
@@ -71,15 +72,15 @@ class GatekeeperTest extends TestCase
         $gatekeeper = App::make(self::TEST);
 
         $gatekeeper->iAm(1);
-        $this->assertTrue($gatekeeper->mayI('edit', 'message')->please());
+        $this->assertTrue($gatekeeper->mayI('edit', 'message')->canI());
         $gatekeeper = App::make(self::TEST);
-        $this->assertTrue($gatekeeper->mayI('edit', 'message')->please());
+        $this->assertTrue($gatekeeper->mayI('edit', 'message')->canI());
         $gatekeeper = App::make(self::TEST);
-        $this->assertFalse($gatekeeper->mayI('delete', 'message')->please());
+        $this->assertFalse($gatekeeper->mayI('delete', 'message')->canI());
         $gatekeeper = App::make(self::TEST);
-        $this->assertFalse($gatekeeper->mayI('delete', 'user')->please());
+        $this->assertFalse($gatekeeper->mayI('delete', 'user')->canI());
         $gatekeeper = App::make(self::TEST);
-        $this->assertTrue($gatekeeper->mayI('create', 'user')->please());
+        $this->assertTrue($gatekeeper->mayI('create', 'user')->canI());
 
     }
 
@@ -99,15 +100,15 @@ class GatekeeperTest extends TestCase
 
         $gatekeeper->disarm();
 
-        $this->assertTrue($gatekeeper->mayI('create', 'message')->please());
-        $this->assertTrue($gatekeeper->mayI('update', 'message')->please());
-        $this->assertTrue($gatekeeper->mayI('delete', 'user')->please());
+        $this->assertTrue($gatekeeper->mayI('create', 'message')->canI());
+        $this->assertTrue($gatekeeper->mayI('update', 'message')->canI());
+        $this->assertTrue($gatekeeper->mayI('delete', 'user')->canI());
 
         $gatekeeper->iAm('1')->disarm();
 
-        $this->assertTrue($gatekeeper->mayI('create', 'message')->please());
-        $this->assertTrue($gatekeeper->mayI('update', 'message')->please());
-        $this->assertTrue($gatekeeper->mayI('delete', 'user')->please());
+        $this->assertTrue($gatekeeper->mayI('create', 'message')->canI());
+        $this->assertTrue($gatekeeper->mayI('update', 'message')->canI());
+        $this->assertTrue($gatekeeper->mayI('delete', 'user')->canI());
     }
 
     /**
@@ -123,7 +124,7 @@ class GatekeeperTest extends TestCase
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
-        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->please());
+        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->canI());
     }
 
     /**
@@ -135,16 +136,16 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(true);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user_note')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
-        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'users')->please());
-        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->please());
-        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user_notes')->please());
-        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user_note')->please());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'users')->canI());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->canI());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user_notes')->canI());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user_note')->canI());
     }
 
     /**
@@ -156,11 +157,11 @@ class GatekeeperTest extends TestCase
     {
         $this->refreshApplication();
 
-        $user_to_delete = json_decode("{'id': 10}");
-        $user_we_cant_delete = json_decode("{'id': 11}");
+        $user_to_delete = new TestResource('test', 1);
+        $user_we_cant_delete = new TestResource('test', 2);
 
         $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode("{'id': 1}"));
+        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')
                  ->with(Mockery::any(), 'delete', 'user', $user_to_delete)
                  ->andReturn(true);
@@ -170,7 +171,29 @@ class GatekeeperTest extends TestCase
         App::instance(self::PROVIDER, $provider);
         $gatekeeper = App::make(self::TEST);
 
-        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_to_delete)->please());
-        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_we_cant_delete)->please());
+        $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_to_delete)->canI());
+        $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_we_cant_delete)->canI());
+    }
+}
+
+class TestResource implements ProtectedResource{
+
+    private $resource;
+    private $owner;
+
+    public function __construct($resource, $owner)
+    {
+        $this->resource = $resource;
+        $this->owner = $owner;
+    }
+
+    public function getResourceName()
+    {
+        return $this->resource;
+    }
+
+    public function getOwner()
+    {
+        return $this->owner;
     }
 }

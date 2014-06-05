@@ -1,6 +1,8 @@
 <?php  namespace Giraffe\Authorization;
 
-class GatekeeperException extends \Exception
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
+class GatekeeperException extends AccessDeniedHttpException
 {
 
 } 

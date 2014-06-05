@@ -31,9 +31,9 @@ class UserService extends Service
      * @return Model|static
      */
     public function createUser($data) {
-        $data['password'] = Hash::make($data['password']);
-        $data['public_id'] = Str::random(30);
         $this->creationValidator->validate($data);
+        $data['password'] = Hash::make($data['password']);
+        $data['hash'] = Str::random(30);
         return $this->userRepository->create($data);
     }
 

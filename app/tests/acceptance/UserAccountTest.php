@@ -26,13 +26,12 @@ class UserAccountTest extends TestCase
     {
         $response = $this->call("POST", "api/users/", [
             "email"     => 'hello@lonelygiraffes.com',
-            "password"  => Hash::make('password'),
+            "password"  => 'password',
             'firstname' => 'Lonely',
             'lastname'  => 'Giraffe',
             'gender'    => 'M'
         ]);
         $responseContent = json_decode($response->getContent());
-
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@lonelygiraffes.com', $responseContent->user->email);
         $this->assertEquals('Lonely', $responseContent->user->firstname);
@@ -42,7 +41,6 @@ class UserAccountTest extends TestCase
 
     /**
      * @test
-     * @depends it_can_create_a_new_user
      */
     public function it_fails_to_create_a_user_with_a_bad_email()
     {
@@ -58,7 +56,6 @@ class UserAccountTest extends TestCase
 
     /**
      * @test
-     * @depends it_can_create_a_new_user
      */
     public function it_can_find_a_user() 
     {

@@ -1,9 +1,12 @@
 Lonely Giraffes V2.
 DATE: April 25, 2014
 
+[![Build Status](http://git.thinksterlabs.com:8080/job/LonelyGiraffes/badge/icon)](http://git.thinksterlabs.com:8080/job/LonelyGiraffes/)
+
 NOTICE: Not ready for development use yet. We can start using this after the final feature push of version 1 is complete. For now, it's just the general structure.
 
 INSTALL:
+
 1. Install Vagrant (http://vagrantup.com)
 2. Linux/OS X: start Vagrant by going to the terminal, navigating to where the project exists, and typing "vagrant up".
 3. Wait for box to download and configuration to complete. (Try vagrant cachier to speed this up in the future.)
@@ -14,6 +17,7 @@ INSTALL:
 8. If NPM will not install your dependencies and you have empty directories, delete your node_modules directory all together and try again.
 
 BRANCHING MODEL:
+
 master:     Source of production pulls. Merge from staging will be done during production pulls; only touch for hotfixes.
 staging:    Source of dev pulls. Merge from dev done automatically with testing during dev pulls.
 develop:    Stable development versions. Merge from feature branches and do atomic commits here.

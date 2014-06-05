@@ -16,11 +16,11 @@ class UserServiceTest extends TestCase
     public function setUp()
     {
         // fake returned user data
-        $data_for_user_id_1 = json_decode("{
-            'settings' : {
-                'use_nickname': true
+        $data_for_user_id_1 = json_decode('{
+            "settings" : {
+                "use_nickname": true
             }
-        }");
+        }');
 
         // mocking
         $userRepository = Mockery::mock('Giraffe\Users\UserRepository');
