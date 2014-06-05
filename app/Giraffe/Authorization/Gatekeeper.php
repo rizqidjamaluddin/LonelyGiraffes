@@ -118,6 +118,14 @@ class Gatekeeper
      */
     public function please()
     {
+        if ($this->canI()) {
+            throw new GatekeeperException;
+        }
+        return true;
+    }
+
+    public function canI()
+    {
         return $this->resolve();
     }
 
