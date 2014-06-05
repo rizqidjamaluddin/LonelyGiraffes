@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration {
 		Schema::create('users', function(Blueprint $table)
 		{
 			$table->increments('id');
-            $table->string('public_id')->unique();
+            $table->string('hash')->unique();
             $table->string('nickname')->nullable();
             $table->string('firstname');
             $table->string('lastname');
@@ -39,7 +39,7 @@ class CreateUsersTable extends Migration {
             $table->unique('email');
             $table->unique('token');
 
-            $table->enum('role', ['member', 'mod', 'admin']);
+            $table->enum('role', ['member', 'mod', 'admin'])->default('member');
 		});
 	}
 
