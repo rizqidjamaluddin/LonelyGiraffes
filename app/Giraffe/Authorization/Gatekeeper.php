@@ -83,11 +83,22 @@ class Gatekeeper
 
     }
 
+    /**
+     * @param $verb string
+     * @param $noun string|ProtectedResource
+     *
+     * @return $this
+     */
     public function mayI($verb, $noun)
     {
         $this->request = self::REQUEST_PERMISSION;
         $this->query['verb'] = $verb;
-        $this->query['noun'] = Str::singular($noun);
+        if (is_string($noun)) {
+            $this->query['noun'] = Str::singular($noun);
+        } else if($noun instanceof ProtectedResource) {
+            $this->query['noun'] = $noun->getResourceName();
+            $this->query['model'] = $noun;
+        }
         return $this;
     }
 
@@ -96,7 +107,7 @@ class Gatekeeper
         return $this->mayI($verb, $noun);
     }
 
-    public function forThis(stdClass $model)
+    public function forThis(ProtectedResource $model)
     {
         $this->query['model'] = $model;
         return $this;
