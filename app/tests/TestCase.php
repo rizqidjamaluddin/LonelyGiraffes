@@ -3,7 +3,7 @@
 /**
  * @method assertTrue($a)
  * @method assertFalse($a)
- * @method assertEqual($a, $b)
+ * @method assertEquals($a, $b)
  */
 class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
