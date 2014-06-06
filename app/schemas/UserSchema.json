@@ -1,0 +1,35 @@
+{
+    "title": "User Schema",
+    "type": "object",
+    "properties": {
+        "firstName": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "firstname": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "lastname": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "email": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "hash": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 20
+                },
+                "gender": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 1
+                }
+            }
+        }
+    },
+    "required": ["user"]
+}
