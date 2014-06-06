@@ -1,6 +1,7 @@
 <?php
 
 use Giraffe\Users\UserService;
+use Json\Validator as JsonValidator;
 
 class UserAccountTest extends TestCase
 {
@@ -33,6 +34,10 @@ class UserAccountTest extends TestCase
         ]);
         $responseContent = json_decode($response->getContent());
         $this->assertResponseStatus(200);
+
+        $validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
+        $validator->validate($responseContent);
+
         $this->assertEquals('hello@lonelygiraffes.com', $responseContent->user->email);
         $this->assertEquals('Lonely', $responseContent->user->firstname);
         $this->assertEquals('Giraffe', $responseContent->user->lastname);
@@ -69,6 +74,9 @@ class UserAccountTest extends TestCase
         ]);
         $response = $this->call("GET", "api/users/" . $model->id);
         $responseContent = json_decode($response->getContent());
+
+        $validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
+        $validator->validate($responseContent);
 
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@lonelygiraffes.com', $responseContent->user->email);
