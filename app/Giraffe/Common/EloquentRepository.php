@@ -22,11 +22,6 @@ abstract class EloquentRepository implements Repository
      */
     protected $model;
 
-    /**
-     * @var bool
-     */
-    protected $hasHash = false;
-
     public function __construct(Eloquent $model)
     {
         $this->model = $model;
@@ -64,7 +59,7 @@ abstract class EloquentRepository implements Repository
 
      public function getByHash($hash)
      {
-         if (!$this->hasHash) {
+         if (!$this->model->hasHash) {
              throw new NotFoundModelException();
          }
 
