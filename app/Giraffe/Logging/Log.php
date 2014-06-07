@@ -6,8 +6,8 @@ use Illuminate\Log\Writer;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Monolog\Processor\GitProcessor;
+use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
-use MyProject\Proxies\__CG__\OtherProject\Proxies\__CG__\stdClass;
 
 /**
  * @method bool debug($stream, $context)
@@ -150,6 +150,7 @@ class Log
 
         $stream->pushProcessor(new WebProcessor());
         $stream->pushProcessor(new GitProcessor());
+        $stream->pushProcessor(new IntrospectionProcessor(Logger::INFO, ['Monolog\\', 'Giraffe\\Logging\\']));
 
         $this->channels[$name] = $stream;
     }
