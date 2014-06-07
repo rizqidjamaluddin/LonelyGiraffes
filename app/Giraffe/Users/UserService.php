@@ -38,7 +38,7 @@ class UserService extends Service
         $data['role'] = 'member';
 
         $user = $this->userRepository->create($data);
-        $this->log->info($this, 'New user registered', $user);
+        $this->log->info($this, 'New user registered', $user->toArray());
         return $user;
     }
 
