@@ -161,7 +161,7 @@ class Log
         $stream = class_basename($stream);
 
         if ($extra) {
-            return storage_path() . $this->path . "/$stream-$extra" . date('Y-m-d') . '.log';
+            return storage_path() . $this->path . "/$stream-$extra-" . date('Y-m-d') . '.log';
         }
         return storage_path() . $this->path . "/$stream-" . date('Y-m-d') . '.log';
     }
