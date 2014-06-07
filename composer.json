@@ -25,7 +25,8 @@
 			"app/controllers",
 			"app/database/migrations",
 			"app/database/seeds",
-			"app/tests/TestCase.php"
+			"app/tests/TestCase.php",
+            "app/tests/acceptance/AcceptanceCase.php"
 		],
         "psr-4": {
             "Giraffe\\": "app/Giraffe"
