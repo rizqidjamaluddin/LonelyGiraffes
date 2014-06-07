@@ -36,7 +36,10 @@ class UserService extends Service
         $data['password'] = Hash::make($data['password']);
         $data['hash'] = Str::random(30);
         $data['role'] = 'member';
-        return $this->userRepository->create($data);
+
+        $user = $this->userRepository->create($data);
+        $this->log->info($this, 'New user registered', $user->toArray());
+        return $user;
     }
 
 
@@ -58,7 +61,7 @@ class UserService extends Service
     public function deleteUser($id)
     {
         $user = $this->userRepository->get($id);
-        $this->gatekeeper->mayI('delete', 'user')->forThis($user)->please();
+        $this->gatekeeper->mayI('delete', $user)->please();
         $user->delete();
         return $user;
     }

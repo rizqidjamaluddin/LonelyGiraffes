@@ -178,7 +178,7 @@ class UserAccountCase extends AcceptanceCase
         $test = $this->repository->get($model->hash);
         $this->gatekeeper->iAm($model);
 
-        $response = $this->call("DELETE", "api/users/" . $model->id);
+        $response = $this->call("DELETE", "api/users/" . $model->hash);
         $this->assertResponseStatus(403);
 
         $fetch = $this->repository->get($model->hash);
