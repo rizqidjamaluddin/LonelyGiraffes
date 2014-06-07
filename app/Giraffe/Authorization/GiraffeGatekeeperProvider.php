@@ -56,13 +56,14 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
     {
         $permissions = $this->loadGroupPermissions();
 
+
         // normalize casing
         $noun = strtolower($noun);
         $verb = strtolower($verb);
 
         // look for user role in permissions lookup
         if (!array_key_exists($role, $permissions)) {
-            throw new ConfigurationException("User role does not exist in permissions table.");
+            throw new ConfigurationException("User role '$role' does not exist in permissions table.");
         }
 
         // look for list of user's "self" permissions
