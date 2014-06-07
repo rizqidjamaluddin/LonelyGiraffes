@@ -118,7 +118,7 @@ class Gatekeeper
      */
     public function please()
     {
-        if ($this->canI()) {
+        if (!$this->canI()) {
             throw new GatekeeperException;
         }
         return true;
@@ -195,6 +195,11 @@ class Gatekeeper
     {
         $this->enable = false;
         return $this;
+    }
+
+    public function isDisarmed()
+    {
+        return !$this->enable;
     }
 
 }

@@ -4,8 +4,9 @@
  * @method assertTrue($a)
  * @method assertFalse($a)
  * @method assertEquals($a, $b)
+ * @method setExpectedException($exception)
  */
-class TestCase extends Illuminate\Foundation\Testing\TestCase {
+abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
 	/**
 	 * Creates the application.

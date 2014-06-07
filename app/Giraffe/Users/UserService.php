@@ -28,12 +28,14 @@ class UserService extends Service
 
     /**
      * @param  array $data
-     * @return Model|static
+     * @return UserModel
      */
     public function createUser($data) {
+        $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
         $data['password'] = Hash::make($data['password']);
         $data['hash'] = Str::random(30);
+        $data['role'] = 'member';
         return $this->userRepository->create($data);
     }
 
@@ -55,7 +57,10 @@ class UserService extends Service
 
     public function deleteUser($id)
     {
-        return $this->userRepository->deleteById($id);
+        $user = $this->userRepository->get($id);
+        $this->gatekeeper->mayI('delete', 'user')->forThis($user)->please();
+        $user->delete();
+        return $user;
     }
 
     /**

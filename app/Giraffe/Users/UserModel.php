@@ -43,7 +43,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
 	 *
 	 * @var array
 	 */
-	protected $hidden = array('password');
+	protected $hidden = ['id', 'password', 'created_at'];
 
     protected $fillable = ['hash', 'nickname', 'firstname', 'lastname', 'email', 'password', 'token', 'cell',
         'country', 'state', 'city', 'lat', 'long',
