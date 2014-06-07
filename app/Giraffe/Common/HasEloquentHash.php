@@ -10,7 +10,7 @@
  */
 trait HasEloquentHash
 {
-    protected $hasHash = true;
+    public $hasHash = true;
 
     /**
      * Find object by hash. Throw ModelNotFoundException if not existing.
