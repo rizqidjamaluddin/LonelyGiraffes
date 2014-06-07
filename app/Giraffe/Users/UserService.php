@@ -31,7 +31,7 @@ class UserService extends Service
      * @return UserModel
      */
     public function createUser($data) {
-        // $data = array_except($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
+        $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
         $data['password'] = Hash::make($data['password']);
         $data['hash'] = Str::random(30);
