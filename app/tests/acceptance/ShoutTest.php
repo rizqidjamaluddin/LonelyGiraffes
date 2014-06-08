@@ -17,10 +17,19 @@ class ShoutTest extends AcceptanceCase
                 'body' => $text
             ]);
 
+        $data = json_decode($response->getContent());
+
         $this->assertResponseOk();
         $validator = new Validator(app_path() . '/schemas/PostSchema.json');
-        $validator->validate(json_decode($response->getContent()));
+        $validator->validate($data);
 
-        echo $response->getContent();
+        // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
+        $shoutChild = new StdClass();
+        $shoutChild->shout = $data->post->postable;
+
+        $shoutValidator = new Validator(app_path() . '/schemas/ShoutSchema.json');
+        $shoutValidator->validate($shoutChild);
+
+
     }
 } 
