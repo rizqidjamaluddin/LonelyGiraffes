@@ -25,6 +25,7 @@ Route::api(
 
              // additional feeds use query strings; GET /posts?feed=buddies
              Route::get('posts', ['uses' => 'PostController@index']);
+             Route::get('posts/{resource}', ['uses' => 'PostController@show']);
              Route::post('posts/{resource}/comments', ['uses' => 'PostController@addComment']);
 
              Route::get('events', ['uses' => 'EventController@index']);
