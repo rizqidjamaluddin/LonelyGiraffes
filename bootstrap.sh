@@ -66,27 +66,30 @@ sudo redis-server /etc/redis/redis.conf
 echo ">>> Create LG database"
 mysql -u root -proot -e 'create database lg'
 
-# Update dependencies
-echo ">>> Running Composer"
-cd /vagrant
-composer update -vvv
-
-# Run unit tests
-echo ">>> Running PHPUnit"
-phpunit
-
 # Node already installed; do other node installs here
 echo ">>> Installing Grunt command line interface"
 sudo npm install -g grunt-cli
 
 # Install node dependencies
 echo ">>> Installing project dependencies via Node"
+cd /vagrant
 sudo npm install
 
-# Run necessary things for grunt
-echo ">>> Running Grunt for development machine"
-cd /vagrant/
-grunt development
+# Update dependencies
+echo ">>> Running Composer Updates"
+grunt composer
+
+# Migrate database
+echo ">>> Running Migrations"
+grunt migrate
+
+# Run PHPunit
+echo ">>> Running PHPUnit"
+phpunit
+
+#Run intern
+echo ">>> Running Intern"
+grunt intern
 
 # if laravel refuses to start properly, adjust the permissions afterwards:
 # chmod -R o+w /vagrant/app/storage

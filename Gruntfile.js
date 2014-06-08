@@ -2,8 +2,9 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		shell: {
+
 			/**
-			 * All commands to get development environment ready to go
+			 * All development tasks
 			 * @type {Object}
 			 */
 			development: {
@@ -11,7 +12,58 @@ module.exports = function(grunt) {
 					"sudo composer self-update",
 					"sudo composer update",
 					"sudo composer install",
-					"php artisan migrate",
+					"php artisan migrate"
+				].join("&&"),
+				options: {
+					stdout: true
+				}
+			},
+
+			/**
+			 * Composer
+			 * @type {Object}
+			 */
+			composer: {
+				command: [
+					"sudo composer self-update",
+					"sudo composer update -vvv",
+					"sudo composer install",
+				].join("&&"),
+				options: {
+					stdout: true
+				}
+			},
+
+			/**
+			 * Migrate
+			 * @type {Object}
+			 */
+			migrate: {
+				command: [
+					"php artisan migrate"
+				].join("&&"),
+				options: {
+					stdout: true
+				}
+			},
+
+			/**
+			 * Intern
+			 * @type {Object}
+			 */
+			intern: {
+				command: "node_modules/.bin/intern-client config=public/tests/intern",
+				options: {
+					stdout: true
+				}
+			},
+
+			/**
+			 * Seed
+			 * @type {Object}
+			 */
+			seed: {
+				command: [
 					"php artisan db:seed",
 					"lgdb:geonames"
 				].join("&&"),
@@ -21,7 +73,7 @@ module.exports = function(grunt) {
 			},
 
 			/**
-			 * Command for sass
+			 * SASS
 			 * @type {Object}
 			 */
 			sass: {
@@ -42,5 +94,9 @@ module.exports = function(grunt) {
 	 * Development task
 	 */
 	grunt.registerTask('development', ["shell:development"]);
+	grunt.registerTask('composer', ["shell:composer"]);
+	grunt.registerTask('migrate', ["shell:migrate"]);
+	grunt.registerTask('intern', ["shell:intern"]);
+	grunt.registerTask('seed', ["shell:seed"]);
 	grunt.registerTask('sass', ["shell:sass"]);
 };

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "198bfe18a848437dc1aa270e5529fca8",
+    "hash": "5c6bf87d27d0280fb9dd44d099185ba4",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -501,16 +501,16 @@
         },
         {
             "name": "league/fractal",
-            "version": "0.8.0",
+            "version": "0.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/fractal.git",
-                "reference": "736016680375a8c9756ce4dddbb0b5894df1fae8"
+                "reference": "cdf7e4100ac6180908c609e81ce5c05660323489"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/736016680375a8c9756ce4dddbb0b5894df1fae8",
-                "reference": "736016680375a8c9756ce4dddbb0b5894df1fae8",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/cdf7e4100ac6180908c609e81ce5c05660323489",
+                "reference": "cdf7e4100ac6180908c609e81ce5c05660323489",
                 "shasum": ""
             },
             "require": {
@@ -556,7 +556,7 @@
                 "league",
                 "rest"
             ],
-            "time": "2014-05-27 14:36:44"
+            "time": "2014-06-05 14:01:11"
         },
         {
             "name": "mews/purifier",
@@ -2097,7 +2097,7 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan H. Wage",
+                    "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
                     "homepage": "http://www.jwage.com/",
                     "role": "Creator"
@@ -2118,7 +2118,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -2172,7 +2172,7 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan Wage",
+                    "name": "Jonathan H. Wage",
                     "email": "jonwage@gmail.com",
                     "homepage": "http://www.jwage.com/",
                     "role": "Creator"
