@@ -47,6 +47,13 @@ module.exports = function(grunt) {
 				}
 			},
 
+			phpunit: {
+				command: "phpunit",
+				options: {
+					stdout: true
+				}
+			},
+
 			/**
 			 * Intern
 			 * @type {Object}
@@ -96,6 +103,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('development', ["shell:development"]);
 	grunt.registerTask('composer', ["shell:composer"]);
 	grunt.registerTask('migrate', ["shell:migrate"]);
+	grunt.registerTask('phpunit', ["shell:phpunit"]);
 	grunt.registerTask('intern', ["shell:intern"]);
 	grunt.registerTask('seed', ["shell:seed"]);
 	grunt.registerTask('sass', ["shell:sass"]);
