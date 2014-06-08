@@ -1,0 +1,16 @@
+{
+    "title": "Shout Schema",
+    "type": "object",
+    "properties": {
+        "shout": {
+            "type": "object",
+            "required": [],
+            "properties": {
+                "body": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "required": ["user"]
+}
