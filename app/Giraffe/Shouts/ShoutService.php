@@ -2,8 +2,11 @@
 
 use Giraffe\Authorization\Gatekeeper;
 use Giraffe\Common\Service;
+use Giraffe\Feed\PostGeneratorHelper;
+use Giraffe\Parser\Parser;
 use Giraffe\Shouts\ShoutRepository;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Str;
 
 class ShoutService extends Service
 {
@@ -16,16 +19,44 @@ class ShoutService extends Service
      * @var \Giraffe\Shouts\ShoutRepository
      */
     private $shoutRepository;
+    /**
+     * @var \Giraffe\Parser\Parser
+     */
+    private $parser;
+    /**
+     * @var \Giraffe\Feed\PostGeneratorHelper
+     */
+    private $postGeneratorHelper;
 
-    public function __construct(UserRepository $userRepository, ShoutRepository $shoutRepository)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        ShoutRepository $shoutRepository,
+        Parser $parser,
+        PostGeneratorHelper $postGeneratorHelper
+    ) {
         parent::__construct();
         $this->userRepository = $userRepository;
         $this->shoutRepository = $shoutRepository;
+
+        $this->parser = $parser;
+        $this->postGeneratorHelper = $postGeneratorHelper;
     }
 
     public function create($user, $body)
     {
-        $this->gatekeeper->mayI('create', 'shout')->please();
+        $parsed = $this->parser->parseComment($body);
+        $hash = Str::random(32);
+        /** @var ShoutModel $shout */
+        $shout = $this->shoutRepository->create(
+            [
+                'user_id' => $user->id,
+                'hash' => $hash,
+                'body' => $body,
+                'html_body' => $parsed
+            ]
+        );
+
+        $post = $this->postGeneratorHelper->generate($shout);
+        return $post;
     }
 } 
