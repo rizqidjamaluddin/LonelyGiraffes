@@ -1,6 +1,8 @@
 Lonely Giraffes V2.
 DATE: April 25, 2014
 
+Download box: vagrant box add CentOS6.5 https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box
+
 NOTICE: Not ready for development use yet. We can start using this after the final feature push of version 1 is complete. For now, it's just the general structure.
 
 INSTALL:
