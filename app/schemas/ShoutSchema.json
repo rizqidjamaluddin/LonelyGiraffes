@@ -4,8 +4,14 @@
     "properties": {
         "shout": {
             "type": "object",
-            "required": [],
+            "required": ["hash", "user_id", "body", "html_body"],
             "properties": {
+                "hash": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
                 "body": {
                     "type": "string"
                 },
