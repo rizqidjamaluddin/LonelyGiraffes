@@ -1,20 +1,20 @@
 <?php  namespace Giraffe\Feed;
 
 use Giraffe\Common\EloquentRepository;
-use Giraffe\Contracts\Postable;
+use Giraffe\Feed\Postable;
 use Giraffe\Feed\PostModel;
 
 class PostRepository extends EloquentRepository
 {
 
-    /**
-     * @var \Giraffe\Feed\PostModel
-     */
-    private $postModel;
-
     public function __construct(PostModel $postModel)
     {
-        $this->postModel = $postModel;
+        parent::__construct($postModel);
+    }
+
+    public function getByHashWithPostable($hash)
+    {
+        return $this->model->with('postable')->where('hash', $hash)->first();
     }
 
 } 
