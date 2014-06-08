@@ -10,6 +10,8 @@ class ShoutTest extends AcceptanceCase
     public function users_can_post_shouts()
     {
         $text = 'This is a shout!';
+        $user = $this->createMemberAccount();
+        $this->be($user);
 
         $response = $this->call('POST', 'api/shouts', [
                 'body' => $text
@@ -18,5 +20,7 @@ class ShoutTest extends AcceptanceCase
         $this->assertResponseOk();
         $validator = new Validator(app_path() . '/schemas/PostSchema.json');
         $validator->validate(json_decode($response->getContent()));
+
+        echo $response->getContent();
     }
 } 
