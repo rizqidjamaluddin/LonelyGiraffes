@@ -17,7 +17,6 @@ class CreateShoutsTable extends Migration {
 			$table->bigIncrements('id');
             $table->string('hash', 32);
             $table->integer('user_id')->unsigned();
-            $table->string('name');
             $table->text('body');
             $table->text('html_body');
 			$table->timestamps();
