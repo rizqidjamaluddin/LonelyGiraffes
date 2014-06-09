@@ -76,15 +76,7 @@ class UserService extends Service
             $user->password = Hash::make($attributes['password']);
         }
 
-        foreach ($attributes as $key => $value) {
-            $user->$key = $value;
-        }
-
-        try {
-            $user->save();
-        } catch (QueryException $e) {
-            if ($e->errorInfo[0] == 23000) throw new InvalidUpdateException("Another user is using this email.");
-        }
+        $this->userRepository->update($user, $attributes);
         return $user;
     }
 
