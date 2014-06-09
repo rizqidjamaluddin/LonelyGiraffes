@@ -30,9 +30,11 @@ class UserService extends Service
      * @param  array $data
      * @return UserModel
      */
-    public function createUser($data) {
+    public function createUser($data) 
+    {
         $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
+
         $data['password'] = Hash::make($data['password']);
         $data['hash'] = Str::random(32);
         $data['role'] = 'member';
@@ -42,22 +44,31 @@ class UserService extends Service
         return $user;
     }
 
-
-    public function changePassword($user_id, $new_password)
+    /**
+     * @param  int $user_id  
+     * @param  array $attributes
+     * @return $userModel
+     */
+    public function updateUser($user_id, $attributes)
     {
         $user = $this->userRepository->get($user_id);
-        $user->password = Hash::make($new_password);
+
+        if (array_key_exists('password', $attributes)) {
+            $user->password = Hash::make($attributes['password']);
+        }
+
+        foreach($attributes as $key => $value) {
+            $user->$key = $value;
+        }
+
         $user->save();
         return $user;
     }
 
-    public function updateUser($user_id, $attributes)
-    {
-        // remove password from attributes
-        unset($attributes['password']);
-        return true;
-    }
-
+    /**
+     * @param  int $id
+     * @return $userModel
+     */
     public function deleteUser($id)
     {
         $user = $this->userRepository->get($id);
@@ -70,7 +81,8 @@ class UserService extends Service
      * @param $id
      * @return mixed|void
      */
-    public function getUser($id) {
+    public function getUser($id) 
+    {
         return $this->userRepository->get($id);
     }
 

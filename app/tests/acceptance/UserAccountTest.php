@@ -43,11 +43,11 @@ class UserAccountCase extends AcceptanceCase
             "POST",
             "api/users/",
             [
-                "email" => 'hello@lonelygiraffes.com',
-                "password" => 'password',
+                "email"     => 'hello@lonelygiraffes.com',
+                "password"  => 'password',
                 'firstname' => 'Lonely',
-                'lastname' => 'Giraffe',
-                'gender' => 'M'
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
             ]
         );
         $responseContent = json_decode($response->getContent());
@@ -71,11 +71,11 @@ class UserAccountCase extends AcceptanceCase
             "POST",
             "api/users/",
             [
-                "email" => 'lonelygiraffes.com',
-                "password" => Hash::make('password'),
+                "email"     => 'lonelygiraffes.com',
+                "password"  => 'password',
                 'firstname' => 'Lonely',
-                'lastname' => 'Giraffe',
-                'gender' => 'M'
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
             ]
         );
         $this->assertResponseStatus(422);
@@ -83,22 +83,22 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     * @depends it_can_create_a_new_user
      */
     public function it_can_find_a_user()
     {
         $service = App::make('Giraffe\Users\UserService');
         $model = $service->createUser(
             [
-                "email" => 'hello@lonelygiraffes.com',
-                "password" => Hash::make('password'),
+                "email"     => 'hello@lonelygiraffes.com',
+                "password"  => 'password',
                 'firstname' => 'Lonely',
-                'lastname' => 'Giraffe',
-                'gender' => 'M'
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
             ]
         );
         $response = $this->call("GET", "api/users/" . $model->id);
         $responseContent = json_decode($response->getContent());
-
         $validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
         $validator->validate($responseContent);
 
@@ -111,33 +111,40 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     * @depends it_can_create_a_new_user
      */
-    public function users_can_change_password()
+    public function a_user_can_update_information()
     {
         $service = App::make('Giraffe\Users\UserService');
         $model = $service->createUser(
             [
-                "email" => 'hello@lonelygiraffes.com',
-                "password" => 'password',
+                'email'     => 'hello@lonelygiraffes.com',
+                'password'  => 'password',
                 'firstname' => 'Lonely',
-                'lastname' => 'Giraffe',
-                'gender' => 'M'
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
             ]
         );
-
-        $response = $this->call(
-            "PUT",
-            "api/users/1",
-            [
-                "password" => 'password2'
+        $response = $this->call("PUT", "api/users/1", [
+                'email'     => 'hello@notlonelygiraffes.com',
+                'password'  => 'anotherpassword',
+                'firstname' => 'Lonesome',
+                'lastname'  => 'Penguin',
+                'gender'    => 'F'
             ]
         );
+        $responseContent = json_decode($response->getContent());
 
         $this->assertResponseStatus(200);
+        $this->assertEquals('hello@notlonelygiraffes.com', $responseContent->user->email);
+        $this->assertEquals('Lonesome', $responseContent->user->firstname);
+        $this->assertEquals('Penguin', $responseContent->user->lastname);
+        $this->assertEquals('F', $responseContent->user->gender);
     }
 
     /**
      * @test
+     * @depends it_can_create_a_new_user
      */
     public function an_administrator_account_can_delete_a_user()
     {
@@ -145,11 +152,11 @@ class UserAccountCase extends AcceptanceCase
         $this->gatekeeper->iAm($admin);;
         $model = $this->service->createUser(
             [
-                "email" => 'hello@lonelygiraffes.com',
-                "password" => Hash::make('password'),
+                "email"     => 'hello@lonelygiraffes.com',
+                "password"  => 'password',
                 'firstname' => 'Lonely',
-                'lastname' => 'Giraffe',
-                'gender' => 'M'
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
             ]
         );
 
@@ -162,16 +169,17 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     * @depends it_can_create_a_new_user
      */
     public function a_user_cannot_delete_their_own_account()
     {
         $model = $this->service->createUser(
             [
-                "email" => 'hello@lonelygiraffes.com',
-                "password" => Hash::make('password'),
+                "email"     => 'hello@lonelygiraffes.com',
+                "password"  => 'password',
                 'firstname' => 'Lonely',
-                'lastname' => 'Giraffe',
-                'gender' => 'M'
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
             ]
         );
         $test = $this->repository->get($model->hash);
