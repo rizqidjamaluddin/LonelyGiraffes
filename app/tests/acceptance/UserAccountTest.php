@@ -203,6 +203,8 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(422);
 
+        $check = $this->repository->get($model->hash);
+        $this->assertEquals($check->email, 'hello@lonelygiraffes.com');
     }
 
     /**
