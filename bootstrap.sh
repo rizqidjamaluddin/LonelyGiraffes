@@ -18,7 +18,7 @@ echo '###################'
 echo '# Install PHP 5.5 #'
 echo '###################'
 sudo yum -y --enablerepo=remi,remi-php55 install nginx php-fpm
-sudo yum -y --enablerepo=remi,remi-php55 install php php-opcache php-xml php-mcrypt php-pdo php-pear php-mbstring php-gd
+sudo yum -y --enablerepo=remi,remi-php55 install php php-opcache php-xml php-mcrypt php-pdo php-pear php-mbstring php-gd php-mysql
 
 echo '####################'
 echo '# Install Composer #'
