@@ -1,4 +1,5 @@
 <?php  namespace Giraffe\Users;
+
 use Giraffe\Common\Service;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
@@ -18,19 +19,28 @@ class UserService extends Service
      * @var UserCreationValidator
      */
     private $creationValidator;
+    /**
+     * @var UserUpdateValidator
+     */
+    private $updateValidator;
 
-    public function __construct(UserRepository $userRepository, UserCreationValidator $creationValidator)
-    {
+    public function __construct(
+        UserRepository $userRepository,
+        UserCreationValidator $creationValidator,
+        UserUpdateValidator $updateValidator
+    ) {
         parent::__construct();
         $this->userRepository = $userRepository;
         $this->creationValidator = $creationValidator;
+        $this->updateValidator = $updateValidator;
     }
 
     /**
      * @param  array $data
+     *
      * @return UserModel
      */
-    public function createUser($data) 
+    public function createUser($data)
     {
         $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
@@ -45,9 +55,10 @@ class UserService extends Service
     }
 
     /**
-     * @param  int $user_id  
+     * @param  int   $user_id
      * @param  array $attributes
-     * @return $userModel
+     *
+     * @return UserModel|null $userModel
      */
     public function updateUser($user_id, $attributes)
     {
@@ -56,11 +67,13 @@ class UserService extends Service
 
         $user = $this->userRepository->get($user_id);
 
+        $this->updateValidator->validate($attributes);
+
         if (array_key_exists('password', $attributes)) {
             $user->password = Hash::make($attributes['password']);
         }
 
-        foreach($attributes as $key => $value) {
+        foreach ($attributes as $key => $value) {
             $user->$key = $value;
         }
 
@@ -70,6 +83,7 @@ class UserService extends Service
 
     /**
      * @param  int $id
+     *
      * @return $userModel
      */
     public function deleteUser($id)
@@ -82,9 +96,10 @@ class UserService extends Service
 
     /**
      * @param $id
+     *
      * @return mixed|void
      */
-    public function getUser($id) 
+    public function getUser($id)
     {
         return $this->userRepository->get($id);
     }
@@ -97,25 +112,27 @@ class UserService extends Service
      */
     public function deactivateUser($user, $email)
     {
-        return (bool) $this->userRepository->deleteByIdWithEmailConfirmation($user, $email);
+        return (bool)$this->userRepository->deleteByIdWithEmailConfirmation($user, $email);
     }
 
     /**
-     * @param int    $user 
+     * @param int $user
+     *
      * @return bool
      */
-    public function reactivateUser($user) 
+    public function reactivateUser($user)
     {
-        return (bool) $this->userRepository->reactivateById($user);
+        return (bool)$this->userRepository->reactivateById($user);
     }
 
     /**
-     * @param  int  $user
+     * @param  int $user
+     *
      * @return bool
      */
     public function getUserNicknameSetting($user)
     {
-        return (bool) $this->userRepository->getByIdWithSettings($user)->settings->use_nickname;
+        return (bool)$this->userRepository->getByIdWithSettings($user)->settings->use_nickname;
     }
 
     /**
@@ -126,7 +143,7 @@ class UserService extends Service
      */
     public function setUserNicknameSetting($user, $useNickname)
     {
-        return (bool) $this->userRepository->setUserNicknameSettingById($user, $useNickname);
+        return (bool)$this->userRepository->setUserNicknameSettingById($user, $useNickname);
     }
 
 } 
