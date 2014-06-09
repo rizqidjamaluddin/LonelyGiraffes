@@ -50,10 +50,6 @@ echo "server {
 
     index           index.php;
 
-    location / {
-             try_files $uri $uri/ /index.php$is_args$args;
-    }
-
     location ~ \.php$ {
         root           /vagrant/public;
         fastcgi_pass   127.0.0.1:9000;
@@ -66,6 +62,9 @@ echo "server {
 echo '#####################################'
 echo '# Start nginx and php-fpm processes #'
 echo '#####################################'
+sudo sed -i '/user/c\user vagrant' /etc/nginx/nginx.conf
+sudo sed -i '/user =/c\user = vagrant' /etc/nginx/nginx.conf
+sudo sed -i '/group =/c\group = vagrant' /etc/nginx/nginx.conf
 sudo /etc/init.d/nginx start
 sudo /etc/init.d/php-fpm start
 sudo chkconfig nginx on
