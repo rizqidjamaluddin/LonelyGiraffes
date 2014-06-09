@@ -22,7 +22,12 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 		return require __DIR__.'/../../bootstrap/start.php';
 	}
 
-
+    public function be(\Illuminate\Auth\UserInterface $model, $driver = null)
+    {
+        $g = App::make('Giraffe\Authorization\Gatekeeper');
+        $g->iAm($model);
+        parent::be($model);
+    }
 
     public function disarm()
     {
