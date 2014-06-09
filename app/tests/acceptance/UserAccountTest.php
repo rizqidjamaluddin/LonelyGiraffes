@@ -115,8 +115,7 @@ class UserAccountCase extends AcceptanceCase
      */
     public function a_user_can_update_information()
     {
-        $service = App::make('Giraffe\Users\UserService');
-        $model = $service->createUser(
+        $model = $this->service->createUser(
             [
                 'email'     => 'hello@lonelygiraffes.com',
                 'password'  => 'password',
@@ -125,7 +124,10 @@ class UserAccountCase extends AcceptanceCase
                 'gender'    => 'M'
             ]
         );
-        $response = $this->call("PUT", "api/users/1", [
+        $response = $this->call(
+            "PUT",
+            "api/users/1",
+            [
                 'email'     => 'hello@notlonelygiraffes.com',
                 'password'  => 'anotherpassword',
                 'firstname' => 'Lonesome',
@@ -140,6 +142,41 @@ class UserAccountCase extends AcceptanceCase
         $this->assertEquals('Lonesome', $responseContent->user->firstname);
         $this->assertEquals('Penguin', $responseContent->user->lastname);
         $this->assertEquals('F', $responseContent->user->gender);
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_change_their_user_hash_or_id()
+    {
+        $model = $this->service->createUser(
+            [
+                'email'     => 'hello@lonelygiraffes.com',
+                'password'  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+        $originalHash = $model->hash;
+        $originalId = $model->id;
+        $response = $this->call(
+            "PUT",
+            "api/users/" . $model->hash,
+            [
+                'id'     => 1000,
+                'hash'   => Str::random(32),
+                'gender' => 'F'
+            ]
+        );
+
+        // the system should simply ignore the new data, but not fail
+        $this->assertResponseStatus(200);
+
+        $check = $this->repository->get($model->id);
+        $this->assertEquals($originalHash, $check->hash);
+        $this->assertEquals($originalId, $check->id);
+        $this->assertEquals('F', $check->gender);
     }
 
     /**
