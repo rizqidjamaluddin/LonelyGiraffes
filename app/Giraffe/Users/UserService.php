@@ -1,9 +1,11 @@
 <?php  namespace Giraffe\Users;
 
 use Giraffe\Authorization\GatekeeperException;
+use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\Service;
 use Hash;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 use stdClass;
 use Str;
 
@@ -78,7 +80,11 @@ class UserService extends Service
             $user->$key = $value;
         }
 
-        $user->save();
+        try {
+            $user->save();
+        } catch (QueryException $e) {
+            if ($e->errorInfo[0] == 23000) throw new InvalidUpdateException("Another user is using this email.");
+        }
         return $user;
     }
 

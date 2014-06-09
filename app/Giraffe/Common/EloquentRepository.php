@@ -84,6 +84,11 @@ abstract class EloquentRepository implements Repository
          return $model;
      }
 
+    public function update($identifier, Array $attributes)
+    {
+
+    }
+
     public function delete($identifier)
     {
 
