@@ -150,7 +150,7 @@ class Log
 
         $stream->pushProcessor(new WebProcessor());
         $stream->pushProcessor(new GitProcessor());
-        $stream->pushProcessor(new IntrospectionProcessor(Logger::INFO, ['Monolog\\', 'Giraffe\\Logging\\']));
+        $stream->pushProcessor(new IntrospectionProcessor(Logger::INFO, ['Monolog\\', 'Giraffe\\Logging\\', 'Giraffe\\Authorization\\']));
 
         $this->channels[$name] = $stream;
     }
