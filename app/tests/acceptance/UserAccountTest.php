@@ -222,9 +222,13 @@ class UserAccountCase extends AcceptanceCase
         $admin = $this->createAdministratorAccount();
         $this->be($admin);
 
-        $response = $this->call('PUT', 'api/users/' . $model->hash, [
+        $response = $this->call(
+            'PUT',
+            'api/users/' . $model->hash,
+            [
                 'email' => 'new@lonelygiraffes.com'
-            ]);
+            ]
+        );
 
         $this->assertResponseOk();
 
