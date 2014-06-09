@@ -62,9 +62,12 @@ echo "server {
 echo '#####################################'
 echo '# Start nginx and php-fpm processes #'
 echo '#####################################'
-sudo sed -i '/user/c\user vagrant;' /etc/nginx/nginx.conf
-sudo sed -i '/user =/c\user = vagrant' /etc/php-fpm.d/www.conf
-sudo sed -i '/group =/c\group = vagrant' /etc/php-fpm.d/www.conf
+sed -i '5s/.*/user vagrant/' /etc/nginx/nginx.conf
+sed -i '39s/.*/user = vagrant/' /etc/php-fpm.d/www.conf
+sed -i '41s/.*/group = vagrant/' /etc/php-fpm.d/www.conf
+
+39 41
+
 sudo /etc/init.d/nginx start
 sudo /etc/init.d/php-fpm start
 sudo chkconfig nginx on
