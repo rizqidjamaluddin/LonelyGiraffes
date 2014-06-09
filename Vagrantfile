@@ -12,10 +12,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # NFS folder sharing
   config.vm.network :private_network, ip: "192.168.33.10"
-  config.vm.synced_folder ".", "/vagrant",
-            id: "core",
-            :nfs => true,
-            :mount_options => ['nolock,vers=3,udp,noatime']
+  #config.vm.synced_folder ".", "/vagrant", type: "nfs"
+  config.vm.synced_folder ".", "/vagrant"
 
   # Bootstrap script
   config.vm.provision :shell, :path => "bootstrap.sh"
