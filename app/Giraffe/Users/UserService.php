@@ -34,7 +34,7 @@ class UserService extends Service
         $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
         $data['password'] = Hash::make($data['password']);
-        $data['hash'] = Str::random(30);
+        $data['hash'] = Str::random(32);
         $data['role'] = 'member';
 
         $user = $this->userRepository->create($data);

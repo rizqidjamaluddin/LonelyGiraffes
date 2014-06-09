@@ -2,10 +2,11 @@
     "title": "User Schema",
     "type": "object",
     "properties": {
-        "firstName": {
+        "user": {
             "type": "object",
-            "required": [],
+            "required": ["firstname", "lastname", "hash", "gender"],
             "properties": {
+                "password": {"type": "null"},
                 "firstname": {
                     "type": "string",
                     "minLength": 1
@@ -14,14 +15,10 @@
                     "type": "string",
                     "minLength": 1
                 },
-                "email": {
-                    "type": "string",
-                    "minLength": 1
-                },
                 "hash": {
                     "type": "string",
-                    "minLength": 20,
-                    "maxLength": 20
+                    "minLength": 32,
+                    "maxLength": 32
                 },
                 "gender": {
                     "type": "string",

@@ -8,12 +8,13 @@ use Giraffe\Users\UserModel;
 /**
  * @property $user UserModel
  * @property $postable mixed
+ * @property $hash string
  */
 class PostModel extends Eloquent implements ProtectedResource {
     use HasEloquentHash;
 
     protected $table = 'posts';
-	protected $fillable = ['user_id', 'postable_type', 'postable_id', 'city', 'state', 'country', 'lat', 'long', 'cell'];
+	protected $fillable = ['user_id', 'hash', 'postable_type', 'postable_id', 'city', 'state', 'country', 'lat', 'long', 'cell'];
 
     public function postable()
     {

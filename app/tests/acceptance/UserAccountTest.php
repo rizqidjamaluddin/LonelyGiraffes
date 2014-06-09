@@ -21,7 +21,6 @@ class UserAccountCase extends AcceptanceCase
     public function setUp()
     {
         parent::setUp();
-        Artisan::call('migrate');
         $this->service = App::make('Giraffe\Users\UserService');
         $this->repository = App::make('Giraffe\Users\UserRepository');
     }
