@@ -15,6 +15,8 @@ use Monolog\Processor\WebProcessor;
  */
 class Log
 {
+    protected $logInTests = false;
+
     protected $path = '/app-logs';
 
     protected $levels = [
@@ -121,8 +123,8 @@ class Log
         $level = $this->translateLogLevel($method);
 
         // disable logging if system is under testing environment
-        if ($this->application->environment('testing')) {
-            // return false;
+        if ($this->application->environment('testing') && !$this->logInTests) {
+            return false;
         }
 
         if (!in_array($stream, $this->channels)) {
