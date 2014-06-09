@@ -189,7 +189,6 @@ class UserAccountCase extends AcceptanceCase
     public function a_user_cannot_change_another_users_data()
     {
         $model = $this->createGenericUser();
-
         $otherUser = $this->service->createUser(
             [
                 'email'     => 'other@lonelygiraffes.com',
@@ -212,7 +211,39 @@ class UserAccountCase extends AcceptanceCase
 
         $check = $this->repository->get($otherUser->hash);
         $this->assertEquals($check->email, 'other@lonelygiraffes.com');
+    }
 
+    /**
+     * @test
+     */
+    public function a_user_cannot_change_their_email_to_another_users_email()
+    {
+        $model = $this->createGenericUser();
+        $otherUser = $this->service->createUser(
+            [
+                'email'     => 'other@lonelygiraffes.com',
+                'password'  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+
+        $response = $this->call(
+            "PUT",
+            "api/users/" . $model->hash,
+            [
+                'email' => 'other@lonelygiraffes.com'
+            ]
+        );
+
+        $this->assertResponseStatus(422);
+
+        // make sure everything is intact
+        $check = $this->repository->get($model->hash);
+        $this->assertEquals($check->email, 'hello@lonelygiraffes.com');
+        $otherCheck = $this->repository->get($otherUser->hash);
+        $this->assertEquals($otherCheck->email, 'other@lonelygiraffes.com');
     }
 
     /**
