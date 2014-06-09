@@ -2,6 +2,7 @@
 
 use Giraffe\Authorization\GatekeeperProvider;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Logging\Log;
 use Illuminate\Support\Str;
 use stdClass;
 
@@ -58,11 +59,16 @@ class Gatekeeper
      * @var GatekeeperProvider
      */
     private $provider;
+    /**
+     * @var \Giraffe\Logging\Log
+     */
+    private $log;
 
-    public function __construct(GatekeeperProvider $gatekeeperProvider)
+    public function __construct(GatekeeperProvider $gatekeeperProvider, Log $log)
     {
         $this->provider = $gatekeeperProvider;
         $this->request = self::REQUEST_NOT_SET;
+        $this->log = $log;
     }
 
     public function iAm($userIdentifier)
@@ -145,6 +151,8 @@ class Gatekeeper
                 break;
             }
         }
+
+        $this->log->debug($this, "Attempted resource access", ['query' => $this->query, 'result' => $result]);
 
         $this->reset();
         return $result;

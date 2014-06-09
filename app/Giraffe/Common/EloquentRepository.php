@@ -49,40 +49,57 @@ abstract class EloquentRepository implements Repository
         }
     }
 
-     public function getById($id)
-     {
-         if (!$model = $this->model->find($id)) {
-             throw new NotFoundModelException();
-         }
-         return $model;
-     }
+    public function getById($id)
+    {
+        if (!$model = $this->model->find($id)) {
+            throw new NotFoundModelException();
+        }
+        return $model;
+    }
 
-     public function getByHash($hash)
-     {
-         if (!$this->model->hasHash) {
-             throw new NotFoundModelException();
-         }
+    public function getByHash($hash)
+    {
+        if (!$this->model->hasHash) {
+            throw new NotFoundModelException();
+        }
 
-         if (!$model = $this->model->where('hash', '=', $hash)->first()) {
-             throw new NotFoundModelException();
-         }
-         return $model;
-     }
+        if (!$model = $this->model->where('hash', '=', $hash)->first()) {
+            throw new NotFoundModelException();
+        }
+        return $model;
+    }
 
-     public function create(array $attributes)
-     {
-         try {
-             $model = $this->model->create($attributes);
-         } catch (QueryException $e) {
-             // error code for "duplicate in unique column"
-             if ($e->errorInfo[0] == 23000) {
+    public function create(array $attributes)
+    {
+        try {
+            $model = $this->model->create($attributes);
+        } catch (QueryException $e) {
+            // error code for "duplicate in unique column"
+            if ($e->errorInfo[0] == 23000) {
                 throw new DuplicateCreationException;
-             }
-             throw new InvalidCreationException;
-         }
+            }
+            throw new InvalidCreationException;
+        }
 
-         return $model;
-     }
+        return $model;
+    }
+
+    public function update($identifier, Array $attributes)
+    {
+        $model = $this->get($identifier);
+        foreach ($attributes as $property => $attribute) {
+            $model->$property = $attribute;
+        }
+        try {
+            $model->save();
+        } catch (QueryException $e) {
+            if ($e->errorInfo[0] == 23000) {
+                throw new InvalidUpdateException("Another user is using this email.");
+            }
+            throw new InvalidUpdateException;
+        }
+        return $model;
+    }
 
     public function delete($identifier)
     {
@@ -105,24 +122,24 @@ abstract class EloquentRepository implements Repository
         }
     }
 
-     public function deleteById($id)
-     {
-         if (!$this->model->destroy($id)) {
-             throw new NotFoundModelException;
-         };
-         return $this->model->find($id);
-     }
+    public function deleteById($id)
+    {
+        if (!$this->model->destroy($id)) {
+            throw new NotFoundModelException;
+        };
+        return $this->model->find($id);
+    }
 
-     public function deleteByHash($hash)
-     {
-         if (!$this->model->where('hash', '=', $hash)->delete()) {
-             throw new NotFoundModelException;
-         };
-         return true;
-     }
+    public function deleteByHash($hash)
+    {
+        if (!$this->model->where('hash', '=', $hash)->delete()) {
+            throw new NotFoundModelException;
+        };
+        return true;
+    }
 
-     public function deleteMany(array $ids)
-     {
-         return $this->model->destroy($ids);
-     }
- }
+    public function deleteMany(array $ids)
+    {
+        return $this->model->destroy($ids);
+    }
+}

@@ -115,17 +115,11 @@ class UserAccountCase extends AcceptanceCase
      */
     public function a_user_can_update_information()
     {
-        $service = App::make('Giraffe\Users\UserService');
-        $model = $service->createUser(
+        $model = $this->createGenericUser();
+        $response = $this->call(
+            "PUT",
+            "api/users/1",
             [
-                'email'     => 'hello@lonelygiraffes.com',
-                'password'  => 'password',
-                'firstname' => 'Lonely',
-                'lastname'  => 'Giraffe',
-                'gender'    => 'M'
-            ]
-        );
-        $response = $this->call("PUT", "api/users/1", [
                 'email'     => 'hello@notlonelygiraffes.com',
                 'password'  => 'anotherpassword',
                 'firstname' => 'Lonesome',
@@ -144,12 +138,146 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     */
+    public function a_user_cannot_change_their_user_hash_or_id()
+    {
+        $model = $this->createGenericUser();
+        $originalHash = $model->hash;
+        $originalId = $model->id;
+        $response = $this->call(
+            "PUT",
+            "api/users/" . $model->hash,
+            [
+                'id'     => 1000,
+                'hash'   => Str::random(32),
+                'gender' => 'F'
+            ]
+        );
+
+        // the system should simply ignore the new data, but not fail
+        $this->assertResponseStatus(200);
+
+        $check = $this->repository->get($model->id);
+        $this->assertEquals($originalHash, $check->hash);
+        $this->assertEquals($originalId, $check->id);
+        $this->assertEquals('F', $check->gender);
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_updating_information_must_conform_to_validation()
+    {
+        $model = $this->createGenericUser();
+        $response = $this->call(
+            "PUT",
+            "api/users/" . $model->hash,
+            [
+                'email' => 'lonelygiraffes.com'
+            ]
+        );
+
+        $this->assertResponseStatus(422);
+
+        $check = $this->repository->get($model->hash);
+        $this->assertEquals($check->email, 'hello@lonelygiraffes.com');
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_change_another_users_data()
+    {
+        $model = $this->createGenericUser();
+        $otherUser = $this->service->createUser(
+            [
+                'email'     => 'other@lonelygiraffes.com',
+                'password'  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+
+        $response = $this->call(
+            "PUT",
+            "api/users/" . $otherUser->hash,
+            [
+                'email' => 'evil@example.com'
+            ]
+        );
+
+        $this->assertResponseStatus(403);
+
+        $check = $this->repository->get($otherUser->hash);
+        $this->assertEquals($check->email, 'other@lonelygiraffes.com');
+    }
+
+    /**
+     * @test
+     */
+    public function an_administrator_can_change_a_users_data()
+    {
+        $model = $this->createMemberAccount();
+        $admin = $this->createAdministratorAccount();
+        $this->be($admin);
+
+        $response = $this->call(
+            'PUT',
+            'api/users/' . $model->hash,
+            [
+                'email' => 'new@lonelygiraffes.com'
+            ]
+        );
+
+        $this->assertResponseOk();
+
+        $check = $this->repository->get($model->id);
+        $this->assertEquals($check->email, 'new@lonelygiraffes.com');
+
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_change_their_email_to_another_users_email()
+    {
+        $model = $this->createGenericUser();
+        $otherUser = $this->service->createUser(
+            [
+                'email'     => 'other@lonelygiraffes.com',
+                'password'  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+
+        $response = $this->call(
+            "PUT",
+            "api/users/" . $model->hash,
+            [
+                'email' => 'other@lonelygiraffes.com'
+            ]
+        );
+
+        $this->assertResponseStatus(422);
+
+        // make sure everything is intact
+        $check = $this->repository->get($model->hash);
+        $this->assertEquals($check->email, 'hello@lonelygiraffes.com');
+        $otherCheck = $this->repository->get($otherUser->hash);
+        $this->assertEquals($otherCheck->email, 'other@lonelygiraffes.com');
+    }
+
+    /**
+     * @test
      * @depends it_can_create_a_new_user
      */
     public function an_administrator_account_can_delete_a_user()
     {
         $admin = $this->createAdministratorAccount();
-        $this->gatekeeper->iAm($admin);;
+        $this->gatekeeper->iAm($admin);
         $model = $this->service->createUser(
             [
                 "email"     => 'hello@lonelygiraffes.com',
@@ -190,5 +318,23 @@ class UserAccountCase extends AcceptanceCase
 
         $fetch = $this->repository->get($model->hash);
         $this->assertEquals($fetch->hash, $model->hash);
+    }
+
+    /**
+     * @return UserModel
+     */
+    protected function createGenericUser()
+    {
+        $model = $this->service->createUser(
+            [
+                'email'     => 'hello@lonelygiraffes.com',
+                'password'  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+        $this->be($model);
+        return $model;
     }
 }

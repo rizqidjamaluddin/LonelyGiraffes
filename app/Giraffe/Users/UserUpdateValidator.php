@@ -5,16 +5,15 @@ use InvalidArgumentException;
 use Respect\Validation\Exceptions\AbstractNestedException;
 use Respect\Validation\Validator as V;
 
-class UserCreationValidator
+class UserUpdateValidator
 {
-
     public function validate(array $data)
     {
-        $validator = V::key('firstname', V::string()->length(0, 100))
-                      ->key('lastname', V::string()->length(0, 100))
-                      ->key('email', V::email()->length(0, 200))
-                      ->key('password', V::string()->length(0, 200))
-                      ->key('gender', V::string()->in(['M', 'F', 'X']));
+        $validator = V::key('firstname', V::string()->length(0, 100), false)
+                      ->key('lastname', V::string()->length(0, 100), false)
+                      ->key('email', V::email()->length(0, 200),false)
+                      ->key('password', V::string()->length(0, 200), false)
+                      ->key('gender', V::string()->in(['M', 'F', 'X']), false);
 
         try {
             $validator->assert($data);
@@ -30,5 +29,4 @@ class UserCreationValidator
 
         return true;
     }
-
-}
+} 
