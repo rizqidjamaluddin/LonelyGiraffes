@@ -46,7 +46,7 @@ class GiraffePermissionsLookup
                 'self' => [
                 ],
                 'global' => [
-                    'user' => ['deactivate', 'delete'],
+                    'user' => ['update', 'deactivate', 'delete'],
                 ],
             ]
         );
