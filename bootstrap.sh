@@ -62,7 +62,7 @@ echo "server {
 echo '#####################################'
 echo '# Start nginx and php-fpm processes #'
 echo '#####################################'
-sed -i '5s/.*/user vagrant/' /etc/nginx/nginx.conf
+sed -i '5s/.*/user vagrant;/' /etc/nginx/nginx.conf
 sed -i '39s/.*/user = vagrant/' /etc/php-fpm.d/www.conf
 sed -i '41s/.*/group = vagrant/' /etc/php-fpm.d/www.conf
 
