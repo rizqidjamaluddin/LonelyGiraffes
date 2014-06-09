@@ -1,8 +1,7 @@
 <?php  namespace Giraffe\Users;
 
+use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Common\Service;
-use Giraffe\Users\UserModel;
-use Giraffe\Users\UserRepository;
 use Hash;
 use Illuminate\Database\Eloquent\Model;
 use stdClass;
@@ -62,10 +61,12 @@ class UserService extends Service
      */
     public function updateUser($user_id, $attributes)
     {
+
         $acceptableAttributes = ['firstname', 'lastname', 'email', 'gender', 'password'];
         $attributes = array_only($attributes, $acceptableAttributes);
 
         $user = $this->userRepository->get($user_id);
+        $this->gatekeeper->mayI('update', $user)->please();
 
         $this->updateValidator->validate($attributes);
 
@@ -84,7 +85,8 @@ class UserService extends Service
     /**
      * @param  int $id
      *
-     * @return $userModel
+     * @throws \Exception
+     * @return \Giraffe\Users\UserModel|null $userModel
      */
     public function deleteUser($id)
     {
