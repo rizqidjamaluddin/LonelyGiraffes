@@ -197,7 +197,7 @@ class UserAccountCase extends AcceptanceCase
             "PUT",
             "api/users/" . $model->hash,
             [
-                'email' => 'new@lonelygiraffes.com'
+                'email' => 'lonelygiraffes.com'
             ]
         );
 
