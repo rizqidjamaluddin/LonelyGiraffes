@@ -181,6 +181,32 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     */
+    public function a_user_updating_information_must_conform_to_validation()
+    {
+        $model = $this->service->createUser(
+            [
+                'email'     => 'hello@lonelygiraffes.com',
+                'password'  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+        $response = $this->call(
+            "PUT",
+            "api/users/" . $model->hash,
+            [
+                'email' => 'new@lonelygiraffes.com'
+            ]
+        );
+
+        $this->assertResponseStatus(422);
+
+    }
+
+    /**
+     * @test
      * @depends it_can_create_a_new_user
      */
     public function an_administrator_account_can_delete_a_user()
