@@ -91,7 +91,9 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
             }
 
             $owner = $model->getOwner();
-            return $owner->id === $user->id;
+            $ownershipMatch = $owner->id === $user->id;
+            $permissionMatch = in_array($verb, $selfPermittedVerbs);
+            return $ownershipMatch && $permissionMatch;
         } else {
             return in_array($verb, array_merge_recursive($selfPermittedVerbs, $globalPermittedVerbs));
         }
