@@ -47,6 +47,13 @@ echo "server {
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
     root /vagrant/public;
+
+    index           index.php;
+
+    location / {
+             try_files $uri $uri/ /index.php$is_args$args;
+    }
+
     location ~ \.php$ {
         root           /vagrant/public;
         fastcgi_pass   127.0.0.1:9000;
