@@ -216,6 +216,26 @@ class UserAccountCase extends AcceptanceCase
     /**
      * @test
      */
+    public function an_administrator_can_change_a_users_data()
+    {
+        $model = $this->createMemberAccount();
+        $admin = $this->createAdministratorAccount();
+        $this->be($admin);
+
+        $response = $this->call('PUT', 'api/users/' . $model->hash, [
+                'email' => 'new@lonelygiraffes.com'
+            ]);
+
+        $this->assertResponseOk();
+
+        $check = $this->repository->get($model->id);
+        $this->assertEquals($check->email, 'new@lonelygiraffes.com');
+
+    }
+
+    /**
+     * @test
+     */
     public function a_user_cannot_change_their_email_to_another_users_email()
     {
         $model = $this->createGenericUser();
