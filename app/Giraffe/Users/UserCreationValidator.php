@@ -2,6 +2,7 @@
 
 use Giraffe\Common\ValidationException;
 use InvalidArgumentException;
+use Respect\Validation\Exceptions\AbstractNestedException;
 use Respect\Validation\Validator as V;
 
 class UserCreationValidator
@@ -17,13 +18,12 @@ class UserCreationValidator
 
         try {
             $validator->assert($data);
-        } catch (InvalidArgumentException $e) {
+        } catch (AbstractNestedException $e) {
             $errors = $e->findMessages(
-              [
-                  'email' => '{{name}} is not a valid email',               // custom error message
-                  'password' => 'Password must be under 200 characters',    // shown if 'password' field fails to pass
-                  'length'                                                  // use default error message, shown if any 'length' test fails
-              ]
+                [
+                    'email' => $data['email'] . ' is not a valid email', // custom error message
+                    'length' // use default error message, shown if any 'length' test fails
+                ]
             );
             throw new ValidationException('Could not create a new user.', $errors);
         }
