@@ -51,6 +51,9 @@ class UserService extends Service
      */
     public function updateUser($user_id, $attributes)
     {
+        $acceptableAttributes = ['firstname', 'lastname', 'email', 'gender', 'password'];
+        $attributes = array_only($attributes, $acceptableAttributes);
+
         $user = $this->userRepository->get($user_id);
 
         if (array_key_exists('password', $attributes)) {
