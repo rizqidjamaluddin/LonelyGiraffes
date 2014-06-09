@@ -14,7 +14,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :private_network, ip: "192.168.33.10"
   #config.vm.synced_folder ".", "/vagrant", type: "nfs"
   #config.vm.synced_folder ".", "/vagrant"
-  config.vm.synced_folder ".", "/vagrant"
+  config.vm.synced_folder "./", "/vagrant", id: "vagrant-root",
+    owner: "vagrant",
+    group: "vagrant",
+    mount_options: ["dmode=775,fmode=664"]
+
 
   # Bootstrap script
   config.vm.provision :shell, :path => "bootstrap.sh"
