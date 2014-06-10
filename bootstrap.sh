@@ -26,6 +26,11 @@ echo '################################'
 cd /vagrant
 sudo npm install
 
+echo '#####################'
+echo '# Install Grunt CLI #'
+echo '#####################'
+sudo npm install -g grunt-cli
+
 echo '#####################################'
 echo '# Install dependencies via Composer #'
 echo '#####################################'
