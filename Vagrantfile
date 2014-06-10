@@ -6,7 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.box = "CentOS6.5"
+  config.vm.box = "LonelyGiraffesDev"
   #config.vm.box_url = "https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box"
   config.vm.provision :shell, path: "bootstrap.sh"
 
@@ -21,7 +21,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
 
   # Bootstrap script
-  config.vm.provision :shell, :path => "bootstrap.sh"
   config.vm.hostname = "vagrant.dev"
 
   if Vagrant.has_plugin?("vagrant-cachier")
