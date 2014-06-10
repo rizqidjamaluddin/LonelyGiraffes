@@ -24,12 +24,12 @@ echo '################################'
 echo '# Install dependencies via npm #'
 echo '################################'
 cd /vagrant
-sudo npm install
+sudo npm install --no-bin-links
 
 echo '#####################'
 echo '# Install Grunt CLI #'
 echo '#####################'
-sudo npm install -g grunt-cli
+sudo npm install -g grunt-cli 
 
 echo '#####################################'
 echo '# Install dependencies via Composer #'
