@@ -16,8 +16,8 @@ class CreateNotificationWrappersTable extends Migration {
 		{
 			$table->bigIncrements('id');
             $table->integer('user_id')->unsigned();
-            $table->string('metadata_type');
-            $table->bigInteger('metadata_id');
+            $table->string('notification_type');
+            $table->bigInteger('notification_id');
 			$table->timestamps();
 		});
 	}

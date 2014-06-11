@@ -40,7 +40,7 @@ class NotificationServiceTest extends TestCase
         $this->assertEquals(get_class($container), 'Giraffe\Notifications\NotificationContainerModel');
 
         $check = $this->repository->get($container->id);
-        $this->assertEquals($check->destination()->hash, $testUser->hash);
+        $this->assertEquals($check->destination->hash, $testUser->hash);
         $this->assertEquals($check->notification->title, 'Test Notification');
     }
 

@@ -3,13 +3,9 @@
 use Eloquent;
 use Giraffe\Notifications\Notification;
 
-class SystemNotificationModel extends Eloquent implements Notification
+class SystemNotificationModel extends Notification
 {
-    protected $table = 'service_notifications';
+    protected $table = 'system_notifications';
     protected $fillable = ['title', 'message'];
 
-    public function container()
-    {
-        return $this->morphOne('Notification', 'notification');
-    }
 } 

@@ -1,5 +1,7 @@
 <?php  namespace Giraffe\Notifications;
 
+use Giraffe\Users\UserRepository;
+
 class NotificationService
 {
 
@@ -7,11 +9,17 @@ class NotificationService
      * @var NotificationContainerRepository
      */
     private $containerRepository;
+    /**
+     * @var \Giraffe\Users\UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(NotificationContainerRepository $containerRepository)
-    {
-
+    public function __construct(
+        NotificationContainerRepository $containerRepository,
+        UserRepository $userRepository
+    ) {
         $this->containerRepository = $containerRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -31,8 +39,12 @@ class NotificationService
      */
     public function queue(Notification $notification, $destinationUser)
     {
+        $destinationUser = $this->userRepository->getByHash($destinationUser);
         $notification->save();
-        $container = $this->containerRepository->create([]);
+        $container = new NotificationContainerModel(['user_id' => $destinationUser->id]);
+        $notification->container()->save($container);
+
+        return $container;
     }
 
 } 

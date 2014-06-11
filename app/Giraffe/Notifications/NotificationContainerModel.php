@@ -13,4 +13,9 @@ class NotificationContainerModel extends Eloquent {
     {
         return $this->morphTo();
     }
+
+    public function destination()
+    {
+        return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
+    }
 }
