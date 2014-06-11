@@ -3,7 +3,7 @@
 use Eloquent;
 use Giraffe\Common\HasEloquentHash;
 
-class NotificationModel extends Eloquent {
+class NotificationContainerModel extends Eloquent {
     use HasEloquentHash;
 
     protected $table = 'notifications';
