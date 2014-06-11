@@ -42,7 +42,7 @@ class EventService extends Service
 
     public function get($event)
     {
-        return $this->eventRepository->get($event);
+        return $this->eventRepository->getByHash($event);
     }
 
     public function delete($event)
