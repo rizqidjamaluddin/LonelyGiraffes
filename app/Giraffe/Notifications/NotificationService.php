@@ -4,6 +4,17 @@ class NotificationService
 {
 
     /**
+     * @var NotificationContainerRepository
+     */
+    private $containerRepository;
+
+    public function __construct(NotificationContainerRepository $containerRepository)
+    {
+
+        $this->containerRepository = $containerRepository;
+    }
+
+    /**
      * @param      $user
      * @param null $lastTimestamp
      */
@@ -20,7 +31,8 @@ class NotificationService
      */
     public function queue(Notification $notification, $destinationUser)
     {
-
+        $notification->save();
+        $container = $this->containerRepository->create([]);
     }
 
 } 
