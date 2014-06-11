@@ -36,6 +36,9 @@ class NotificationServiceTest extends TestCase
         $notification = new SystemNotificationModel(['title' => 'Test Notification', 'message' => 'foo']);
         $container = $this->service->queue($notification, $testUser);
 
+        $this->assertTrue(!is_null($container), 'Service::queue should return an instance of NotificationContainerModel');
+        $this->assertEquals(get_class($container), 'Giraffe\Notifications\NotificationContainerModel');
+
         $check = $this->repository->get($container->id);
         $this->assertEquals($check->destination()->hash, $testUser->hash);
         $this->assertEquals($check->notification->title, 'Test Notification');
