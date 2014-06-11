@@ -6,7 +6,7 @@ use Giraffe\Notifications\Notification;
 class SystemNotificationModel extends Eloquent implements Notification
 {
     protected $table = 'service_notifications';
-    protected $fields = [];
+    protected $fillable = ['title', 'message'];
 
     public function container()
     {
