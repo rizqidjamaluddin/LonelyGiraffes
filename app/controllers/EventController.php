@@ -1,4 +1,4 @@
-<?php  namespace controllers; 
+<?php
 
 use Giraffe\Common\Controller;
 use Giraffe\Events\EventService;

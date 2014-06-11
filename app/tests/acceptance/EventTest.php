@@ -3,6 +3,7 @@
 use Giraffe\Users\EventModel;
 use Giraffe\Users\EventRepository;
 use Giraffe\Users\EventService;
+use Str;
 
 class EventCase extends AcceptanceCase
 {
@@ -28,8 +29,9 @@ class EventCase extends AcceptanceCase
      */
     public function it_can_create_a_new_event()
     {
-        $response = $this->call('POST', 'api/events/', [
-                'id' => 1
+        $response = $this->call("POST", "api/events/", 
+            [
+                "name" => "my awesome location"
             ]
         );
         $this->assertResponseStatus(200);

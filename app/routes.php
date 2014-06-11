@@ -15,10 +15,6 @@ Route::get('/', function(){
         return View::make('hello');
     });
 
-Route::get('test', function(){
-        return 'test';
-    });
-
 Route::api(
      ['version' => 'v1'],
          function () {

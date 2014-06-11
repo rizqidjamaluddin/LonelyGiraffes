@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Events;
 
 use Giraffe\Common\Service;
+use Str;
 
 class EventService extends Service
 {
