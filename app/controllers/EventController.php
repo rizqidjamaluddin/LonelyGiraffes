@@ -16,9 +16,8 @@ class EventController extends Controller
         $this->eventService = $eventService;
     }
 
-    public function index()
-    {
-
+    public function store() {
+        return $this->eventService->createEvent(Input::all());
     }
 
     public function show($event)

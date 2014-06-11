@@ -33,6 +33,12 @@ class EventService extends Service
         $this->requestRepository = $requestRepository;
     }
 
+    public function createEvent($data)
+    {
+        $data['hash'] = Str::random(32);
+        return $this->eventRepository->create($data);
+    }
+
     public function get($event)
     {
         return $this->eventRepository->get($event);
