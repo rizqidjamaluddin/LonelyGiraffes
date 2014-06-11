@@ -27,6 +27,7 @@ Route::api(
              Route::get('events/{resource}', ['uses' => 'EventController@show']);
              Route::post('events', ['uses' => 'EventController@store']);
              Route::delete('events/{resource}', ['uses' => 'EventController@delete']);
+             Route::put('events/{resource}', ['uses' => 'EventController@update']);
 
              Route::get('events/{resource}/invites', ['uses' => 'EventController@indexInvite']);
              Route::post('events/{resource}/invites/{invitation}/accept', ['uses' => 'EventController@acceptInvite']);

@@ -40,16 +40,21 @@ class EventService extends Service
         return $this->eventRepository->create($data);
     }
 
-    public function get($event)
+    public function getEvent($hash)
     {
-        return $this->eventRepository->getByHash($event);
+        return $this->eventRepository->getByHash($hash);
     }
 
-    public function delete($hash)
+    public function deleteEvent($hash)
     {
         $event = $this->eventRepository->getByHash($hash);
         $this->eventRepository->deleteByHash($hash);
         return $event;
+    }
+
+    public function updateEvent($hash, $attributes)
+    {
+        return $this->eventRepository->update($hash, $attributes);
     }
 
     public function createRequest($event, $requestingUser)

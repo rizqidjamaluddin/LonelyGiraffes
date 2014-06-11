@@ -63,7 +63,7 @@ class EventCase extends AcceptanceCase
      * @depends it_can_create_a_new_event
      * @test
      */
-     public function it_can_find_an_event()
+     public function it_can_find_an_event_by_hash()
      {
         $service = App::make('Giraffe\Events\EventService');
         $model = $service->createEvent(
@@ -102,7 +102,7 @@ class EventCase extends AcceptanceCase
      * @depends it_can_create_a_new_event
      * @test
      */
-     public function it_can_delete_an_event()
+     public function it_can_delete_an_event_by_hash()
      {
         $service = App::make('Giraffe\Events\EventService');
         $model = $service->createEvent(
@@ -122,5 +122,46 @@ class EventCase extends AcceptanceCase
         );
         $response = $this->call('DELETE', 'api/events/' . $model->hash);
         $this->assertResponseStatus(200);
+     }
+
+    /**
+     * @depends it_can_create_a_new_event
+     * @test
+     */
+     public function it_can_update_an_event_by_hash()
+     {
+        $service = App::make('Giraffe\Events\EventService');
+        $model = $service->createEvent(
+            [
+                'user_id'   => 1,
+                'name'      => 'My Awesome Event',
+                'body'      => 'Details of my awesome event',
+                'html_body' => 'Details of my awesome event',
+                'url'       => 'http://www.google.com',
+                'location'  => 'My Awesome Location',
+                'city'      => 'Athens',
+                'state'     => 'Georgia',
+                'country'   => 'US',
+                'cell'      => '',
+                'timestamp' => '0000-00-00 00:00:00'
+            ]
+        );
+        $response = $this->call('PUT', 'api/events/' . $model->hash, 
+            [
+                'name'      => 'My Edited Awesome Event',
+                'body'      => 'Details of my edited awesome event',
+                'html_body' => 'Details of my edited awesome event',
+                'url'       => 'http://www.notgoogle.com',
+                'location'  => 'My Edited Awesome Location'
+            ]
+        );
+        $responseContent = json_decode($response->getContent());
+        $this->assertResponseStatus(200);
+
+        $this->assertEquals('My Edited Awesome Event', $responseContent->event->name);
+        $this->assertEquals('Details of my edited awesome event', $responseContent->event->body);
+        $this->assertEquals('Details of my edited awesome event', $responseContent->event->html_body);
+        $this->assertEquals('http://www.notgoogle.com', $responseContent->event->url);
+        $this->assertEquals('My Edited Awesome Location', $responseContent->event->location);
      }
 }
