@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 				command: [
 					"sudo composer self-update",
 					"sudo composer update -vvv",
-					"sudo composer install",
+					"sudo composer install"
 				].join("&&"),
 				options: {
 					stdout: true
