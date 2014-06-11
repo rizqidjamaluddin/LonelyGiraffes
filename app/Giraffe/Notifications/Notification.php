@@ -1,5 +1,5 @@
 <?php  namespace Giraffe\Notifications; 
-interface Notification 
-{
 
+interface Notification
+{
 } 

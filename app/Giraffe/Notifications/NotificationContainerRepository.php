@@ -1,5 +1,11 @@
 <?php  namespace Giraffe\Notifications; 
-class NotificationContainerRepository 
-{
 
+use Giraffe\Common\EloquentRepository;
+
+class NotificationContainerRepository extends EloquentRepository
+{
+    public function __construct(NotificationContainerModel $containerModel)
+    {
+        parent::__construct($containerModel);
+    }
 } 
