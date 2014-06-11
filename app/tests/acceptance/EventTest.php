@@ -1,19 +1,18 @@
 <?php
 
-use Giraffe\Users\EventModel;
-use Giraffe\Users\EventRepository;
-use Giraffe\Users\EventService;
-use Str;
+use Giraffe\Events\EventModel;
+use Giraffe\Events\EventRepository;
+use Giraffe\Events\EventService;
 
 class EventCase extends AcceptanceCase
 {
     /**
-     * @var UserService
+     * @var EventService
      */
     protected $service;
 
     /**
-     * @var UserRepository
+     * @var EventRepository
      */
     protected $repository;
 
@@ -121,7 +120,7 @@ class EventCase extends AcceptanceCase
                 'timestamp' => '0000-00-00 00:00:00'
             ]
         );
-        $response = $this->call('DELETE', 'api/events/' . $model->id);
+        $response = $this->call('DELETE', 'api/events/' . $model->hash);
         $this->assertResponseStatus(200);
      }
 }

@@ -27,7 +27,6 @@ class EventController extends Controller
 
     public function delete($event)
     {
-        $event = $this->eventService->get($event);
-        return;
+        return $this->eventService->delete($event);
     }
 } 
