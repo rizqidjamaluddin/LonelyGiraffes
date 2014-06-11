@@ -1,6 +1,8 @@
 <?php  namespace Giraffe\Users;
 
 use Giraffe\Authorization\GatekeeperException;
+use Giraffe\Common\DuplicateCreationException;
+use Giraffe\Common\DuplicateUpdateException;
 use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\Service;
 use Hash;
@@ -75,8 +77,11 @@ class UserService extends Service
         if (array_key_exists('password', $attributes)) {
             $user->password = Hash::make($attributes['password']);
         }
-
-        $this->userRepository->update($user, $attributes);
+        try {
+            $this->userRepository->update($user, $attributes);
+        } catch (DuplicateUpdateException $e) {
+            throw new DuplicateCreationException('Another user is using this email.');
+        }
         return $user;
     }
 
