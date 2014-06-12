@@ -2,6 +2,7 @@ Lonely Giraffes Version 2
 =========================
 
 Started: April 25, 2014
+
 Technologies: Laravel, PHPUnit, Node.
 
 Welcome to Lonely Giraffes Version 2.  If you're reading this that means that you're going to start writing code for the Lonely Giraffes project.  To get started, follow these simple steps.
