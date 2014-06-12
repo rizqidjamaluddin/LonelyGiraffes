@@ -1,5 +1,6 @@
 Lonely Giraffes Version 2
 =========================
+***
 
 
 Started: April 25, 2014
@@ -15,6 +16,7 @@ Welcome to Lonely Giraffes Version 2.  If you're reading this that means that yo
 
 Getting Up & Running
 ====================
+***
 
 
 1. Download and install Vagrant at http://vagrantup.com.
@@ -28,9 +30,12 @@ Getting Up & Running
   * The files are stored in `./vagrant`.
   * Access the database with `mysql -u root`.
 7. Access the app by navigation to `192.168.33.10` in your favorite browser.
+8. ???
+9. Profit. :sparkles:
 
 Git Branching Model
 ===================
+***
 
 
 Lonely Giraffes uses a fairly simple branching model with Git that should be followed at all times.
