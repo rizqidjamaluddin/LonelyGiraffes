@@ -72,8 +72,14 @@ Using PHPUnit
 ***
 
 
-When logged into the vagrant box using `vagrant ssh` and in the `./vagrant` directory PHPUnit (PHP testing stack) is available to you.  To run unit and acceptance tests run `phpunit`.
+When logged into the vagrant box using `vagrant ssh` and in the `./vagrant` directory PHPUnit (PHP testing stack) is available to you.
 
+Syntax:
+
+* `phpunit` will run all available unit tests. This is a general health check of the whole application; run it before merging anything to dev.
+* `phpunit app/tests/path/to/file.php` will run a single test file. 
+* `phpunit --testsuite acceptance` will run acceptance tests. These tests hit a URL/route and examine the output.
+* `phpunit --testsuite unit` and `phpunit --testsuite componment` run tests for specific classes within the code.
 
 Using Intern
 =============
