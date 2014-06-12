@@ -31,7 +31,7 @@ Getting Up & Running
   * Access the database with `mysql -u root`.
 7. Access the app by navigation to `192.168.33.10` in your favorite browser.
 8. ???
-9. Profit. :sparkles:
+9. Profit.
 
 Git Branching Model
 ===================
