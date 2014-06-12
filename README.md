@@ -1,16 +1,21 @@
 Lonely Giraffes Version 2
 =========================
 
+
 Started: April 25, 2014
 
 Technologies: Laravel, PHPUnit, Node.
 
+
 Welcome to Lonely Giraffes Version 2.  If you're reading this that means that you're going to start writing code for the Lonely Giraffes project.  To get started, follow these simple steps.
+
 
 **Notice:** Lonely Giraffes Version 2 is not in production as of June 11, 2014.
 
+
 Getting Up & Running
 ====================
+
 
 1. Download and install Vagrant at http://vagrantup.com.
   * Vagrant is used to create a virtual box that mimics our production environment.
@@ -27,11 +32,16 @@ Getting Up & Running
 Git Branching Model
 ===================
 
+
 Lonely Giraffes uses a fairly simple branching model with Git that should be followed at all times.
 
+
 **master:** Source of production pulls. Merge from staging will be done during production pulls; only touch for hotfixes.
+
 **staging:** Source of dev pulls. Merge from dev done automatically with testing during dev pulls.
+
 **develop:** Stable development versions. Merge from feature branches and do atomic commits here.
+
 
 You should create new feature branches whenever working on something new. Once it's stable, merge it back into develop, and then delete the branch locally (and remotely if it applies). It's okay to do "atomic" commits straight into develop, such as new migrations. These feature branches SHOULD be mirrored on the server (push them to the server as upstream branches with git push -u origin <branch>)
 for collaboration.
