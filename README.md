@@ -70,6 +70,22 @@ Git
 Subversion for managing code.  Find it's docs at http://git-scm.com/documentation.
 
 
+Using PHPUnit
+=============
+***
+
+
+When logged into the vagrant box using `vagrant ssh` and in the `./vagrant` directory PHPUnit (PHP testing stack) is available to you.  To run unit and acceptance tests run `phpunit`.
+
+
+Using Intern
+=============
+***
+
+
+When logged into the vagrant box using `vagrant ssh` and in the `./vagrant` directory Intern (JavaScript testing stack) is available to you.  To run unit and acceptance tests run `grunt intern`.
+
+
 Git Branching Model
 ===================
 ***
@@ -87,22 +103,6 @@ Lonely Giraffes uses a fairly simple branching model with Git that should be fol
 
 You should create new feature branches whenever working on something new. Once it's stable, merge it back into develop, and then delete the branch locally (and remotely if it applies). It's okay to do "atomic" commits straight into develop, such as new migrations. These feature branches SHOULD be mirrored on the server (push them to the server as upstream branches with git push -u origin <branch>)
 for collaboration.
-
-
-Using PHPUnit
-=============
-***
-
-
-When logged into the vagrant box using `vagrant ssh` and in the `./vagrant` directory PHPUnit (PHP testing stack) is available to you.  To run unit and acceptance tests run `phpunit`.
-
-
-Using Intern
-=============
-***
-
-
-When logged into the vagrant box using `vagrant ssh` and in the `./vagrant` directory Intern (JavaScript testing stack) is available to you.  To run unit and acceptance tests run `grunt intern`.
 
 
 Coding Standards
