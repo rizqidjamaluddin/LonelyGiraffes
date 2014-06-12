@@ -1,40 +1,36 @@
-Lonely Giraffes V2.
-DATE: April 25, 2014
+Lonely Giraffes Version 2
+=========================
 
-Download box: vagrant box add CentOS6.5 https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box
+Started: April 25, 2014
+Technologies: Laravel, PHPUnit, Node.
 
-NOTICE: Not ready for development use yet. We can start using this after the final feature push of version 1 is complete. For now, it's just the general structure.
+Welcome to Lonely Giraffes Version 2.  If you're reading this that means that you're going to start writing code for the Lonely Giraffes project.  To get started, follow these simple steps.
 
-INSTALL:
+**Notice:** Lonely Giraffes Version 2 is not in production as of June 11, 2014.
 
-1. Install Vagrant (http://vagrantup.com)
-2. Linux/OS X: start Vagrant by going to the terminal, navigating to where the project exists, and typing "vagrant up".
-3. Wait for box to download and configuration to complete. (Try vagrant cachier to speed this up in the future.)
-4. Access box web server by pointing browser at 192.168.33.10.xip.io (this loops back into your local network).
-5. Access box terminal via SSH by typing "vagrant SSH".
-6. Access MySQL from GUIs by looking on port 2222, using a private key; this key is stored in ~/.vagrant.d/insecure_private_key.
-7. Within the box, the application is stored in ./vagrant.
-8. If NPM will not install your dependencies and you have empty directories, delete your node_modules directory all together and try again.
+Getting Up & Running
+====================
 
-BRANCHING MODEL:
+1. Download and install Vagrant at http://vagrantup.com.
+  * Vagrant is used to create a virtual box that mimics our production environment.
+2. Download and install Oracle Virtualbox at https://www.virtualbox.org/wiki/Downloads.
+  * Vagrant will use this to create the virtual box.
+3. Clone the repository by running `git clone git@git.thinksterlabs.com:root/lonelygiraffes.git` wherever you wish the repository to live on your local machine.
+4. Change directory into the repository and download the Lonely Giraffes virtual box.  Run `vagrant box add LonelyGiraffesDev https://direct.lonelygiraffes.com/package.box --insecure` in the Lonely Giraffes directory.
+5. Run `vagrant up` in the Lonely Giraffes directory to start your virtual machine.
+6. Access your vagrant box by typing `vagrant ssh`.
+  * The files are stored in `./vagrant`.
+  * Access the database with `mysql -u root`.
+7. Access the app by navigation to `192.168.33.10` in your favorite browser.
 
-master:     Source of production pulls. Merge from staging will be done during production pulls; only touch for hotfixes.
-staging:    Source of dev pulls. Merge from dev done automatically with testing during dev pulls.
-develop:    Stable development versions. Merge from feature branches and do atomic commits here.
+Git Branching Model
+===================
 
-Create new feature branches whenever working on something new. Once it's stable, merge it back into develop, and then
-delete the branch. It's okay to do "atomic" commits straight into develop, such as new migrations. These feature
-branches SHOULD be mirrored on the server (push them to the server as upstream branches with git push -u origin <branch>)
+Lonely Giraffes uses a fairly simple branching model with Git that should be followed at all times.
+
+**master:** Source of production pulls. Merge from staging will be done during production pulls; only touch for hotfixes.
+**staging:** Source of dev pulls. Merge from dev done automatically with testing during dev pulls.
+**develop:** Stable development versions. Merge from feature branches and do atomic commits here.
+
+You should create new feature branches whenever working on something new. Once it's stable, merge it back into develop, and then delete the branch locally (and remotely if it applies). It's okay to do "atomic" commits straight into develop, such as new migrations. These feature branches SHOULD be mirrored on the server (push them to the server as upstream branches with git push -u origin <branch>)
 for collaboration.
-
-TODO:
-- Contributor list
-- Licensing
-- Installation instructions
-- Component versions
-- Code structure & standards
-
-NOTES:
-- Look into automation for development and production servers.
-- Learn more about Git branching.
-- Decide on a task runner to use.
