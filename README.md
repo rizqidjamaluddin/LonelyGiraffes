@@ -3,15 +3,39 @@ Lonely Giraffes Version 2
 ***
 
 
-Started: April 25, 2014
-
-Technologies: Laravel, PHPUnit, Node.
-
-
 Welcome to Lonely Giraffes Version 2.  If you're reading this that means that you're going to start writing code for the Lonely Giraffes project.  To get started, follow these simple steps.
 
 
-> **Notice:** Lonely Giraffes Version 2 is not in production as of June 11, 2014.
+> Lonely Giraffes Version 2 is not in production as of June 11, 2014.
+
+
+Technologies
+============
+***
+
+
+Lonely Giraffes uses a lot of different technoogies.  Here is a short description of each and where you can find more information about them.
+
+
+Laravel
+-------
+
+
+A PHP MVC with a lot of tools baked right into it's core.  Find it's docs at http://laravel.com/docs.
+
+
+PHPUnit
+-------
+
+
+A testing framework for PHP.  Find it's docs at http://phpunit.de/manual/current/en/index.html.
+
+
+Intern
+------
+
+
+A testing framework for JavaScript.  Find it's docs at https://github.com/theintern/intern/wiki.
 
 
 Getting Up & Running
