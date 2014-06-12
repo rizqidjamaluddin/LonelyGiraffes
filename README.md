@@ -1,7 +1,7 @@
 Lonely Giraffes Version 2
 =========================
-\s\s
-\s\s
+
+
 Started: April 25, 2014
 
 Technologies: Laravel, PHPUnit, Node.
