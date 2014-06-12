@@ -69,9 +69,9 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
         return "user";
     }
 
-    public function getOwner()
+    public function checkOwnership(UserModel $userModel)
     {
-        return $this;
+        return $this->id == $userModel->id;
     }
 
 

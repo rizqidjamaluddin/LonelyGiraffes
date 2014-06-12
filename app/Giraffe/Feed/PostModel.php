@@ -31,8 +31,8 @@ class PostModel extends Eloquent implements ProtectedResource {
         return "post";
     }
 
-    public function getOwner()
+    public function checkOwnership(UserModel $userModel)
     {
-        return $this->user;
+        return $this->user->id == $userModel->id;
     }
 }
