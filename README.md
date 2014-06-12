@@ -1,12 +1,9 @@
-Lonely Giraffes Version 2
-=========================
+Lonely Giraffes
+===============
 ***
 
 
-Welcome to Lonely Giraffes Version 2.  If you're reading this that means that you're going to start writing code for the Lonely Giraffes project.  To get started, follow these simple steps.
-
-
-> Lonely Giraffes Version 2 is not in production as of June 11, 2014.
+Welcome to Lonely Giraffes Version 2.  If you're reading this that means that you're going to start writing code for the Lonely Giraffes project.  All documentation about the project including installation, technologies used and coding standards can be found here.
 
 
 Getting Up & Running
