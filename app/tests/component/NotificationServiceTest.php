@@ -42,6 +42,7 @@ class NotificationServiceTest extends TestCase
         $check = $this->repository->get($container->id);
         $this->assertEquals($check->destination->hash, $testUser->hash);
         $this->assertEquals($check->notification->title, 'Test Notification');
+        $this->assertEquals($check->notification->message, 'foo');
     }
 
     /**
