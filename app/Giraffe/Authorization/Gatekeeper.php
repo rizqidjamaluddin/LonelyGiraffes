@@ -125,7 +125,11 @@ class Gatekeeper
     public function please()
     {
         if (!$this->canI()) {
-            throw new GatekeeperException;
+            if ($this->authenticated) {
+                throw new GatekeeperException;
+            } else {
+                throw new GatekeeperUnauthorizedException;
+            }
         }
         return true;
     }
@@ -192,6 +196,11 @@ class Gatekeeper
         return $this->authenticatedUser;
     }
 
+    public function me()
+    {
+        return $this->fetchMyModel();
+    }
+
     /**
      * Disarm access control features. User given all permissions.
      *
@@ -208,6 +217,11 @@ class Gatekeeper
     public function isDisarmed()
     {
         return !$this->enable;
+    }
+
+    public function why()
+    {
+
     }
 
 }

@@ -7,6 +7,9 @@ use stdClass;
 
 class GiraffeGatekeeperProvider implements GatekeeperProvider
 {
+
+    protected $report;
+
     /**
      * @var \Giraffe\Users\UserModel
      */
@@ -27,7 +30,7 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
     private $permissionsLookup;
 
     /**
-     * @param UserRepository           $userRepository
+     * @param UserRepository $userRepository
      * @param GiraffePermissionsLookup $permissionsLookup
      */
     public function __construct(UserRepository $userRepository, GiraffePermissionsLookup $permissionsLookup)
@@ -71,6 +74,7 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
         $globalPermissionList = $permissions[$role]['global'];
         if (!(array_key_exists($noun, $selfPermissionList) || array_key_exists($noun, $globalPermissionList))) {
             // noun not found at all, assume access denied
+            $this->report = 'Noun not registered in permissions list';
             return false;
         }
 
@@ -82,20 +86,40 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
         // default to non-model authorization if user is not provided.
         if ($model && $user) {
             if (!$model instanceof ProtectedResource) {
-                throw new ConfigurationException('Model ' . get_class($model) . ' must implement Gatekeeper\ProtectedResource');
+                throw new ConfigurationException(
+                    'Model ' . get_class($model) . ' must implement Gatekeeper\ProtectedResource'
+                );
             }
 
             // globally permitted verbs for this noun override self permissions
             if (in_array($verb, $globalPermittedVerbs)) {
+                $this->report = "User permitted global access to $verb $noun";
                 return true;
             }
 
             $owner = $model->getOwner();
-            $ownershipMatch = (integer) $owner->id === (integer) $user->id;
+            $ownershipMatch = (integer)$owner->id === (integer)$user->id;
             $permissionMatch = in_array($verb, $selfPermittedVerbs);
-            return $ownershipMatch && $permissionMatch;
+            if ($ownershipMatch && $permissionMatch) {
+                $this->report = 'User access approved for self-owned resource';
+                return true;
+            } else {
+                if (!$permissionMatch) {
+                    $this->report = 'User access denied because of insufficient permissions';
+                } else {
+                    $this->report = 'User access denied because of resource ownership';
+
+                }
+                return false;
+            }
         } else {
-            return in_array($verb, array_merge_recursive($selfPermittedVerbs, $globalPermittedVerbs));
+            if (in_array($verb, array_merge_recursive($selfPermittedVerbs, $globalPermittedVerbs))) {
+                $this->report = "User approved to $verb $noun";
+                return true;
+            } else {
+                $this->report = "User denied to $verb $noun because of insufficient permissions";
+                return false;
+            }
         }
     }
 
@@ -106,5 +130,11 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
     {
         $permissions = $this->permissions ? : $this->permissions = $this->permissionsLookup->getGroupPermissions();
         return $permissions;
+    }
+
+
+    public function getLastActionReport()
+    {
+        return $this->report;
     }
 }
