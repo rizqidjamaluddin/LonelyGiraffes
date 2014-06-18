@@ -95,7 +95,8 @@ class GiraffeGatekeeperTest extends TestCase
      */
     public function all_posts_are_public_by_default()
     {
-        $this->assertTrue($this->provider->checkIfGuestMay('read', 'post'));
+        $allow = $this->provider->checkIfGuestMay('read', 'post');
+        $this->assertTrue($allow);
     }
 
     /**

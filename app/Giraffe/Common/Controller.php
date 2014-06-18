@@ -18,7 +18,6 @@ class Controller extends \Controller
     {
         $this->auth = App::make('Dingo\Api\Auth\Shield');
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
-
         $this->gatekeeper->iAm($this->auth->user());
     }
 } 

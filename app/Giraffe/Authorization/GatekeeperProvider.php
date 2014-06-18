@@ -30,4 +30,6 @@ interface GatekeeperProvider
      * @return mixed
      */
     public function checkIfGuestMay($verb, $noun, $model = null);
+
+    public function getLastActionReport();
 } 

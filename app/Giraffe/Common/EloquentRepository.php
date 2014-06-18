@@ -67,6 +67,10 @@ abstract class EloquentRepository implements Repository
 
     public function getByHash($hash)
     {
+        if ($hash instanceof Eloquent) {
+            return $hash;
+        }
+
         if (!$this->model->hasHash) {
             throw new NotFoundModelException();
         }

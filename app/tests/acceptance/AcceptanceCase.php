@@ -52,4 +52,23 @@ abstract class AcceptanceCase extends TestCase
         return $member;
     }
 
+
+
+    protected function createOtherAccount()
+    {
+        $userRepository = App::make('Giraffe\Users\UserRepository');
+        $member = $userRepository->create(
+            [
+                'firstname' => 'Energetic',
+                'lastname' => 'Penguin',
+                'gender' => 'F',
+                'email' => 'hi@lonelygiraffes.net',
+                'password' => 'password',
+                'role' => 'member',
+                'hash' => Str::random(32),
+            ]
+        );
+        return $member;
+    }
+
 } 

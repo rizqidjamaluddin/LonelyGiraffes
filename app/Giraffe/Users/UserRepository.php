@@ -28,6 +28,17 @@ class UserRepository extends EloquentRepository
      * @return UserModel|null
      */
     public function get($identifier){
+
+        // skip specific search if identifier is null; delegate to parent to decide what to do
+        if (is_null($identifier)) {
+            return parent::get($identifier);
+        }
+
+        // immediately return if already a UserModel
+        if ($identifier instanceof UserModel) {
+            return $identifier;
+        }
+
         try {
             $model = $this->getByPublicId($identifier);
         } catch (NotFoundModelException $e) {
@@ -37,14 +48,14 @@ class UserRepository extends EloquentRepository
     }
 
     /**
-     * @param string $id
+     * @param string $nickname
      *
      * @throws \Giraffe\Common\NotFoundModelException
-     * @return \Illuminate\Database\Eloquent\Model|null|static
+     * @return UserModel
      */
-    public function getByPublicId($id)
+    public function getByPublicId($nickname)
     {
-        if (!$model = $this->model->where('nickname', '=', $id)->first()) {
+        if (!$model = $this->model->where('nickname', '=', $nickname)->first()) {
             throw new NotFoundModelException();
         }
         return $model;
