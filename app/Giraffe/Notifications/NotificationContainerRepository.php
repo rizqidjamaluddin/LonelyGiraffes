@@ -8,4 +8,15 @@ class NotificationContainerRepository extends EloquentRepository
     {
         parent::__construct($containerModel);
     }
+
+    /**
+     * @param $userId
+     *
+     * @return NotificationContainerModel[]
+     */
+    public function getForUser($userId)
+    {
+        return $this->model->with('notification')->where('user_id', $userId)->get();
+    }
+
 } 

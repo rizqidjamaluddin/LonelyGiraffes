@@ -63,6 +63,7 @@ Route::api(
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);
+             Route::post('notifications/clear', ['uses' => 'NotificationController@dismissAll']);
 
          }
 );

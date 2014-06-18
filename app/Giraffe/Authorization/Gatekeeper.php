@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Authorization;
 
 use Giraffe\Authorization\GatekeeperProvider;
+use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Logging\Log;
 use Illuminate\Support\Str;
@@ -36,7 +37,7 @@ use stdClass;
 class Gatekeeper
 {
 
-    const REQUEST_NOT_SET    = 0;
+    const REQUEST_NOT_SET = 0;
     const REQUEST_PERMISSION = 1;
 
 
@@ -73,6 +74,11 @@ class Gatekeeper
 
     public function iAm($userIdentifier)
     {
+
+        if (is_null($userIdentifier)) {
+            return $this;
+        }
+
         if ($this->enable) {
             try {
                 $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
@@ -101,9 +107,16 @@ class Gatekeeper
         $this->query['verb'] = $verb;
         if (is_string($noun)) {
             $this->query['noun'] = Str::singular($noun);
-        } else if($noun instanceof ProtectedResource) {
-            $this->query['noun'] = $noun->getResourceName();
-            $this->query['model'] = $noun;
+        } else {
+            if ($noun instanceof ProtectedResource) {
+                $this->query['noun'] = $noun->getResourceName();
+                $this->query['model'] = $noun;
+            } else {
+                throw new ConfigurationException(
+                    'Gatekeeper cannot check for permissions on ' . get_class($noun) .
+                    '. Please implement ProtectedResource on this model.'
+                );
+            }
         }
         return $this;
     }
@@ -146,7 +159,8 @@ class Gatekeeper
         $result = null;
 
         switch ($this->request) {
-            case self::REQUEST_PERMISSION : {
+            case self::REQUEST_PERMISSION :
+            {
                 if (!$this->enable) {
                     $result = true;
                     break;
@@ -169,13 +183,26 @@ class Gatekeeper
     {
         if ($this->authenticated) {
             if (array_key_exists('model', $this->query)) {
-                return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun'], $this->query['model']);
+                return $this->provider->checkIfUserMay(
+                    $this->authenticatedUser,
+                    $this->query['verb'],
+                    $this->query['noun'],
+                    $this->query['model']
+                );
             } else {
-                return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+                return $this->provider->checkIfUserMay(
+                    $this->authenticatedUser,
+                    $this->query['verb'],
+                    $this->query['noun']
+                );
             }
         } else {
             if (array_key_exists('model', $this->query)) {
-                return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun'], $this->query['model']);
+                return $this->provider->checkIfGuestMay(
+                    $this->query['verb'],
+                    $this->query['noun'],
+                    $this->query['model']
+                );
             } else {
                 return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun']);
             }
@@ -221,7 +248,7 @@ class Gatekeeper
 
     public function why()
     {
-
+        return $this->provider->getLastActionReport();
     }
 
 }

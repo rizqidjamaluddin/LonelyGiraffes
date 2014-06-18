@@ -8,6 +8,7 @@ use stdClass;
 class GiraffeGatekeeperProvider implements GatekeeperProvider
 {
 
+    protected $lastRequest;
     protected $report;
 
     /**
@@ -30,7 +31,7 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
     private $permissionsLookup;
 
     /**
-     * @param UserRepository $userRepository
+     * @param UserRepository           $userRepository
      * @param GiraffePermissionsLookup $permissionsLookup
      */
     public function __construct(UserRepository $userRepository, GiraffePermissionsLookup $permissionsLookup)
@@ -58,6 +59,15 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
     protected function resolve($role, $verb, $noun, $model = null, $user = null)
     {
         $permissions = $this->loadGroupPermissions();
+
+        $this->lastRequest = [];
+        $this->lastRequest = ['role' => $role, 'verb' => $verb, 'noun' => $noun];
+        if ($model) {
+            $this->lastRequest['model'] = get_class($model);
+        }
+        if ($user) {
+            $this->lastRequest['user'] = $user->id;
+        }
 
 
         // normalize casing
@@ -113,12 +123,17 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
                 return false;
             }
         } else {
-            if (in_array($verb, array_merge_recursive($selfPermittedVerbs, $globalPermittedVerbs))) {
-                $this->report = "User approved to $verb $noun";
+            if (in_array($verb, $selfPermittedVerbs)) {
+                $this->report = "User approved to $verb $noun through self permissions";
                 return true;
             } else {
-                $this->report = "User denied to $verb $noun because of insufficient permissions";
-                return false;
+                if (in_array($verb, $globalPermittedVerbs)) {
+                    $this->report = "User permitted global access to $verb $noun";
+                    return true;
+                } else {
+                    $this->report = "User denied to $verb $noun because of insufficient permissions";
+                    return false;
+                }
             }
         }
     }
@@ -135,6 +150,11 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
 
     public function getLastActionReport()
     {
-        return $this->report;
+        $role = $this->lastRequest['role'];
+        $verb = $this->lastRequest['verb'];
+        $noun = $this->lastRequest['noun'];
+        $user = array_key_exists('user', $this->lastRequest) ? ' ' . $this->lastRequest['user'] . ' : ' : '';
+        $model = array_key_exists('model', $this->lastRequest) ? ' on ' . $this->lastRequest['model'] : '';
+        return "[$role $user$verb->$noun$model] " . $this->report;
     }
 }

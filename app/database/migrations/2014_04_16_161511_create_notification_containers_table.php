@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateNotificationWrappersTable extends Migration {
+class CreateNotificationContainersTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -16,6 +16,7 @@ class CreateNotificationWrappersTable extends Migration {
 		{
 			$table->bigIncrements('id');
             $table->integer('user_id')->unsigned();
+            $table->string('hash', 32);
             $table->string('notification_type');
             $table->bigInteger('notification_id');
 			$table->timestamps();

@@ -1,8 +1,12 @@
 <?php  namespace Giraffe\Notifications;
 
+use Giraffe\Common\NotImplementedException;
+use Giraffe\Common\Service;
+use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Str;
 
-class NotificationService
+class NotificationService extends Service
 {
 
     /**
@@ -18,17 +22,21 @@ class NotificationService
         NotificationContainerRepository $containerRepository,
         UserRepository $userRepository
     ) {
+        parent::__construct();
         $this->containerRepository = $containerRepository;
         $this->userRepository = $userRepository;
     }
 
     /**
      * @param      $user
-     * @param null $lastTimestamp
+     *
+     * @return \Giraffe\Notifications\NotificationContainerModel[]
      */
-    public function getUserNotifications($user, $lastTimestamp = null)
+    public function getUserNotifications($user)
     {
-
+        $this->gatekeeper->mayI('read', 'notification_container')->please();
+        $notifications = $this->containerRepository->getForUser($user->id);
+        return $notifications;
     }
 
     /**
@@ -41,10 +49,42 @@ class NotificationService
     {
         $destinationUser = $this->userRepository->getByHash($destinationUser);
         $notification->save();
-        $container = new NotificationContainerModel(['user_id' => $destinationUser->id]);
+        $container = new NotificationContainerModel(
+            [
+                'user_id' => $destinationUser->id,
+                'hash'    => Str::random(32)
+            ]
+        );
         $notification->container()->save($container);
 
         return $container;
+    }
+
+    public function dismiss($container, UserModel $me)
+    {
+        /** @var NotificationContainerModel $container */
+        $container = $this->containerRepository->getByHash($container);
+        $this->gatekeeper->mayI('delete', $container)->please();
+
+        // delete body and container
+        $container->notification->delete();
+        $container->delete();
+
+        return true;
+    }
+
+    public function dismissAll(UserModel $me)
+    {
+        $this->gatekeeper->mayI('dismiss_all', 'notification_container')->please();
+
+        $notifications = $this->containerRepository->getForUser($me->id);
+        foreach ($notifications as $notificationContainer) {
+            $notificationContainer->notification->delete();
+            $notificationContainer->delete();
+        }
+
+        return true;
+
     }
 
 } 

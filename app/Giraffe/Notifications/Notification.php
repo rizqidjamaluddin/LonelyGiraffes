@@ -8,4 +8,6 @@ abstract class Notification extends Eloquent
     {
         return $this->morphOne('Giraffe\Notifications\NotificationContainerModel', 'notification');
     }
+
+    abstract public function getBody();
 } 

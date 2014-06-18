@@ -2,7 +2,7 @@
 
 use Giraffe\Notifications\NotificationContainerRepository;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\Types\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotificationModel;
 use Giraffe\Users\UserService;
 
 class NotificationServiceTest extends TestCase
@@ -43,6 +43,15 @@ class NotificationServiceTest extends TestCase
         $this->assertEquals($check->destination->hash, $testUser->hash);
         $this->assertEquals($check->notification->title, 'Test Notification');
         $this->assertEquals($check->notification->message, 'foo');
+    }
+
+    /**
+     * This is how short polling will work; client ping server with the hash of the last received notification, server
+     * should return all notifications since this one.
+     */
+    public function it_can_get_all_waiting_notifications_based_on_the_last_received_hash()
+    {
+
     }
 
     /**
