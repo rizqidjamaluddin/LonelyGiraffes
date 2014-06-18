@@ -50,11 +50,8 @@ class NotificationContainerModel extends Eloquent implements TransformableInterf
         return 'notification_container';
     }
 
-    /**
-     * @return UserModel
-     */
-    public function getOwner()
+    public function checkOwnership(UserModel $user)
     {
-        return $this->destination;
+        return $this->destination->id == $user->id;
     }
 }

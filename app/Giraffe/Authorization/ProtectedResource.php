@@ -14,7 +14,7 @@ interface ProtectedResource
     /**
      * @param \Giraffe\Users\UserModel $user
      *
-     * @return UserModel
+     * @return bool
      */
     public function checkOwnership(UserModel $user);
 } 
