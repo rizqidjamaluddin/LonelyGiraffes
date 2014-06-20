@@ -1,6 +1,7 @@
 <?php
 
 use Giraffe\Authorization\ProtectedResource;
+use Giraffe\Users\UserModel;
 
 class GatekeeperTest extends TestCase
 {
@@ -192,8 +193,8 @@ class TestResource implements ProtectedResource{
         return $this->resource;
     }
 
-    public function getOwner()
+    public function checkOwnership(UserModel $user)
     {
-        return $this->owner;
+        return $this->owner->id == $user->id;
     }
 }

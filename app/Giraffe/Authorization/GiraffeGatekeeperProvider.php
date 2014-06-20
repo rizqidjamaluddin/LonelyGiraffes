@@ -107,8 +107,7 @@ class GiraffeGatekeeperProvider implements GatekeeperProvider
                 return true;
             }
 
-            $owner = $model->getOwner();
-            $ownershipMatch = (integer)$owner->id === (integer)$user->id;
+            $ownershipMatch = $model->checkOwnership($user);
             $permissionMatch = in_array($verb, $selfPermittedVerbs);
             if ($ownershipMatch && $permissionMatch) {
                 $this->report = 'User access approved for self-owned resource';
