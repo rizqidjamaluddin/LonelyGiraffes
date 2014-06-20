@@ -30,7 +30,7 @@ class UserAccountCase extends AcceptanceCase
      */
     public function it_can_fail_to_find_a_user()
     {
-        $response = $this->call('GET', 'api/users/404');
+        $response = $this->call('GET', '/api/users/404');
         $this->assertResponseStatus(404);
     }
 
@@ -39,17 +39,7 @@ class UserAccountCase extends AcceptanceCase
      */
     public function it_can_create_a_new_user()
     {
-        $response = $this->call(
-            "POST",
-            "api/users/",
-            [
-                "email"     => 'hello@lonelygiraffes.com',
-                "password"  => 'password',
-                'firstname' => 'Lonely',
-                'lastname'  => 'Giraffe',
-                'gender'    => 'M'
-            ]
-        );
+        $response = $this->call("POST", "/api/users/", $this->genericUser);
         $responseContent = json_decode($response->getContent());
         $this->assertResponseStatus(200);
 
@@ -67,15 +57,12 @@ class UserAccountCase extends AcceptanceCase
      */
     public function it_fails_to_create_a_user_with_a_bad_email()
     {
-        $response = $this->call(
-            "POST",
-            "api/users/",
-            [
-                "email"     => 'lonelygiraffes.com',
-                "password"  => 'password',
+        $response = $this->call("POST", "/api/users/", [
+                'email'     => '@lonelygiraffes.x',
+                'password'  => 'password',
                 'firstname' => 'Lonely',
                 'lastname'  => 'Giraffe',
-                'gender'    => 'M'
+                'gender'    => 'M'        
             ]
         );
         $this->assertResponseStatus(422);
@@ -87,18 +74,12 @@ class UserAccountCase extends AcceptanceCase
      */
     public function it_can_find_a_user()
     {
-        $service = App::make('Giraffe\Users\UserService');
-        $model = $service->createUser(
-            [
-                "email"     => 'hello@lonelygiraffes.com',
-                "password"  => 'password',
-                'firstname' => 'Lonely',
-                'lastname'  => 'Giraffe',
-                'gender'    => 'M'
-            ]
-        );
-        $response = $this->call("GET", "api/users/" . $model->id);
+        $model = $this->call("POST", "/api/users/", $this->genericUser);
+        $modelResponse = json_decode($model->getContent());
+
+        $response = $this->call("GET", "/api/users/" . $modelResponse->user->hash);
         $responseContent = json_decode($response->getContent());
+        
         $validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
         $validator->validate($responseContent);
 
@@ -115,10 +96,11 @@ class UserAccountCase extends AcceptanceCase
      */
     public function a_user_can_update_information()
     {
-        $model = $this->createGenericUser();
-        $response = $this->call(
-            "PUT",
-            "api/users/1",
+        $model = $this->call("POST", "/api/users/", $this->genericUser);
+        $modelResponse = json_decode($model->getContent());
+        $this->asUser($modelResponse->user->hash);
+
+        $response = $this->call("PUT", "/api/users/" . $modelResponse->user->hash,
             [
                 'email'     => 'hello@notlonelygiraffes.com',
                 'password'  => 'anotherpassword',
@@ -168,10 +150,13 @@ class UserAccountCase extends AcceptanceCase
      */
     public function a_user_updating_information_must_conform_to_validation()
     {
-        $model = $this->createGenericUser();
+        $model = $this->call("POST", "/api/users/", $this->genericUser);
+        $modelResponse = json_decode($model->getContent());
+        $this->asUser($modelResponse->user->hash);
+
         $response = $this->call(
             "PUT",
-            "api/users/" . $model->hash,
+            "/api/users/" . $modelResponse->user->hash,
             [
                 'email' => 'lonelygiraffes.com'
             ]
@@ -179,7 +164,7 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(422);
 
-        $check = $this->repository->get($model->hash);
+        $check = $this->repository->get($modelResponse->user->hash);
         $this->assertEquals($check->email, 'hello@lonelygiraffes.com');
     }
 
@@ -218,23 +203,23 @@ class UserAccountCase extends AcceptanceCase
      */
     public function an_administrator_can_change_a_users_data()
     {
-        $model = $this->createMemberAccount();
-        $admin = $this->createAdministratorAccount();
-        $this->be($admin);
+        $model = $this->call('POST', '/api/users/', $this->genericUser);
+        $modelResponse = json_decode($model->getContent());
+        $this->asUser($modelResponse->user->hash);
+
+        $admin = $this->call('POST', '/api/users/', $this->administrator);
+        $adminResponse = json_decode($model->getContent());
+        $this->asUser($adminResponse->user->hash);
 
         $response = $this->call(
             'PUT',
-            'api/users/' . $model->hash,
+            '/api/users/' . $modelResponse->user->hash,
             [
                 'email' => 'new@lonelygiraffes.com'
             ]
         );
 
-        $this->assertResponseOk();
-
-        $check = $this->repository->get($model->id);
-        $this->assertEquals($check->email, 'new@lonelygiraffes.com');
-
+        $this->assertResponseStatus(200);
     }
 
     /**
@@ -242,20 +227,17 @@ class UserAccountCase extends AcceptanceCase
      */
     public function a_user_cannot_change_their_email_to_another_users_email()
     {
-        $model = $this->createGenericUser();
-        $otherUser = $this->service->createUser(
-            [
-                'email'     => 'other@lonelygiraffes.com',
-                'password'  => 'password',
-                'firstname' => 'Lonely',
-                'lastname'  => 'Giraffe',
-                'gender'    => 'M'
-            ]
-        );
+        $model = $this->call('POST', '/api/users/', $this->genericUser);
+        $modelResponse = json_decode($model->getContent());
+        $this->asUser($modelResponse->user->hash);
+
+        $anotherModel = $this->call('POST', '/api/users/', $this->anotherGenericUser);
+        $anotherModelResponse = json_decode($model->getContent());
+        $this->asUser($anotherModelResponse->user->hash);        
 
         $response = $this->call(
             "PUT",
-            "api/users/" . $model->hash,
+            "/api/users/" . $modelResponse->user->hash,
             [
                 'email' => 'other@lonelygiraffes.com'
             ]
@@ -334,7 +316,7 @@ class UserAccountCase extends AcceptanceCase
                 'gender'    => 'M'
             ]
         );
-        $this->be($model);
+        $this->asUser($model);
         return $model;
     }
 }

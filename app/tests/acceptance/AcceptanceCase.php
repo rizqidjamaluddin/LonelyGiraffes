@@ -10,6 +10,40 @@ abstract class AcceptanceCase extends TestCase
      */
     protected $gatekeeper;
 
+    /**
+     * @var array
+     */
+    protected $genericUser = [
+        'email'     => 'hello@lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Lonely',
+        'lastname'  => 'Giraffe',
+        'gender'    => 'M'
+    ];
+
+    /**
+     * @var array
+     */
+    protected $anotherGenericUser = [
+        'email'     => 'anotherHello@lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Lonely',
+        'lastname'  => 'Giraffe',
+        'gender'    => 'M'
+    ];
+
+    /**
+     * @var array
+     */
+    protected $administrator = [
+        'email'     => 'anotherHello@lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Lonely',
+        'lastname'  => 'Giraffe',
+        'gender'    => 'M'
+    ];
+
+
     public function setUp()
     {
         parent::setUp();
@@ -70,5 +104,4 @@ abstract class AcceptanceCase extends TestCase
         );
         return $member;
     }
-
 } 
