@@ -239,17 +239,17 @@ class UserAccountCase extends AcceptanceCase
             "PUT",
             "/api/users/" . $modelResponse->user->hash,
             [
-                'email' => 'other@lonelygiraffes.com'
+                'email' => 'anotherHello@lonelygiraffes.com'
             ]
         );
 
         $this->assertResponseStatus(422);
 
         // make sure everything is intact
-        $check = $this->repository->get($model->hash);
+        $check = $this->repository->get($modelResponse->user->hash);
         $this->assertEquals($check->email, 'hello@lonelygiraffes.com');
-        $otherCheck = $this->repository->get($otherUser->hash);
-        $this->assertEquals($otherCheck->email, 'other@lonelygiraffes.com');
+        $otherCheck = $this->repository->get($anotherModelResponse->user->hash);
+        $this->assertEquals($otherCheck->email, 'anotherHello@lonelygiraffes.com');
     }
 
     /**
