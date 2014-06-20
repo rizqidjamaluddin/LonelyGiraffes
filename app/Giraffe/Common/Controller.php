@@ -16,8 +16,12 @@ class Controller extends \Controller
 
     public function __construct()
     {
+        $api = App::make('Dingo\Api\Dispatcher');
         $this->auth = App::make('Dingo\Api\Auth\Shield');
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
-        $this->gatekeeper->iAm($this->auth->user());
+
+         parent::__construct($api, $this->auth);
+
     }
+
 } 
