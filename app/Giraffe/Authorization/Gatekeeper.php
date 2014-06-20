@@ -1,11 +1,12 @@
 <?php  namespace Giraffe\Authorization;
 
-use Giraffe\Authorization\GatekeeperProvider;
+use Auth;
+use Dingo\Api\Auth\Shield;
 use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Logging\Log;
 use Illuminate\Support\Str;
-use stdClass;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * Class Gatekeeper
@@ -64,6 +65,10 @@ class Gatekeeper
      * @var \Giraffe\Logging\Log
      */
     private $log;
+    /**
+     * @var Auth
+     */
+    private $auth;
 
     public function __construct(GatekeeperProvider $gatekeeperProvider, Log $log)
     {
@@ -181,6 +186,7 @@ class Gatekeeper
      */
     protected function resolveRequestPermission()
     {
+        $this->iAmImplicit();
         if ($this->authenticated) {
             if (array_key_exists('model', $this->query)) {
                 return $this->provider->checkIfUserMay(
@@ -220,6 +226,7 @@ class Gatekeeper
 
     public function fetchMyModel()
     {
+        $this->iAmImplicit();
         return $this->authenticatedUser;
     }
 
@@ -249,6 +256,29 @@ class Gatekeeper
     public function why()
     {
         return $this->provider->getLastActionReport();
+    }
+
+    /**
+     * Implicit version of iAm(), attempts to do Auth::user when it's not given directly.
+     * Currently needs to force Dingo/Api to invoke authentication.
+     *
+     * In an exported package, this mechanism would probably be delegated to a configuration file.
+     *
+     * @see https://github.com/dingo/api/issues/92
+     */
+    protected function iAmImplicit()
+    {
+        // silence exceptions. If shield authentication fails, simply do nothing.
+        // for instance, a test may fail because Route::current() is null (since it's being called from a test).
+        try {
+            /** @var Shield $shield */
+            $shield = \App::make('Dingo\Api\Auth\Shield');
+            $shield->authenticate(\Request::instance(), \Route::current());
+        } catch (\Exception $e) {}
+
+        if (!$this->authenticatedUser) {
+            $this->iAm(Auth::user());
+        }
     }
 
 }
