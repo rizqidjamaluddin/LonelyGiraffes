@@ -96,8 +96,15 @@ class NotificationTest extends AcceptanceCase
         $user = $this->createMemberAccount();
         $this->be($user);
         $generated = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $user);
+        $generated2 = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $user);
 
         $r = $this->call('DELETE', 'api/notifications/' . $generated->hash);
+        $this->assertResponseOk();
+        $notifications = $this->service->getUserNotifications($user);
+        $this->assertEquals(count($notifications), 1);
+
+
+        $r = $this->call('DELETE', '/api/notifications/' . $generated2->hash);
         $this->assertResponseOk();
         $notifications = $this->service->getUserNotifications($user);
         $this->assertEquals(count($notifications), 0);
