@@ -10,22 +10,20 @@ class ShoutTest extends AcceptanceCase
     public function users_can_post_shouts()
     {
         $text = 'This is a shout!';
-        $user = $this->createMemberAccount();
-        $this->be($user);
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $this->asUser($model->user->hash);
 
-        $response = $this->call('POST', 'api/shouts', [
+        $response = $this->toJson($this->call('POST', '/api/shouts', [
                 'body' => $text
-            ]);
+            ]));
 
-        $data = json_decode($response->getContent());
-
-        $this->assertResponseOk();
+        $this->assertResponseStatus(200);
         $validator = new Validator(app_path() . '/schemas/PostSchema.json');
-        $validator->validate($data);
+        $validator->validate($response);
 
         // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
         $shoutChild = new StdClass();
-        $shoutChild->shout = $data->post->postable;
+        $shoutChild->shout = $response->post->postable;
 
         $shoutValidator = new Validator(app_path() . '/schemas/ShoutSchema.json');
         $shoutValidator->validate($shoutChild);
