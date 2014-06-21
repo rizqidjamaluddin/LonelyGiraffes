@@ -51,57 +51,8 @@ abstract class AcceptanceCase extends TestCase
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
     }
 
-
-    protected function createAdministratorAccount()
+    public function toJson($model) 
     {
-        $userRepository = App::make('Giraffe\Users\UserRepository');
-        $admin = $userRepository->create(
-            [
-                'firstname' => 'Admin',
-                'lastname' => 'Member',
-                'gender' => 'M',
-                'email' => 'admin@lonelygiraffes.net',
-                'password' => 'password',
-                'role' => 'admin',
-                'hash' => Str::random(32),
-            ]
-        );
-        return $admin;
-    }
-
-    protected function createMemberAccount()
-    {
-        $userRepository = App::make('Giraffe\Users\UserRepository');
-        $member = $userRepository->create(
-            [
-                'firstname' => 'Lonely',
-                'lastname' => 'Giraffe',
-                'gender' => 'M',
-                'email' => 'hello@lonelygiraffes.net',
-                'password' => 'password',
-                'role' => 'member',
-                'hash' => Str::random(32),
-            ]
-        );
-        return $member;
-    }
-
-
-
-    protected function createOtherAccount()
-    {
-        $userRepository = App::make('Giraffe\Users\UserRepository');
-        $member = $userRepository->create(
-            [
-                'firstname' => 'Energetic',
-                'lastname' => 'Penguin',
-                'gender' => 'F',
-                'email' => 'hi@lonelygiraffes.net',
-                'password' => 'password',
-                'role' => 'member',
-                'hash' => Str::random(32),
-            ]
-        );
-        return $member;
+        return json_decode($model->getContent());
     }
 } 

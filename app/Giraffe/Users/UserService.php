@@ -151,4 +151,26 @@ class UserService extends Service
         return (bool)$this->userRepository->setUserNicknameSettingById($user, $useNickname);
     }
 
+    /**
+     * @param int  $user
+     *
+     * @return bool
+     */
+    public function promoteToAdmin($user)
+    {
+        $model = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI("promote", $model)->please();
+        $this->setUserRole($model, 'admin');
+        return true;
+    }
+
+    public function setUserRole($user_hash, $role) 
+    {
+        $this->userRepository->update($user_hash, [
+                'role' => $role
+            ]
+        );
+        
+        return true;
+    }
 } 
