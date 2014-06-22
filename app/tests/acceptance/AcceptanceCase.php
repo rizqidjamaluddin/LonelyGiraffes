@@ -1,6 +1,7 @@
 <?php
 
 use Giraffe\Authorization\Gatekeeper;
+use Illuminate\Http\Response;
 
 abstract class AcceptanceCase extends TestCase
 {
@@ -57,7 +58,7 @@ abstract class AcceptanceCase extends TestCase
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
     }
 
-    public function toJson($model) 
+    public function toJson(Response $model)
     {
         return json_decode($model->getContent());
     }

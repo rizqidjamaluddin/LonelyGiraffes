@@ -45,10 +45,10 @@ class UserAccountCase extends AcceptanceCase
         $validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
         //$validator->validate($response->user);
 
-        $this->assertEquals('hello@lonelygiraffes.com', $response->user->email);
-        $this->assertEquals('Lonely', $response->user->firstname);
-        $this->assertEquals('Giraffe', $response->user->lastname);
-        $this->assertEquals('M', $response->user->gender);
+        $this->assertEquals('hello@lonelygiraffes.com', $response->users[0]->email);
+        $this->assertEquals('Lonely', $response->users[0]->firstname);
+        $this->assertEquals('Giraffe', $response->users[0]->lastname);
+        $this->assertEquals('M', $response->users[0]->gender);
     }
 
     /**
@@ -76,16 +76,16 @@ class UserAccountCase extends AcceptanceCase
     public function it_can_find_a_user()
     {
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
-        $getModel = $this->toJson($this->call("GET", "/api/users/" . $model->user->hash));
+        $getModel = $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->hash));
         
         //$validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
         //$validator->validate($responseContent);
 
         $this->assertResponseStatus(200);
-        $this->assertEquals('hello@lonelygiraffes.com', $getModel->user->email);
-        $this->assertEquals('Lonely', $getModel->user->firstname);
-        $this->assertEquals('Giraffe', $getModel->user->lastname);
-        $this->assertEquals('M', $getModel->user->gender);
+        $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
+        $this->assertEquals('Lonely', $getModel->users[0]->firstname);
+        $this->assertEquals('Giraffe', $getModel->users[0]->lastname);
+        $this->assertEquals('M', $getModel->users[0]->gender);
     }
 
     /**
@@ -95,9 +95,9 @@ class UserAccountCase extends AcceptanceCase
     public function a_user_can_update_information()
     {
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
-        $this->asUser($model->user->hash);
+        $this->asUser($model->users[0]->hash);
 
-        $response = $this->toJson($this->call("PUT", "/api/users/" . $model->user->hash,
+        $response = $this->toJson($this->call("PUT", "/api/users/" . $model->users[0]->hash,
             [
                 'email'     => 'hello@notlonelygiraffes.com',
                 'password'  => 'anotherpassword',
@@ -108,10 +108,10 @@ class UserAccountCase extends AcceptanceCase
         ));
 
         $this->assertResponseStatus(200);
-        $this->assertEquals('hello@notlonelygiraffes.com', $response->user->email);
-        $this->assertEquals('Lonesome', $response->user->firstname);
-        $this->assertEquals('Penguin', $response->user->lastname);
-        $this->assertEquals('F', $response->user->gender);
+        $this->assertEquals('hello@notlonelygiraffes.com', $response->users[0]->email);
+        $this->assertEquals('Lonesome', $response->users[0]->firstname);
+        $this->assertEquals('Penguin', $response->users[0]->lastname);
+        $this->assertEquals('F', $response->users[0]->gender);
     }
 
     /**
@@ -121,7 +121,7 @@ class UserAccountCase extends AcceptanceCase
     public function a_user_cannot_change_their_user_hash_or_id()
     {
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $modelHash = $model->user->hash;
+        $modelHash = $model->users[0]->hash;
         $this->asUser($modelHash);
 
         $response = $this->call(
@@ -137,9 +137,9 @@ class UserAccountCase extends AcceptanceCase
         // the system should simply ignore the new data, but not fail
         $this->assertResponseStatus(200);
 
-        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->user->hash));
-        $this->assertEquals($modelHash, $getModel->user->hash);
-        $this->assertEquals('F', $getModel->user->gender);
+        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
+        $this->assertEquals($modelHash, $getModel->users[0]->hash);
+        $this->assertEquals('F', $getModel->users[0]->gender);
     }
 
     /**
@@ -149,11 +149,11 @@ class UserAccountCase extends AcceptanceCase
     public function a_user_updating_information_must_conform_to_validation()
     {
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
-        $this->asUser($model->user->hash);
+        $this->asUser($model->users[0]->hash);
 
         $response = $this->call(
             "PUT",
-            "/api/users/" . $model->user->hash,
+            "/api/users/" . $model->users[0]->hash,
             [
                 'email' => 'lonelygiraffes.com'
             ]
@@ -161,7 +161,7 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(422);
 
-        $getModel = $this->repository->get($model->user->hash);
+        $getModel = $this->repository->get($model->users[0]->hash);
         $this->assertEquals($getModel->email, 'hello@lonelygiraffes.com');
     }
 
@@ -172,13 +172,13 @@ class UserAccountCase extends AcceptanceCase
     public function a_user_cannot_change_another_users_data()
     {
         $model = $this->toJson($this->call('POST', '/api/users', $this->genericUser));
-        $this->asUser($model->user->hash);
+        $this->asUser($model->users[0]->hash);
 
         $anotherModel = $this->toJson($this->call('POST', '/api/users', $this->anotherGenericUser));
 
         $response = $this->call(
             "PUT",
-            "/api/users/" . $anotherModel->user->hash,
+            "/api/users/" . $anotherModel->users[0]->hash,
             [
                 'email' => 'evil@example.com'
             ]
@@ -186,8 +186,8 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(403);
 
-        $getModel = $this->toJson($this->call('GET', '/api/users/' . $anotherModel->user->hash));
-        $this->assertEquals($getModel->user->email, 'anotherHello@lonelygiraffes.com');
+        $getModel = $this->toJson($this->call('GET', '/api/users/' . $anotherModel->users[0]->hash));
+        $this->assertEquals($getModel->users[0]->email, 'anotherHello@lonelygiraffes.com');
     }
 
     /**
@@ -198,20 +198,20 @@ class UserAccountCase extends AcceptanceCase
     {
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->service->setUserRole($anotherModel->user->hash, 'admin');
-        $this->asUser($anotherModel->user->hash);
+        $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
+        $this->asUser($anotherModel->users[0]->hash);
 
         $response = $this->call(
             'PUT',
-            '/api/users/' . $model->user->hash,
+            '/api/users/' . $model->users[0]->hash,
             [
                 'email' => 'new@lonelygiraffes.com'
             ]
         );
 
         $this->assertResponseStatus(200);
-        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->user->hash));
-        $this->assertEquals($getModel->user->email, 'new@lonelygiraffes.com');
+        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
+        $this->assertEquals($getModel->users[0]->email, 'new@lonelygiraffes.com');
     }
 
     /**
@@ -221,13 +221,13 @@ class UserAccountCase extends AcceptanceCase
     public function a_user_cannot_change_their_email_to_another_users_email()
     {
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->user->hash);
+        $this->asUser($model->users[0]->hash);
 
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
 
         $response = $this->call(
             "PUT",
-            "/api/users/" . $model->user->hash,
+            "/api/users/" . $model->users[0]->hash,
             [
                 'email' => 'anotherHello@lonelygiraffes.com'
             ]
@@ -236,10 +236,10 @@ class UserAccountCase extends AcceptanceCase
         $this->assertResponseStatus(422);
 
         // make sure everything is intact
-        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->user->hash));
-        $this->assertEquals($getModel->user->email, 'hello@lonelygiraffes.com');
-        $getAnotherModel = $this->toJson($this->call('GET', '/api/users/' . $anotherModel->user->hash));
-        $this->assertEquals($getAnotherModel->user->email, 'anotherHello@lonelygiraffes.com');
+        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
+        $this->assertEquals($getModel->users[0]->email, 'hello@lonelygiraffes.com');
+        $getAnotherModel = $this->toJson($this->call('GET', '/api/users/' . $anotherModel->users[0]->hash));
+        $this->assertEquals($getAnotherModel->users[0]->email, 'anotherHello@lonelygiraffes.com');
     }
 
     /**
@@ -250,14 +250,14 @@ class UserAccountCase extends AcceptanceCase
     {
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->service->setUserRole($anotherModel->user->hash, 'admin');
-        $this->asUser($anotherModel->user->hash);
+        $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
+        $this->asUser($anotherModel->users[0]->hash);
 
-        $response = $this->call("DELETE", "/api/users/" . $model->user->hash);
+        $response = $this->call("DELETE", "/api/users/" . $model->users[0]->hash);
         $this->assertResponseStatus(200);
 
         $this->setExpectedException('Giraffe\Common\NotFoundModelException');
-        $this->repository->get($model->user->hash);
+        $this->repository->get($model->users[0]->hash);
     }
 
     /**
@@ -267,12 +267,12 @@ class UserAccountCase extends AcceptanceCase
     public function a_user_cannot_delete_their_own_account()
     {
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->user->hash);
+        $this->asUser($model->users[0]->hash);
 
-        $response = $this->call("DELETE", "/api/users/" . $model->user->hash);
+        $response = $this->call("DELETE", "/api/users/" . $model->users[0]->hash);
         $this->assertResponseStatus(403);
 
-        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->user->hash));
-        $this->assertEquals($getModel->user->hash, $model->user->hash);
+        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
+        $this->assertEquals($getModel->users[0]->hash, $model->users[0]->hash);
     }
 }
