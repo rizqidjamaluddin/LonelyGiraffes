@@ -17,7 +17,22 @@ class ShoutController extends BaseController
     public function store()
     {
         $body = Input::get('body');
-        $post = $this->shoutService->create(Auth::user(), $body);
+        $post = $this->shoutService->createShout(Auth::user(), $body);
         return $post;
+    }
+
+    public function show($hash)
+    {
+        return $this->shoutService->getShout($hash);
+    }
+
+    public function destroy($hash)
+    {
+        return $this->shoutService->deleteShout($hash);
+    }
+
+    public function showAll($hash)
+    {
+        return $this->shoutService->getShouts($hash);
     }
 } 

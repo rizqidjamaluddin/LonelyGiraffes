@@ -42,7 +42,7 @@ class ShoutService extends Service
         $this->postGeneratorHelper = $postGeneratorHelper;
     }
 
-    public function create($user, $body)
+    public function createShout($user, $body)
     {
         $parsed = $this->parser->parseComment($body);
         $hash = Str::random(32);
@@ -58,5 +58,21 @@ class ShoutService extends Service
 
         $post = $this->postGeneratorHelper->generate($shout);
         return $post;
+    }
+
+    public function getShout($hash)
+    {
+        return $this->shoutRepository->getByHash($hash);
+    }
+
+    public function getShouts($userHash)
+    {
+        $user = $this->userRepository->getByHash($userHash);
+        return $this->shoutRepository->getAllShoutsForUser($user->id);
+    }
+
+    public function deleteShout($hash)
+    {
+        return $this->shoutRepository->deleteByHash($hash);
     }
 } 

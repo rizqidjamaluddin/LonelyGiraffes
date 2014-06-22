@@ -2,6 +2,7 @@
 
 use Eloquent;
 use Giraffe\Feed\Postable;
+use Giraffe\Common\HasEloquentHash;
 
 /**
  * @property $id int
@@ -11,6 +12,9 @@ use Giraffe\Feed\Postable;
  * @property $html_body string
  */
 class ShoutModel extends Eloquent implements Postable {
+    
+    use HasEloquentHash;
+
     protected $table = 'shouts';
 	protected $fillable = ['hash', 'user_id', 'body', 'html_body'];
 
