@@ -1,5 +1,6 @@
 <?php
 use Giraffe\Common\Controller;
+use Giraffe\Notifications\NotificationContainerTransformer;
 use Giraffe\Notifications\NotificationService;
 
 class NotificationController extends Controller
@@ -18,7 +19,10 @@ class NotificationController extends Controller
     public function index()
     {
         $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me());
-        return $notifications;
+        if (count($notifications) == 0) {
+            $this->withCollection([], new NotificationContainerTransformer(), 'notifications');
+        }
+        return $this->withCollection($notifications, new NotificationContainerTransformer(), 'notifications');
     }
 
     public function destroy($notification)
