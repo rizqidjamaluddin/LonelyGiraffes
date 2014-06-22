@@ -100,13 +100,13 @@ class NotificationTest extends AcceptanceCase
         $this->call('DELETE', '/api/notifications/' . $generated->hash);
         $this->assertResponseStatus(200);
 
-        $notifications = $this->service->getUserNotifications($model->user->hash);
-        $this->assertEquals(count($notifications), 1);
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $this->assertEquals(count($notifications->data), 1);
 
         $this->call('DELETE', '/api/notifications/' . $generated2->hash);
         $this->assertResponseStatus(200);
 
-        $notifications = $this->service->getUserNotifications($model->user->hash);
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(count($notifications), 0);
     }
 
@@ -125,12 +125,12 @@ class NotificationTest extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         // double check to ensure notification is dismissed, but not others
-        $notifications = $this->service->getUserNotifications($model->user->hash);
-        $this->assertEquals(count($notifications), 2);
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $this->assertEquals(count($notifications->data), 2);
 
         // these are NotificationContainerModel objects, so the property is ->notification to get the body
-        $this->assertEquals($notifications[0]->notification->message, 'Test Notification 1');
-        $this->assertEquals($notifications[1]->notification->message, 'Test Notification 3');
+        $this->assertEquals($notifications->data[0]->body->message, 'Test Notification 1');
+        $this->assertEquals($notifications->data[1]->body->message, 'Test Notification 3');
 
     }
 
@@ -201,8 +201,11 @@ class NotificationTest extends AcceptanceCase
         $this->call('DELETE', '/api/notifications/' . $container->hash);
         $this->assertResponseStatus(403);
 
-        $notifications = $this->service->getUserNotifications($model->user->hash);
-        $this->assertEquals(1, count($notifications));
-        $this->assertEquals('Test Notification', $notifications[0]->notification->message);
+
+        // switch back to the owning user to test
+        $this->asUser($model->user->hash);
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $this->assertEquals(1, count($notifications->data));
+        $this->assertEquals('Test Notification', $notifications->data[0]->body->message);
     }
 } 
