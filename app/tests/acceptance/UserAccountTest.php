@@ -42,9 +42,6 @@ class UserAccountCase extends AcceptanceCase
         $response = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
         $this->assertResponseStatus(200);
 
-        $validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
-        //$validator->validate($response->user);
-
         $this->assertEquals('hello@lonelygiraffes.com', $response->users[0]->email);
         $this->assertEquals('Lonely', $response->users[0]->firstname);
         $this->assertEquals('Giraffe', $response->users[0]->lastname);
@@ -77,9 +74,6 @@ class UserAccountCase extends AcceptanceCase
     {
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
         $getModel = $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->hash));
-        
-        //$validator = new JsonValidator(app_path() . '/schemas/UserSchema.json');
-        //$validator->validate($responseContent);
 
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);

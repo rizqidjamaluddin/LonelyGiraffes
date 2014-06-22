@@ -18,15 +18,10 @@ class ShoutTest extends AcceptanceCase
             ]));
 
         $this->assertResponseStatus(200);
-        $validator = new Validator(app_path() . '/schemas/PostSchema.json');
-        $validator->validate($response);
 
         // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
         $shoutChild = new StdClass();
         $shoutChild->shout = $response->post->postable;
-
-        $shoutValidator = new Validator(app_path() . '/schemas/ShoutSchema.json');
-        $shoutValidator->validate($shoutChild);
 
 
     }
