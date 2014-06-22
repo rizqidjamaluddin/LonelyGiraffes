@@ -11,7 +11,7 @@ class ShoutTest extends AcceptanceCase
     {
         $text = 'This is a shout!';
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->data->hash);
+        $this->asUser($model->users[0]->hash);
 
         $response = $this->toJson($this->call('POST', '/api/shouts', [
                 'body' => $text
