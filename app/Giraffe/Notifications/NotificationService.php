@@ -35,6 +35,7 @@ class NotificationService extends Service
     public function getUserNotifications($user)
     {
         $this->gatekeeper->mayI('read', 'notification_container')->please();
+        $user = $this->userRepository->getByHash($user);
         $notifications = $this->containerRepository->getForUser($user->id);
         return $notifications;
     }

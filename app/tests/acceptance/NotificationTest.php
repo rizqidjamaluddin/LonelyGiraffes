@@ -96,18 +96,17 @@ class NotificationTest extends AcceptanceCase
         $this->asUser($model->user->hash);
         $generated = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
         $generated2 = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
-        $getModel = $this->userRepository->getByHash($model->user->hash);
 
         $this->call('DELETE', '/api/notifications/' . $generated->hash);
         $this->assertResponseStatus(200);
 
-        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $notifications = $this->service->getUserNotifications($model->user->hash);
         $this->assertEquals(count($notifications), 1);
 
         $this->call('DELETE', '/api/notifications/' . $generated2->hash);
         $this->assertResponseStatus(200);
 
-        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $notifications = $this->service->getUserNotifications($model->user->hash);
         $this->assertEquals(count($notifications), 0);
     }
 
@@ -121,13 +120,12 @@ class NotificationTest extends AcceptanceCase
         $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
         $generated = $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->user->hash);
         $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->user->hash);
-        $getModel = $this->userRepository->getByHash($model->user->hash);
 
         $this->call('DELETE', '/api/notifications/' . $generated->hash);
         $this->assertResponseStatus(200);
 
         // double check to ensure notification is dismissed, but not others
-        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $notifications = $this->service->getUserNotifications($model->user->hash);
         $this->assertEquals(count($notifications), 2);
 
         // these are NotificationContainerModel objects, so the property is ->notification to get the body
@@ -147,13 +145,16 @@ class NotificationTest extends AcceptanceCase
         $m2 = $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->user->hash);
         $m3 = $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->user->hash);
         $internalCheck = $m1->notification;
-        $getModel = $this->userRepository->getByHash($model->user->hash);
+
+         // make sure the notifications were inserted as expected; test would dud if this failed
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $this->assertEquals(count($notifications->data), 3);
 
         $this->call('POST', '/api/notifications/clear');
         $this->assertResponseStatus(200);
 
         // double-check notifications to ensure no undismissed ones are around
-        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(count($notifications), 0);
 
         // internal check to make sure the actual sub-children are gone too
@@ -196,12 +197,11 @@ class NotificationTest extends AcceptanceCase
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
         $this->asUser($anotherModel->user->hash);
         $container = $this->service->queue(SystemNotificationModel::make('Test Notification'), $model->user->hash);
-        $getModel = $this->userRepository->getByHash($model->user->hash);
 
         $this->call('DELETE', '/api/notifications/' . $container->hash);
         $this->assertResponseStatus(403);
 
-        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $notifications = $this->service->getUserNotifications($model->user->hash);
         $this->assertEquals(1, count($notifications));
         $this->assertEquals('Test Notification', $notifications[0]->notification->message);
     }
