@@ -8,9 +8,9 @@ use Giraffe\Users\UserModel;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 /**
- * @property $notification Notification
- * @property $user_id      integer
- * @property $destination  UserModel
+ * @property Notification $notification
+ * @property integer $user_id
+ * @property UserModel $destination
  */
 class NotificationContainerModel extends Eloquent implements TransformableInterface, ProtectedResource
 {
