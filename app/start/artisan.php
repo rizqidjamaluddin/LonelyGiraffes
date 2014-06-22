@@ -12,3 +12,4 @@
 */
 
 Artisan::add(new GenerateGeonames());
+Artisan::add(new GeonameFilter());

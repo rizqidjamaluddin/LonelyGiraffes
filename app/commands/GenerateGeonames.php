@@ -46,7 +46,7 @@ class GenerateGeonames extends Command
         $total_countries = 0;
         $total_states = 0;
 
-        $path = __DIR__ . '/../data/geonames-cities-15000.txt';
+        $path = __DIR__ . '/../../' . $this->argument('source');
         $filesize = File::size($path);
         $this->info('Importing Geonames database.');
         $this->info("Source File: $path ($filesize bytes)");
@@ -125,8 +125,8 @@ class GenerateGeonames extends Command
             $state_statement->execute(
                 [
                     ':country_code' => $country_code,
-                    ':state_code' => $state_code,
-                    ':name' => $row[1]
+                    ':state_code'   => $state_code,
+                    ':name'         => $row[1]
                 ]
             );
             $total_states++;
@@ -218,7 +218,7 @@ class GenerateGeonames extends Command
                         "%-30s",
                         "Processing #$counter"
                     ) .
-                    "{$row[1]}, " . ($composite_state_code ?: '') . ", " . trim($country_list[$row[8]])
+                    "{$row[1]}, " . ($composite_state_code ? : '') . ", " . trim($country_list[$row[8]])
                 );
             }
 
@@ -280,7 +280,14 @@ class GenerateGeonames extends Command
      */
     protected function getArguments()
     {
-        return array();
+        return array(
+            array(
+                'source',
+                InputArgument::OPTIONAL,
+                'Source geonames file',
+                'app/data/geonames-cities-15000.txt'
+            ),
+        );
     }
 
     /**
