@@ -31,16 +31,22 @@ abstract class AcceptanceCase extends TestCase
         'lastname'  => 'Giraffe',
         'gender'    => 'M'
     ];
-
+    
     /**
      * @var array
      */
-    protected $administrator = [
-        'email'     => 'anotherHello@lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Lonely',
-        'lastname'  => 'Giraffe',
-        'gender'    => 'M'
+    protected $event = [
+        'user_id'   => 1,
+        'name'      => 'My Awesome Event',
+        'body'      => 'Details of my awesome event',
+        'html_body' => 'Details of my awesome event',
+        'url'       => 'http://www.google.com',
+        'location'  => 'My Awesome Location',
+        'city'      => 'Athens',
+        'state'     => 'Georgia',
+        'country'   => 'US',
+        'cell'      => '',
+        'timestamp' => '0000-00-00 00:00:00'
     ];
 
 

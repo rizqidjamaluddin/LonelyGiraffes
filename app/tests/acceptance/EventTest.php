@@ -28,35 +28,20 @@ class EventCase extends AcceptanceCase
      */
     public function it_can_create_a_new_event()
     {
-        $response = $this->call('POST', 'api/events/', 
-            [
-                'user_id'   => 1,
-                'name'      => 'My Awesome Event',
-                'body'      => 'Details of my awesome event',
-                'html_body' => 'Details of my awesome event',
-                'url'       => 'http://www.google.com',
-                'location'  => 'My Awesome Location',
-                'city'      => 'Athens',
-                'state'     => 'Georgia',
-                'country'   => 'US',
-                'cell'      => '',
-                'timestamp' => '0000-00-00 00:00:00'
-            ]
-        );
-        $responseContent = json_decode($response->getContent());
+        $model = $this->toJson($this->call('POST', '/api/events/', $this->event));
         $this->assertResponseStatus(200);
 
-        $this->assertEquals(1, $responseContent->event->user_id);
-        $this->assertEquals('My Awesome Event', $responseContent->event->name);
-        $this->assertEquals('Details of my awesome event', $responseContent->event->body);
-        $this->assertEquals('Details of my awesome event', $responseContent->event->html_body);
-        $this->assertEquals('http://www.google.com', $responseContent->event->url);
-        $this->assertEquals('My Awesome Location', $responseContent->event->location);
-        $this->assertEquals('Athens', $responseContent->event->city);
-        $this->assertEquals('Georgia', $responseContent->event->state);
-        $this->assertEquals('US', $responseContent->event->country);
-        $this->assertEquals('', $responseContent->event->cell);
-        $this->assertEquals('0000-00-00 00:00:00', $responseContent->event->timestamp);
+        $this->assertEquals(1, $model->event->user_id);
+        $this->assertEquals('My Awesome Event', $model->event->name);
+        $this->assertEquals('Details of my awesome event', $model->event->body);
+        $this->assertEquals('Details of my awesome event', $model->event->html_body);
+        $this->assertEquals('http://www.google.com', $model->event->url);
+        $this->assertEquals('My Awesome Location', $model->event->location);
+        $this->assertEquals('Athens', $model->event->city);
+        $this->assertEquals('Georgia', $model->event->state);
+        $this->assertEquals('US', $model->event->country);
+        $this->assertEquals('', $model->event->cell);
+        $this->assertEquals('0000-00-00 00:00:00', $model->event->timestamp);
     }
 
     /**
@@ -66,36 +51,21 @@ class EventCase extends AcceptanceCase
      public function it_can_find_an_event_by_hash()
      {
         $service = App::make('Giraffe\Events\EventService');
-        $model = $service->createEvent(
-            [
-                'user_id'   => 1,
-                'name'      => 'My Awesome Event',
-                'body'      => 'Details of my awesome event',
-                'html_body' => 'Details of my awesome event',
-                'url'       => 'http://www.google.com',
-                'location'  => 'My Awesome Location',
-                'city'      => 'Athens',
-                'state'     => 'Georgia',
-                'country'   => 'US',
-                'cell'      => '',
-                'timestamp' => '0000-00-00 00:00:00'
-            ]
-        );
-        $response = $this->call('GET', 'api/events/' . $model->hash);
-        $responseContent = json_decode($response->getContent());
+        $model = $this->toJson($this->call('POST', '/api/events/', $this->event));
+        $getEvent = $this->toJson($this->call('GET', '/api/events/' . $model->event->hash));
         $this->assertResponseStatus(200);
 
-        $this->assertEquals(1, $responseContent->event->user_id);
-        $this->assertEquals('My Awesome Event', $responseContent->event->name);
-        $this->assertEquals('Details of my awesome event', $responseContent->event->body);
-        $this->assertEquals('Details of my awesome event', $responseContent->event->html_body);
-        $this->assertEquals('http://www.google.com', $responseContent->event->url);
-        $this->assertEquals('My Awesome Location', $responseContent->event->location);
-        $this->assertEquals('Athens', $responseContent->event->city);
-        $this->assertEquals('Georgia', $responseContent->event->state);
-        $this->assertEquals('US', $responseContent->event->country);
-        $this->assertEquals('', $responseContent->event->cell);
-        $this->assertEquals('0000-00-00 00:00:00', $responseContent->event->timestamp);
+        $this->assertEquals(1, $model->event->user_id);
+        $this->assertEquals('My Awesome Event', $model->event->name);
+        $this->assertEquals('Details of my awesome event', $model->event->body);
+        $this->assertEquals('Details of my awesome event', $model->event->html_body);
+        $this->assertEquals('http://www.google.com', $model->event->url);
+        $this->assertEquals('My Awesome Location', $model->event->location);
+        $this->assertEquals('Athens', $model->event->city);
+        $this->assertEquals('Georgia', $model->event->state);
+        $this->assertEquals('US', $model->event->country);
+        $this->assertEquals('', $model->event->cell);
+        $this->assertEquals('0000-00-00 00:00:00', $model->event->timestamp);
      }
 
     /**
@@ -104,23 +74,9 @@ class EventCase extends AcceptanceCase
      */
      public function it_can_delete_an_event_by_hash()
      {
-        $service = App::make('Giraffe\Events\EventService');
-        $model = $service->createEvent(
-            [
-                'user_id'   => 1,
-                'name'      => 'My Awesome Event',
-                'body'      => 'Details of my awesome event',
-                'html_body' => 'Details of my awesome event',
-                'url'       => 'http://www.google.com',
-                'location'  => 'My Awesome Location',
-                'city'      => 'Athens',
-                'state'     => 'Georgia',
-                'country'   => 'US',
-                'cell'      => '',
-                'timestamp' => '0000-00-00 00:00:00'
-            ]
-        );
-        $response = $this->call('DELETE', 'api/events/' . $model->hash);
+        $model = $this->toJson($this->call('POST', '/api/events/', $this->event));
+
+        $response = $this->call('DELETE', '/api/events/' . $model->event->hash);
         $this->assertResponseStatus(200);
      }
 
@@ -130,23 +86,8 @@ class EventCase extends AcceptanceCase
      */
      public function it_can_update_an_event_by_hash()
      {
-        $service = App::make('Giraffe\Events\EventService');
-        $model = $service->createEvent(
-            [
-                'user_id'   => 1,
-                'name'      => 'My Awesome Event',
-                'body'      => 'Details of my awesome event',
-                'html_body' => 'Details of my awesome event',
-                'url'       => 'http://www.google.com',
-                'location'  => 'My Awesome Location',
-                'city'      => 'Athens',
-                'state'     => 'Georgia',
-                'country'   => 'US',
-                'cell'      => '',
-                'timestamp' => '0000-00-00 00:00:00'
-            ]
-        );
-        $response = $this->call('PUT', 'api/events/' . $model->hash, 
+        $model = $this->toJson($this->call('POST', '/api/events/', $this->event));
+        $editEvent = $this->toJson($this->call('PUT', '/api/events/' . $model->event->hash, 
             [
                 'name'      => 'My Edited Awesome Event',
                 'body'      => 'Details of my edited awesome event',
@@ -154,14 +95,13 @@ class EventCase extends AcceptanceCase
                 'url'       => 'http://www.notgoogle.com',
                 'location'  => 'My Edited Awesome Location'
             ]
-        );
-        $responseContent = json_decode($response->getContent());
+        ));
         $this->assertResponseStatus(200);
 
-        $this->assertEquals('My Edited Awesome Event', $responseContent->event->name);
-        $this->assertEquals('Details of my edited awesome event', $responseContent->event->body);
-        $this->assertEquals('Details of my edited awesome event', $responseContent->event->html_body);
-        $this->assertEquals('http://www.notgoogle.com', $responseContent->event->url);
-        $this->assertEquals('My Edited Awesome Location', $responseContent->event->location);
+        $this->assertEquals('My Edited Awesome Event', $editEvent->event->name);
+        $this->assertEquals('Details of my edited awesome event', $editEvent->event->body);
+        $this->assertEquals('Details of my edited awesome event', $editEvent->event->html_body);
+        $this->assertEquals('http://www.notgoogle.com', $editEvent->event->url);
+        $this->assertEquals('My Edited Awesome Location', $editEvent->event->location);
      }
 }
