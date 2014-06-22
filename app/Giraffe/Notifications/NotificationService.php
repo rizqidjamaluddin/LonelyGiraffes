@@ -28,7 +28,9 @@ class NotificationService extends Service
     }
 
     /**
-     * @param      $user
+     * Get notification containers for a particular user.
+     *
+     * @param UserModel|string $user
      *
      * @return \Giraffe\Notifications\NotificationContainerModel[]
      */
@@ -41,6 +43,9 @@ class NotificationService extends Service
     }
 
     /**
+     * Send a notification to a user. Build a class that extends Notification, with all the context relevant to that
+     * notification, and queue it using this method.
+     *
      * @param Notification $notification
      * @param              $destinationUser
      *
@@ -61,7 +66,13 @@ class NotificationService extends Service
         return $container;
     }
 
-    public function dismiss($container, UserModel $me)
+    /**
+     * Dismiss a notification container as well as the embedded notification.
+     *
+     * @param NotificationContainerModel|string $container
+     * @return bool
+     */
+    public function dismiss($container)
     {
         /** @var NotificationContainerModel $container */
         $container = $this->containerRepository->getByHash($container);
@@ -74,11 +85,18 @@ class NotificationService extends Service
         return true;
     }
 
-    public function dismissAll(UserModel $me)
+    /**
+     * Dismiss all notifications for a user.
+     *
+     * @param $user
+     * @return bool
+     */
+    public function dismissAll($user)
     {
         $this->gatekeeper->mayI('dismiss_all', 'notification_container')->please();
 
-        $notifications = $this->containerRepository->getForUser($me->id);
+        $user = $this->userRepository->getByHash($user);
+        $notifications = $this->containerRepository->getForUser($user->id);
         foreach ($notifications as $notificationContainer) {
             $notificationContainer->notification->delete();
             $notificationContainer->delete();
