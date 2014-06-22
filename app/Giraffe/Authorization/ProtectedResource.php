@@ -12,7 +12,9 @@ interface ProtectedResource
     public function getResourceName();
 
     /**
-     * @return UserModel
+     * @param \Giraffe\Users\UserModel $user
+     *
+     * @return bool
      */
-    public function getOwner();
+    public function checkOwnership(UserModel $user);
 } 

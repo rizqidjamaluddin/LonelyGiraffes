@@ -28,4 +28,8 @@ class UserController extends Controller
     {
         return $this->userService->updateUser($id, Input::all());
     }
+
+    public function promote($id) {
+    	return $this->userService->promoteAdmin($id);
+    }
 } 

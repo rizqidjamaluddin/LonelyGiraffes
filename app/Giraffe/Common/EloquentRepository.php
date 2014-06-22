@@ -1,9 +1,11 @@
 <?php  namespace Giraffe\Common;
 
+use App;
 use Eloquent;
 use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Repository;
+use Giraffe\Logging\Log;
 use Illuminate\Database\QueryException;
 use stdClass;
 
@@ -22,9 +24,15 @@ abstract class EloquentRepository implements Repository
      */
     protected $model;
 
+    /**
+     * @var Log
+     */
+    protected $log;
+
     public function __construct(Eloquent $model)
     {
         $this->model = $model;
+        $this->log = App::make('Giraffe\Logging\Log');
     }
 
     /**
@@ -59,6 +67,10 @@ abstract class EloquentRepository implements Repository
 
     public function getByHash($hash)
     {
+        if ($hash instanceof Eloquent) {
+            return $hash;
+        }
+
         if (!$this->model->hasHash) {
             throw new NotFoundModelException();
         }
@@ -74,6 +86,7 @@ abstract class EloquentRepository implements Repository
         try {
             $model = $this->model->create($attributes);
         } catch (QueryException $e) {
+            $this->log->info(__CLASS__, "Invalid Creation", $e->getMessage());
             // error code for "duplicate in unique column"
             if ($e->errorInfo[0] == 23000) {
                 throw new DuplicateCreationException;
@@ -93,8 +106,9 @@ abstract class EloquentRepository implements Repository
         try {
             $model->save();
         } catch (QueryException $e) {
+            $this->log->info(__CLASS__, "Invalid Update", $e->getMessage());
             if ($e->errorInfo[0] == 23000) {
-                throw new InvalidUpdateException("Another user is using this email.");
+                throw new DuplicateUpdateException;
             }
             throw new InvalidUpdateException;
         }

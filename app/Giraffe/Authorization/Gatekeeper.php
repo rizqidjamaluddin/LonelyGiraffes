@@ -1,10 +1,12 @@
 <?php  namespace Giraffe\Authorization;
 
-use Giraffe\Authorization\GatekeeperProvider;
+use Auth;
+use Dingo\Api\Auth\Shield;
+use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Logging\Log;
 use Illuminate\Support\Str;
-use stdClass;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * Class Gatekeeper
@@ -36,7 +38,7 @@ use stdClass;
 class Gatekeeper
 {
 
-    const REQUEST_NOT_SET    = 0;
+    const REQUEST_NOT_SET = 0;
     const REQUEST_PERMISSION = 1;
 
 
@@ -63,6 +65,10 @@ class Gatekeeper
      * @var \Giraffe\Logging\Log
      */
     private $log;
+    /**
+     * @var Auth
+     */
+    private $auth;
 
     public function __construct(GatekeeperProvider $gatekeeperProvider, Log $log)
     {
@@ -73,6 +79,11 @@ class Gatekeeper
 
     public function iAm($userIdentifier)
     {
+
+        if (is_null($userIdentifier)) {
+            return $this;
+        }
+
         if ($this->enable) {
             try {
                 $this->authenticatedUser = $this->provider->getUserModel($userIdentifier);
@@ -101,9 +112,16 @@ class Gatekeeper
         $this->query['verb'] = $verb;
         if (is_string($noun)) {
             $this->query['noun'] = Str::singular($noun);
-        } else if($noun instanceof ProtectedResource) {
-            $this->query['noun'] = $noun->getResourceName();
-            $this->query['model'] = $noun;
+        } else {
+            if ($noun instanceof ProtectedResource) {
+                $this->query['noun'] = $noun->getResourceName();
+                $this->query['model'] = $noun;
+            } else {
+                throw new ConfigurationException(
+                    'Gatekeeper cannot check for permissions on ' . get_class($noun) .
+                    '. Please implement ProtectedResource on this model.'
+                );
+            }
         }
         return $this;
     }
@@ -125,7 +143,11 @@ class Gatekeeper
     public function please()
     {
         if (!$this->canI()) {
-            throw new GatekeeperException;
+            if ($this->authenticated) {
+                throw new GatekeeperException;
+            } else {
+                throw new GatekeeperUnauthorizedException;
+            }
         }
         return true;
     }
@@ -142,7 +164,8 @@ class Gatekeeper
         $result = null;
 
         switch ($this->request) {
-            case self::REQUEST_PERMISSION : {
+            case self::REQUEST_PERMISSION :
+            {
                 if (!$this->enable) {
                     $result = true;
                     break;
@@ -163,15 +186,29 @@ class Gatekeeper
      */
     protected function resolveRequestPermission()
     {
+        $this->iAmImplicit();
         if ($this->authenticated) {
             if (array_key_exists('model', $this->query)) {
-                return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun'], $this->query['model']);
+                return $this->provider->checkIfUserMay(
+                    $this->authenticatedUser,
+                    $this->query['verb'],
+                    $this->query['noun'],
+                    $this->query['model']
+                );
             } else {
-                return $this->provider->checkIfUserMay($this->authenticatedUser, $this->query['verb'], $this->query['noun']);
+                return $this->provider->checkIfUserMay(
+                    $this->authenticatedUser,
+                    $this->query['verb'],
+                    $this->query['noun']
+                );
             }
         } else {
             if (array_key_exists('model', $this->query)) {
-                return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun'], $this->query['model']);
+                return $this->provider->checkIfGuestMay(
+                    $this->query['verb'],
+                    $this->query['noun'],
+                    $this->query['model']
+                );
             } else {
                 return $this->provider->checkIfGuestMay($this->query['verb'], $this->query['noun']);
             }
@@ -189,7 +226,13 @@ class Gatekeeper
 
     public function fetchMyModel()
     {
+        $this->iAmImplicit();
         return $this->authenticatedUser;
+    }
+
+    public function me()
+    {
+        return $this->fetchMyModel();
     }
 
     /**
@@ -208,6 +251,34 @@ class Gatekeeper
     public function isDisarmed()
     {
         return !$this->enable;
+    }
+
+    public function why()
+    {
+        return $this->provider->getLastActionReport();
+    }
+
+    /**
+     * Implicit version of iAm(), attempts to do Auth::user when it's not given directly.
+     * Currently needs to force Dingo/Api to invoke authentication.
+     *
+     * In an exported package, this mechanism would probably be delegated to a configuration file.
+     *
+     * @see https://github.com/dingo/api/issues/92
+     */
+    protected function iAmImplicit()
+    {
+        // silence exceptions. If shield authentication fails, simply do nothing.
+        // for instance, a test may fail because Route::current() is null (since it's being called from a test).
+        try {
+            /** @var Shield $shield */
+            $shield = \App::make('Dingo\Api\Auth\Shield');
+            $shield->authenticate(\Request::instance(), \Route::current());
+        } catch (\Exception $e) {}
+
+        if (!$this->authenticatedUser) {
+            $this->iAm(Auth::user());
+        }
     }
 
 }

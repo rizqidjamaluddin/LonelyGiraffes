@@ -46,6 +46,7 @@ Route::api(
              Route::delete('users/{resource}', ['uses' => 'UserController@destroy']);
              Route::get('users/{resource}', ['uses' => 'UserController@show']);
              Route::put('users/{resource}', ['uses' => 'UserController@update']);
+             Route::post('users/{resource}/promote', ['uses' => 'UserController@promote']);
 
              Route::get('users/{resource}/buddies', ['uses' => 'BuddyController@show']);
              Route::post('users/{resource}/buddies', ['uses' => 'BuddyController@create']);
@@ -60,6 +61,7 @@ Route::api(
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);
+             Route::post('notifications/clear', ['uses' => 'NotificationController@dismissAll']);
 
          }
 );

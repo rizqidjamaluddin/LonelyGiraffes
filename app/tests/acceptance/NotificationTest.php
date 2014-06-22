@@ -1,0 +1,208 @@
+<?php
+
+use Giraffe\Notifications\NotificationContainerRepository;
+use Giraffe\Notifications\NotificationService;
+use Giraffe\Notifications\SystemNotificationModel;
+use Giraffe\Users\UserRepository;
+
+class NotificationTest extends AcceptanceCase
+{
+
+    /**
+     * @var NotificationContainerRepository
+     */
+    protected $containerRepository;
+
+    /**
+     * @var NotificationService
+     */
+    protected $service;
+    protected $userRepository;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->userRepository = App::make('Giraffe\Users\UserRepository');
+        $this->service = App::make('Giraffe\Notifications\NotificationService');
+        $this->containerRepository = App::make('Giraffe\Notifications\NotificationContainerRepository');
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_can_get_their_notifications_when_empty()
+    {
+
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $this->asUser($model->user->hash);
+
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+
+        $this->assertResponseStatus(200);
+        $this->assertEquals(count($notifications), 0);
+    }
+
+    /**
+     * @test
+     */
+    public function a_guest_has_no_notifications()
+    {
+        $this->call('GET', 'api/notifications');
+        $this->assertResponseStatus(401);
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_can_see_a_notification()
+    {
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $this->asUser($model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test notification'), $model->user->hash);
+
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+
+        $this->assertResponseStatus(200);
+        $this->assertEquals(count($notifications->data), 1);
+        $this->assertEquals($notifications->data[0]->type, 'SystemNotificationModel');
+        $this->assertEquals($notifications->data[0]->body->message, 'Test notification');
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_can_see_a_collection_of_notifications()
+    {
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $this->asUser($model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->user->hash);
+
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(count($notifications->data), 3);
+        $this->assertEquals($notifications->data[0]->body->message, 'Test Notification 1');
+        $this->assertEquals($notifications->data[1]->body->message, 'Test Notification 2');
+        $this->assertEquals($notifications->data[2]->body->message, 'Test Notification 3');
+    }
+
+    /**
+     * @test
+     */
+    public function a_client_can_dismiss_a_notification()
+    {
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $this->asUser($model->user->hash);
+        $generated = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
+        $generated2 = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
+        $getModel = $this->userRepository->getByHash($model->user->hash);
+
+        $this->call('DELETE', '/api/notifications/' . $generated->hash);
+        $this->assertResponseStatus(200);
+
+        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $this->assertEquals(count($notifications), 1);
+
+        $this->call('DELETE', '/api/notifications/' . $generated2->hash);
+        $this->assertResponseStatus(200);
+
+        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $this->assertEquals(count($notifications), 0);
+    }
+
+    /**
+     * @test
+     */
+    public function a_client_can_dismiss_one_out_of_many_notifications()
+    {
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $this->asUser($model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
+        $generated = $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->user->hash);
+        $getModel = $this->userRepository->getByHash($model->user->hash);
+
+        $this->call('DELETE', '/api/notifications/' . $generated->hash);
+        $this->assertResponseStatus(200);
+
+        // double check to ensure notification is dismissed, but not others
+        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $this->assertEquals(count($notifications), 2);
+
+        // these are NotificationContainerModel objects, so the property is ->notification to get the body
+        $this->assertEquals($notifications[0]->notification->message, 'Test Notification 1');
+        $this->assertEquals($notifications[1]->notification->message, 'Test Notification 3');
+
+    }
+
+    /**
+     * @test
+     */
+    public function a_client_can_dismiss_all_notifications()
+    {
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $this->asUser($model->user->hash);
+        $m1 = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
+        $m2 = $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->user->hash);
+        $m3 = $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->user->hash);
+        $internalCheck = $m1->notification;
+        $getModel = $this->userRepository->getByHash($model->user->hash);
+
+        $this->call('POST', '/api/notifications/clear');
+        $this->assertResponseStatus(200);
+
+        // double-check notifications to ensure no undismissed ones are around
+        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $this->assertEquals(count($notifications), 0);
+
+        // internal check to make sure the actual sub-children are gone too
+        $check = SystemNotificationModel::find($internalCheck->id);
+        $this->assertEquals($check, null);
+
+    }
+
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_see_the_notifications_for_another_user()
+    {
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
+        $this->asUser($anotherModel->user->hash);
+
+        $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->user->hash);
+        $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->user->hash);
+
+        $this->service->queue(SystemNotificationModel::make('My Notification'), $anotherModel->user->hash);
+
+        $request = $this->call('GET', '/api/notifications');
+        $this->assertResponseStatus(200);
+        $notifications = json_decode($request->getContent())->data;
+        $this->assertEquals(1, count($notifications));
+        $this->assertEquals('My Notification', $notifications[0]->body->message);
+
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_dismiss_other_user_notifications()
+    {
+
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
+        $this->asUser($anotherModel->user->hash);
+        $container = $this->service->queue(SystemNotificationModel::make('Test Notification'), $model->user->hash);
+        $getModel = $this->userRepository->getByHash($model->user->hash);
+
+        $this->call('DELETE', '/api/notifications/' . $container->hash);
+        $this->assertResponseStatus(403);
+
+        $notifications = $this->service->getUserNotifications((object)$getModel);
+        $this->assertEquals(1, count($notifications));
+        $this->assertEquals('Test Notification', $notifications[0]->notification->message);
+    }
+} 

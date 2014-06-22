@@ -27,7 +27,7 @@ module.exports = function(grunt) {
 				command: [
 					"sudo composer self-update",
 					"sudo composer update -vvv",
-					"sudo composer install",
+					"sudo composer install"
 				].join("&&"),
 				options: {
 					stdout: true
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 			 * @type {Object}
 			 */
 			intern: {
-				command: "node_modules/.bin/intern-client config=public/tests/intern",
+				command: "node node_modules/intern/client.js config=public/tests/intern",
 				options: {
 					stdout: true
 				}
