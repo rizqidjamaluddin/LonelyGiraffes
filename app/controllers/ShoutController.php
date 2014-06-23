@@ -1,8 +1,10 @@
 <?php
 
+use Giraffe\Common\Controller;
 use Giraffe\Shouts\ShoutService;
+use Giraffe\Shouts\ShoutTransformer;
 
-class ShoutController extends BaseController
+class ShoutController extends Controller
 {
     /**
      * @var Giraffe\Shouts\ShoutService
@@ -12,18 +14,20 @@ class ShoutController extends BaseController
     public function __construct(ShoutService $shoutService)
     {
         $this->shoutService = $shoutService;
+        parent::__construct();
     }
 
     public function store()
     {
         $body = Input::get('body');
-        $post = $this->shoutService->createShout(Auth::user(), $body);
-        return $post;
+        $shout = $this->shoutService->createShout(Auth::user(), $body);
+        return $this->withItem($shout, new ShoutTransformer(), 'shouts');
     }
 
     public function show($hash)
     {
-        return $this->shoutService->getShout($hash);
+        $shout = $this->shoutService->getShout($hash);
+        return $this->withItem($shout, new ShoutTransformer(), 'shouts');
     }
 
     public function destroy($hash)
@@ -31,8 +35,9 @@ class ShoutController extends BaseController
         return $this->shoutService->deleteShout($hash);
     }
 
-    public function showAll($hash)
+    public function showAll($userHash)
     {
-        return $this->shoutService->getShouts($hash);
+        $shouts = $this->shoutService->getShouts($userHash);
+        return $this->withCollection($shouts, new ShoutTransformer(), 'shouts');
     }
 } 

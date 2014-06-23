@@ -34,11 +34,11 @@ class ShoutTest extends AcceptanceCase
             ]
         ));
 
-        $shoutChild = $shout->post->postable;
+        $shoutChild = $shout->shouts[0];
         
         $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(200);
-        $this->assertEquals('This is a shout!', $getShout->shout->body);
+        $this->assertEquals('This is a shout!', $getShout->shouts[0]->body);
     }
 
     /**
@@ -141,7 +141,7 @@ class ShoutTest extends AcceptanceCase
                 'body' => 'This is a shout!'
             ]
         ));
-        $shoutChild = $shout->post->postable;
+        $shoutChild = $shout->shouts[0];
 
         $this->asUser($anotherModel->users[0]->hash);
         $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->hash));
@@ -162,7 +162,7 @@ class ShoutTest extends AcceptanceCase
             ]
         ));
 
-        $shoutChild = $shout->post->postable;
+        $shoutChild = $shout->shouts[0];
         
         $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(200);

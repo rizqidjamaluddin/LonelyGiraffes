@@ -25,6 +25,11 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource {
         return $this->user_id;
     }
 
+    public function author()
+    {
+        return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
+    }
+
     public function getId()
     {
         return $this->id;

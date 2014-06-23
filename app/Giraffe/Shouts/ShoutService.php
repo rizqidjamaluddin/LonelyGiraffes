@@ -57,7 +57,7 @@ class ShoutService extends Service
         );
 
         $post = $this->postGeneratorHelper->generate($shout);
-        return $post;
+        return $shout;
     }
 
     public function getShout($hash)
