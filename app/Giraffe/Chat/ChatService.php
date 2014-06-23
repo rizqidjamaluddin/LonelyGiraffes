@@ -1,4 +1,9 @@
 <?php  namespace Giraffe\Chat;
+
+use Giraffe\Common\Service;
+use Giraffe\Chat\ChatRepository;
+use Giraffe\Users\UserRepository;
+
 class ChatService 
 {
 
