@@ -1,7 +1,9 @@
 <?php
 
 use Giraffe\Common\Controller;
+use Giraffe\Users\UserModel;
 use Giraffe\Users\UserService;
+use Dingo\Api\Http\ResponseBuilder;
 
 class UserController extends Controller
 {
@@ -10,26 +12,37 @@ class UserController extends Controller
      */
 	public function __construct(UserService $userService) {
 		$this->userService = $userService;
+        parent::__construct();
 	}
 
 	public function store() {
-		return $this->userService->createUser(Input::all());
+		$model = $this->userService->createUser(Input::all());
+        return $this->returnUserModel($model);
 	}
 
 	public function destroy($id) {
-		return $this->userService->deleteUser($id);
+		$model = $this->userService->deleteUser($id);
+        return $this->returnUserModel($model);
 	}
 
 	public function show($id) {
-		return $this->userService->getUser($id);
+		$model = $this->userService->getUser($id);
+        return $this->returnUserModel($model);
 	}
 
     public function update($id)
     {
-        return $this->userService->updateUser($id, Input::all());
+        $model = $this->userService->updateUser($id, Input::all());
+        return $this->returnUserModel($model);
     }
 
-    public function promote($id) {
-    	return $this->userService->promoteAdmin($id);
+    /**
+     * @param UserModel $model
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function returnUserModel(UserModel $model)
+    {
+        return $this->withItem($model, $model->getTransformer(), 'users');
     }
 } 

@@ -5,7 +5,8 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.2.*",
-        "dingo/api": "0.*",
+        "league/fractal": "dev-master",
+        "dingo/api": "dev-master",
         "mews/purifier": "dev-master",
         "erusev/parsedown": "dev-master",
         "respect/validation": "dev-master"
