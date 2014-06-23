@@ -32,7 +32,7 @@ abstract class AcceptanceCase extends TestCase
         'lastname'  => 'Giraffe',
         'gender'    => 'M'
     ];
-    
+
     /**
      * @var array
      */
@@ -61,5 +61,114 @@ abstract class AcceptanceCase extends TestCase
     public function toJson(Response $model)
     {
         return json_decode($model->getContent());
+    }
+
+    /*
+     * -- Fake user data --
+     */
+
+    protected $mario = [
+        'email'     => 'mario@test.lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Mario',
+        'lastname'  => 'N',
+        'gender'    => 'M'
+    ];
+
+    protected $luigi = [
+        'email'     => 'luigi@test.lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Luigi',
+        'lastname'  => 'N',
+        'gender'    => 'M'
+    ];
+
+    protected $yoshi = [
+        'email'     => 'yoshi@test.lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Yoshi',
+        'lastname'  => 'N',
+        'gender'    => 'X'
+    ];
+
+    protected $peach = [
+        'email'     => 'peach@test.lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Peach',
+        'lastname'  => 'N',
+        'gender'    => 'F'
+    ];
+
+    protected $bowser = [
+        'email'     => 'bowser@evil.test.lonelygiraffes.com',
+        'password'  => 'password',
+        'firstname' => 'Bowser',
+        'lastname'  => 'N',
+        'gender'    => 'M'
+    ];
+
+    public function registerAndLoginAsMario()
+    {
+        $mario = $this->registerMario();
+        $this->asUser($mario->hash);
+        return $mario;
+    }
+
+    public function registerMario()
+    {
+        $mario = $this->toJson($this->call("POST", "/api/users/", $this->mario))->users[0];
+        return $mario;
+    }
+
+    public function registerAndLoginAsLuigi()
+    {
+        $luigi = $this->registerLuigi();
+        $this->asUser($luigi->hash);
+        return $luigi;
+    }
+
+    public function registerLuigi()
+    {
+        $luigi = $this->toJson($this->call("POST", "/api/users/", $this->luigi))->users[0];
+        return $luigi;
+    }
+
+    public function registerAndLoginAsYoshi()
+    {
+        $yoshi = $this->registerYoshi();
+        $this->asUser($yoshi->hash);
+        return $yoshi;
+    }
+
+    public function registerYoshi()
+    {
+        $yoshi = $this->toJson($this->call("POST", "/api/users/", $this->yoshi))->users[0];
+        return $yoshi;
+    }
+
+    public function registerAndLoginAsPeach()
+    {
+        $peach = $this->registerPeach();
+        $this->asUser($peach->hash);
+        return $peach;
+    }
+
+    public function registerPeach()
+    {
+        $peach = $this->toJson($this->call("POST", "/api/users/", $this->peach))->users[0];
+        return $peach;
+    }
+
+    public function registerAndLoginAsBowser()
+    {
+        $bowser = $this->registerBowser();
+        $this->asUser($bowser->hash);
+        return $bowser;
+    }
+
+    public function registerBowser()
+    {
+        $bowser = $this->toJson($this->call("POST", "/api/users/", $this->bowser))->users[0];
+        return $bowser;
     }
 } 
