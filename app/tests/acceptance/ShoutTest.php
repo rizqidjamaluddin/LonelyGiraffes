@@ -34,11 +34,9 @@ class ShoutTest extends AcceptanceCase
             ]
         ));
 
-        // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
-        $shoutChild = new StdClass();
-        $shoutChild->shout = $shout->post->postable;
+        $shoutChild = $shout->post->postable;
         
-        $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->shout->hash));
+        $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(200);
         $this->assertEquals('This is a shout!', $getShout->shout->body);
     }
@@ -143,12 +141,10 @@ class ShoutTest extends AcceptanceCase
                 'body' => 'This is a shout!'
             ]
         ));
-        // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
-        $shoutChild = new StdClass();
-        $shoutChild->shout = $shout->post->postable;
+        $shoutChild = $shout->post->postable;
 
         $this->asUser($anotherModel->users[0]->hash);
-        $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->shout->hash));
+        $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(403);
     }
 
@@ -166,14 +162,12 @@ class ShoutTest extends AcceptanceCase
             ]
         ));
 
-        // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
-        $shoutChild = new StdClass();
-        $shoutChild->shout = $shout->post->postable;
+        $shoutChild = $shout->post->postable;
         
-        $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->shout->hash));
+        $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(200);
 
-        $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->shout->hash));
+        $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(404);
     }
 } 
