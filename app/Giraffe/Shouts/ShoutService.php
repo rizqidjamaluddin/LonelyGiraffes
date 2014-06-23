@@ -73,6 +73,8 @@ class ShoutService extends Service
 
     public function deleteShout($hash)
     {
+        $shout = $this->getShout($hash);
+        $this->gatekeeper->mayI('delete', $shout)->please();
         return $this->shoutRepository->deleteByHash($hash);
     }
 } 

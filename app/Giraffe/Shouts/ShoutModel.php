@@ -3,6 +3,8 @@
 use Eloquent;
 use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Users\UserModel;
+use Giraffe\Authorization\ProtectedResource;
 
 /**
  * @property $id int
@@ -11,7 +13,7 @@ use Giraffe\Common\HasEloquentHash;
  * @property $body string
  * @property $html_body string
  */
-class ShoutModel extends Eloquent implements Postable {
+class ShoutModel extends Eloquent implements Postable, ProtectedResource {
     
     use HasEloquentHash;
 
@@ -26,5 +28,19 @@ class ShoutModel extends Eloquent implements Postable {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * ---------------- Protected Resource ----------------
+     */
+
+    public function getResourceName()
+    {
+        return "shout";
+    }
+
+    public function checkOwnership(UserModel $userModel)
+    {
+        return $this->id == $userModel->id;
     }
 }

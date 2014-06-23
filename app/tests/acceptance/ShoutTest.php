@@ -18,10 +18,6 @@ class ShoutTest extends AcceptanceCase
         ));
 
         $this->assertResponseStatus(200);
-
-        // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
-        $shoutChild = new StdClass();
-        $shoutChild->shout = $shout->post->postable;
     }
 
     /**
@@ -137,6 +133,29 @@ class ShoutTest extends AcceptanceCase
      * @test
      * @depends users_can_post_shouts
      */
+    public function a_user_cannot_delete_another_users_shout()
+    {
+        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
+        $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
+        $this->asUser($model->users[0]->hash);
+
+        $shout = $this->toJson($this->call('POST', '/api/shouts', [
+                'body' => 'This is a shout!'
+            ]
+        ));
+        // we need to do this because the ShoutSchema expects syntax like {"shout": {}}
+        $shoutChild = new StdClass();
+        $shoutChild->shout = $shout->post->postable;
+
+        $this->asUser($anotherModel->users[0]->hash);
+        $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->shout->hash));
+        $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @test
+     * @depends users_can_post_shouts
+     */
     public function users_can_delete_specific_shouts()
     {
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
@@ -151,7 +170,7 @@ class ShoutTest extends AcceptanceCase
         $shoutChild = new StdClass();
         $shoutChild->shout = $shout->post->postable;
         
-        $getShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->shout->hash));
+        $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->shout->hash));
         $this->assertResponseStatus(200);
 
         $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->shout->hash));
