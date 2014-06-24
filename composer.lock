@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5c6bf87d27d0280fb9dd44d099185ba4",
+    "hash": "8916d6290bb3a3a834780d22207283d5",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -89,16 +89,16 @@
         },
         {
             "name": "dingo/api",
-            "version": "v0.5.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "65b453c119b0a0a34348b1a54ae4c0e0c72d28aa"
+                "reference": "a6984c4b27953cea13a078354c2d1c77c0788a7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/65b453c119b0a0a34348b1a54ae4c0e0c72d28aa",
-                "reference": "65b453c119b0a0a34348b1a54ae4c0e0c72d28aa",
+                "url": "https://api.github.com/repos/dingo/api/zipball/a6984c4b27953cea13a078354c2d1c77c0788a7c",
+                "reference": "a6984c4b27953cea13a078354c2d1c77c0788a7c",
                 "shasum": ""
             },
             "require": {
@@ -107,7 +107,6 @@
                 "php": ">=5.4.0"
             },
             "require-dev": {
-                "dingo/oauth2-server-laravel": "0.2.*",
                 "illuminate/auth": "~4.1",
                 "illuminate/database": "~4.1",
                 "illuminate/events": "~4.1",
@@ -115,16 +114,16 @@
                 "illuminate/routing": "~4.1",
                 "lucadegasperi/oauth2-server-laravel": "1.0.*",
                 "mockery/mockery": "~0.9",
-                "phpunit/phpunit": "~4.0"
+                "phpunit/phpunit": "~4.0",
+                "squizlabs/php_codesniffer": "1.*"
             },
             "suggest": {
-                "dingo/oauth2-server-laravel": "Use the Dingo OAuth 2.0 server to protect your API.",
                 "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.3-dev"
+                    "dev-master": "0.6-dev"
                 }
             },
             "autoload": {
@@ -151,7 +150,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-05-28 10:30:29"
+            "time": "2014-06-19 10:17:11"
         },
         {
             "name": "erusev/parsedown",
@@ -501,16 +500,16 @@
         },
         {
             "name": "league/fractal",
-            "version": "0.8.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/fractal.git",
-                "reference": "9985eee7efc42ef472da07856cdd3fd29c57642c"
+                "reference": "d4aa9309af2cae8fed65735e35ff66bd722b5501"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/9985eee7efc42ef472da07856cdd3fd29c57642c",
-                "reference": "9985eee7efc42ef472da07856cdd3fd29c57642c",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/d4aa9309af2cae8fed65735e35ff66bd722b5501",
+                "reference": "d4aa9309af2cae8fed65735e35ff66bd722b5501",
                 "shasum": ""
             },
             "require": {
@@ -556,7 +555,7 @@
                 "league",
                 "rest"
             ],
-            "time": "2014-06-14 11:11:41"
+            "time": "2014-06-20 22:40:01"
         },
         {
             "name": "mews/purifier",
@@ -2980,6 +2979,8 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
+        "league/fractal": 20,
+        "dingo/api": 20,
         "mews/purifier": 20,
         "erusev/parsedown": 20,
         "respect/validation": 20,

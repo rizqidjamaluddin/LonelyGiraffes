@@ -102,7 +102,7 @@ class UserService extends Service
     /**
      * @param $id
      *
-     * @return mixed|void
+     * @return UserModel
      */
     public function getUser($id)
     {

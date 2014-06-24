@@ -11,4 +11,9 @@ class ShoutRepository extends EloquentRepository
         parent::__construct($shoutModel);
     }
 
+    public function getAllShoutsForUser($userId)
+    {
+    	return $this->model->where('user_id', '=', $userId)->get();
+    }
+
 } 

@@ -25,9 +25,11 @@ class GiraffePermissionsLookup
                     'post' => ['delete'],
                     'user' => ['update', 'deactivate'],
                     'notification_container' => ['read', 'delete', 'dismiss_all'],
+                    'shout' => ['post', 'delete']
                 ],
                 'global' => [
-                    'post' => ['comment']
+                    'post' => ['comment'],
+                    'shout' => ['comment']
                 ]
             ]
         );
