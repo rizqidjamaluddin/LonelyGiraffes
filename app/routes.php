@@ -65,5 +65,7 @@ Route::api(
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);
              Route::post('notifications/clear', ['uses' => 'NotificationController@dismissAll']);
 
+             Route::get('locations', ['uses' => 'LocationController@search']);
+
          }
 );
