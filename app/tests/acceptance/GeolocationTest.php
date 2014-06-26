@@ -17,7 +17,9 @@ class GeolocationTest extends AcceptanceCase
      */
     public function aggregate()
     {
+        $this->it_cannot_return_results_for_one_letter_hints();
         $this->it_can_look_up_a_city_name_and_state_name();
+        $this->it_can_distinguish_cities_of_the_same_name_in_one_country();
     }
 
 
@@ -38,6 +40,13 @@ class GeolocationTest extends AcceptanceCase
         $this->assertEquals($expectNSW->country, 'Australia');
     }
 
+    protected function it_cannot_return_results_for_one_letter_hints()
+    {
+        $response = $this->toJson($this->call('GET', '/api/locations?hint=a'));
+        $this->assertResponseStatus(400);
+        $this->assertFalse(isset($response->locations));
+    }
+
     protected function it_can_look_up_a_country_name()
     {
 
@@ -45,6 +54,17 @@ class GeolocationTest extends AcceptanceCase
 
     protected function it_can_distinguish_cities_of_the_same_name_in_one_country()
     {
+        // Apparently there are 2 places in Mexico called Gustavo A. Madero
+        $results = $this->toJson($this->call('GET', '/api/locations?hint=gustavo'))->locations;
+
+        $expectTamaulipasCity = $results[0];
+        $this->assertEquals($expectTamaulipasCity->city, 'Gustavo A. Madero');
+        $this->assertEquals($expectTamaulipasCity->state, 'Tamaulipas');
+        $this->assertEquals($expectTamaulipasCity->country, 'Mexico');
+        $expectFederalCity = $results[1];
+        $this->assertEquals($expectFederalCity->city, 'Gustavo A. Madero');
+        $this->assertEquals($expectFederalCity->state, 'The Federal District');
+        $this->assertEquals($expectFederalCity->country, 'Mexico');
 
     }
 

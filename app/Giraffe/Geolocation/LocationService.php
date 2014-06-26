@@ -40,6 +40,10 @@ class LocationService extends Service
 
     public function search($hint, $limit = 5)
     {
+        if (strlen($hint) < 2) {
+            throw new LocationQueryTooShortException;
+        }
+
         $results = [];
 
         // loop through providers and grab all results
