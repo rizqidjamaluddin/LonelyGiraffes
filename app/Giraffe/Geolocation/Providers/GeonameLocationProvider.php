@@ -23,11 +23,8 @@ class GeonameLocationProvider implements LocationProvider
         // Look up by state - return highest pop city.
         $stateCities = $this->searchViaState($hint);
 
-        // look up by country - return highest pop city
-        $countryCities = $this->searchViaCountry($hint);
-
         // merge and transform
-        $cities = $cities->merge($stateCities, $countryCities);
+        $cities = $cities->merge($stateCities);
         $results = $this->transformToLocations($cities);
 
         return $results;
@@ -41,27 +38,6 @@ class GeonameLocationProvider implements LocationProvider
     protected function getCompositeIdentifier($city)
     {
         return $city->country_code . '.' . $city->state_code . '.' . $city->city;
-    }
-
-    /**
-     * @param $hint
-     * @return Collection
-     */
-    protected function searchViaCountry($hint)
-    {
-        /** @var Array $countries */
-        $countries = DB::table('lookup_countries')->where('name', 'LIKE', '%' . $hint . '%')->get();
-        $countryCities = new Collection();
-        foreach ($countries as $country) {
-            $countryCities->push(
-                DB::table(self::CITY_TABLE)
-                  ->where('country_code', $country->code)
-                  ->orderBy('population', 'desc')
-                  ->first()
-            );
-        }
-        $countryCities->sortBy('population', SORT_NUMERIC, true);
-        return $countryCities;
     }
 
     /**

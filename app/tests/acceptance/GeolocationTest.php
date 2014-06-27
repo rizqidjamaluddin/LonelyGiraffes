@@ -20,12 +20,14 @@ class GeolocationTest extends AcceptanceCase
         $this->it_cannot_return_results_for_one_letter_hints();
         $this->it_can_look_up_a_city_name_and_state_name();
         $this->it_can_distinguish_cities_of_the_same_name_in_one_country();
+        $this->it_can_find_nearby_cities();
     }
 
 
     protected function it_can_look_up_a_city_name_and_state_name()
     {
         $results = $this->toJson($this->call('GET', '/api/locations?hint=new'))->locations;
+        $this->assertResponseOk();
 
         // NY should be the biggest population city with "new" in the name
         $expectNewYork = $results[0];
@@ -47,15 +49,11 @@ class GeolocationTest extends AcceptanceCase
         $this->assertFalse(isset($response->locations));
     }
 
-    protected function it_can_look_up_a_country_name()
-    {
-
-    }
-
     protected function it_can_distinguish_cities_of_the_same_name_in_one_country()
     {
         // Apparently there are 2 places in Mexico called Gustavo A. Madero
         $results = $this->toJson($this->call('GET', '/api/locations?hint=gustavo'))->locations;
+        $this->assertResponseOk();
 
         $expectTamaulipasCity = $results[0];
         $this->assertEquals($expectTamaulipasCity->city, 'Gustavo A. Madero');
@@ -65,10 +63,9 @@ class GeolocationTest extends AcceptanceCase
         $this->assertEquals($expectFederalCity->city, 'Gustavo A. Madero');
         $this->assertEquals($expectFederalCity->state, 'The Federal District');
         $this->assertEquals($expectFederalCity->country, 'Mexico');
-
     }
 
-    protected function it_can_distinguish_cities_of_the_same_name_in_different_countries()
+    protected function it_can_find_nearby_cities()
     {
 
     }
