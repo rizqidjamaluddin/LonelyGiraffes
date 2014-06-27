@@ -11,9 +11,21 @@
 |
 */
 
-Route::get('/', function(){
-        return View::make('hello');
-    });
+Route::get(
+     '/',
+         function () {
+             return View::make('hello');
+         }
+);
+
+Route::filter(
+     'access-control',
+         function () {
+             header('Access-Control-Allow-Origin: *');
+         }
+);
+
+Route::when('*', 'access-control');
 
 Route::api(
      ['version' => 'v1'],
@@ -58,7 +70,10 @@ Route::api(
              Route::post('conversations', ['uses' => 'ConversationController@create']);
              Route::delete('conversations/{conversation}', ['uses' => 'ConversationController@leave']);
              Route::post('conversations/{conversation}/messages', ['uses' => 'ConversationController@createMessage']);
-             Route::delete('conversations/{conversation}/messages/{message}', ['uses' => 'ConversationController@deleteMessage']);
+             Route::delete(
+                  'conversations/{conversation}/messages/{message}',
+                  ['uses' => 'ConversationController@deleteMessage']
+             );
              Route::post('conversations/{conversation}/invite', ['uses' => 'ConversationController@invite']);
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);

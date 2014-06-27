@@ -4,8 +4,96 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "8916d6290bb3a3a834780d22207283d5",
+    "hash": "713c56ed95d4411e9a7ebbb267382c2c",
     "packages": [
+        {
+            "name": "asm89/stack-cors",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/asm89/stack-cors.git",
+                "reference": "60bb51fbd65e0209de46f373cd5392308bb92045"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/asm89/stack-cors/zipball/60bb51fbd65e0209de46f373cd5392308bb92045",
+                "reference": "60bb51fbd65e0209de46f373cd5392308bb92045",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "symfony/http-foundation": "~2.1",
+                "symfony/http-kernel": "~2.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Asm89\\Stack": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander",
+                    "email": "iam.asm89@gmail.com",
+                    "homepage": "http://asm89.github.io/"
+                }
+            ],
+            "description": "Cross-origin resource sharing library and stack middleware",
+            "homepage": "https://github.com/asm89/stack-cors",
+            "keywords": [
+                "cors",
+                "stack"
+            ],
+            "time": "2014-01-22 10:40:42"
+        },
+        {
+            "name": "barryvdh/laravel-cors",
+            "version": "v0.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barryvdh/laravel-cors.git",
+                "reference": "ce25db72385c135b74cdaf061dbd444957c363d2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barryvdh/laravel-cors/zipball/ce25db72385c135b74cdaf061dbd444957c363d2",
+                "reference": "ce25db72385c135b74cdaf061dbd444957c363d2",
+                "shasum": ""
+            },
+            "require": {
+                "asm89/stack-cors": "0.2.x",
+                "illuminate/support": "~4.1",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Barryvdh\\Cors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Barry vd. Heuvel",
+                    "email": "barryvdh@gmail.com"
+                }
+            ],
+            "description": "Adds CORS (Cross-Origin Resource Sharing) headers support in your Laravel application",
+            "keywords": [
+                "api",
+                "cors",
+                "crossdomain",
+                "laravel"
+            ],
+            "time": "2014-05-30 18:49:44"
+        },
         {
             "name": "classpreloader/classpreloader",
             "version": "1.0.2",
@@ -93,12 +181,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "a6984c4b27953cea13a078354c2d1c77c0788a7c"
+                "reference": "43574ffdd1f0546a6c26fdd05fe3309696d06400"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/a6984c4b27953cea13a078354c2d1c77c0788a7c",
-                "reference": "a6984c4b27953cea13a078354c2d1c77c0788a7c",
+                "url": "https://api.github.com/repos/dingo/api/zipball/43574ffdd1f0546a6c26fdd05fe3309696d06400",
+                "reference": "43574ffdd1f0546a6c26fdd05fe3309696d06400",
                 "shasum": ""
             },
             "require": {
@@ -150,7 +238,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-06-19 10:17:11"
+            "time": "2014-06-24 11:14:03"
         },
         {
             "name": "erusev/parsedown",
@@ -383,16 +471,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v4.2.4",
+            "version": "v4.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "ee370ac91ee0a51303765c870e139b1ecd1e222c"
+                "reference": "30088567a133fadf14b708dcc4001d6c639b8c59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/ee370ac91ee0a51303765c870e139b1ecd1e222c",
-                "reference": "ee370ac91ee0a51303765c870e139b1ecd1e222c",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/30088567a133fadf14b708dcc4001d6c639b8c59",
+                "reference": "30088567a133fadf14b708dcc4001d6c639b8c59",
                 "shasum": ""
             },
             "require": {
@@ -496,7 +584,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2014-06-18 05:07:22"
+            "time": "2014-06-26 17:33:59"
         },
         {
             "name": "league/fractal",
@@ -504,12 +592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/fractal.git",
-                "reference": "d4aa9309af2cae8fed65735e35ff66bd722b5501"
+                "reference": "4d814938278ae1379ceaba4c75cb3d6c6f9df597"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/d4aa9309af2cae8fed65735e35ff66bd722b5501",
-                "reference": "d4aa9309af2cae8fed65735e35ff66bd722b5501",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/4d814938278ae1379ceaba4c75cb3d6c6f9df597",
+                "reference": "4d814938278ae1379ceaba4c75cb3d6c6f9df597",
                 "shasum": ""
             },
             "require": {
@@ -555,7 +643,7 @@
                 "league",
                 "rest"
             ],
-            "time": "2014-06-20 22:40:01"
+            "time": "2014-06-24 09:26:45"
         },
         {
             "name": "mews/purifier",
@@ -2096,7 +2184,7 @@
             ],
             "authors": [
                 {
-                    "name": "Jonathan H. Wage",
+                    "name": "Jonathan Wage",
                     "email": "jonwage@gmail.com",
                     "homepage": "http://www.jwage.com/",
                     "role": "Creator"
@@ -2117,7 +2205,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "http://jmsyst.com",
+                    "homepage": "https://github.com/schmittjoh",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -2931,12 +3019,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JeffreyWay/Laravel-4-Generators.git",
-                "reference": "3d631c483849005005620a117624c39ad611a5d4"
+                "reference": "53d2f84e6d75856c2ab72d49aeee9731de1a0af3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JeffreyWay/Laravel-4-Generators/zipball/3d631c483849005005620a117624c39ad611a5d4",
-                "reference": "3d631c483849005005620a117624c39ad611a5d4",
+                "url": "https://api.github.com/repos/JeffreyWay/Laravel-4-Generators/zipball/53d2f84e6d75856c2ab72d49aeee9731de1a0af3",
+                "reference": "53d2f84e6d75856c2ab72d49aeee9731de1a0af3",
                 "shasum": ""
             },
             "require": {
@@ -2971,7 +3059,7 @@
                 }
             ],
             "description": "Rapidly generate resources, migrations, models, and much more.",
-            "time": "2014-06-02 14:21:07"
+            "time": "2014-06-27 00:26:58"
         }
     ],
     "aliases": [
