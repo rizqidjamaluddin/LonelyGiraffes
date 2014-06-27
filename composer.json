@@ -9,7 +9,8 @@
         "dingo/api": "dev-master",
         "mews/purifier": "dev-master",
         "erusev/parsedown": "dev-master",
-        "respect/validation": "dev-master"
+        "respect/validation": "dev-master",
+		"barryvdh/laravel-cors": "0.2.*"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
