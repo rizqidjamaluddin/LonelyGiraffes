@@ -137,6 +137,12 @@ class Log
             $this->registerNewStream($stream);
         }
 
+        // attach Gatekeeper current user if possible
+        $currentUser = \App::make('Giraffe\Authorization\Gatekeeper')->me();
+        if ($currentUser) {
+            $message = '[' . $currentUser->email . ']' . $message;
+        }
+
         $compositeMethod = 'add' . ucfirst($level);
         $this->channels[$stream]->{$compositeMethod}($message, $context);
 
