@@ -72,10 +72,14 @@ class GeonameLocationProvider implements LocationProvider
      */
     protected function searchForCities($hint)
     {
+        // soften the limit for long searches just in case of too many results
+        $limit = strlen($hint > 4) ? 20 : self::CITY_SEARCH_CAP;
+
         $cities = new Collection(
             DB::table(self::CITY_TABLE)
-              ->where('city', 'LIKE', '%' . $hint . '%')
-              ->take(self::CITY_SEARCH_CAP)
+              ->where('city', 'LIKE', $hint . '%')
+              ->take($limit)
+              ->orderBy('population', 'desc')
               ->get()
         );
         return $cities;
