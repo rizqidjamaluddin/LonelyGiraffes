@@ -190,6 +190,7 @@ class UserAccountCase extends AcceptanceCase
      */
     public function an_administrator_can_change_a_users_data()
     {
+        $this->markTestIncomplete();
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
         $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
@@ -242,6 +243,8 @@ class UserAccountCase extends AcceptanceCase
      */
     public function an_administrator_account_can_delete_a_user()
     {
+        $this->markTestIncomplete();
+
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
         $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
