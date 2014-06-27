@@ -35,7 +35,7 @@ class LocationService extends Service
 
     public function getCanonicalProvider()
     {
-
+        return $this->canonicalProvider;
     }
 
     public function search($hint, $limit = 5)

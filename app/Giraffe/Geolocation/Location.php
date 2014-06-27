@@ -23,6 +23,11 @@ class Location
      */
     protected $metadata;
 
+    public function __construct()
+    {
+        $this->canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
+    }
+
     public static function makeFromCity($city, $state, $country, $metadata = [])
     {
         $instance = new static;

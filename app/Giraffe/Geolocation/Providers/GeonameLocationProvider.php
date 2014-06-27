@@ -10,6 +10,7 @@ class GeonameLocationProvider implements LocationProvider
     const CITY_TABLE = 'lookup_geoname_places';
     const STATE_SEARCH_CAP = 10;
     const CITY_SEARCH_CAP = 5;
+    const STATES_TABLE = 'lookup_geoname_states';
 
     /**
      * @param $hint
@@ -50,7 +51,7 @@ class GeonameLocationProvider implements LocationProvider
     protected function searchViaState($hint)
     {
         /** @var Array $states */
-        $states = DB::table('lookup_geoname_states')->where('name', 'LIKE', '%' . $hint . '%')
+        $states = DB::table(self::STATES_TABLE)->where('name', 'LIKE', '%' . $hint . '%')
                     ->take(self::STATE_SEARCH_CAP)
                     ->get();
         $stateCities = new Collection();
