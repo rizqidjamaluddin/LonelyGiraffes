@@ -10,8 +10,14 @@ use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
 
 /**
- * @method bool debug($stream, $context)
- * @method bool info($stream, $context)
+ * @method bool debug($stream, $context, $meta = '')
+ * @method bool info($stream, $context, $meta = '')
+ * @method bool notice($stream, $context, $meta = '')
+ * @method bool warning($stream, $context, $meta = '')
+ * @method bool error($stream, $context, $meta = '')
+ * @method bool critical($stream, $context, $meta = '')
+ * @method bool alert($stream, $context, $meta = '')
+ * @method bool emergency($stream, $context, $meta = '')
  */
 class Log
 {
