@@ -3,13 +3,13 @@
 use DB;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationProvider;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 
 class GeonameLocationProvider implements LocationProvider
 {
     const CITY_TABLE = 'lookup_geoname_places';
     const STATE_SEARCH_CAP = 10;
+    const CITY_SEARCH_CAP = 5;
 
     /**
      * @param $hint
@@ -96,7 +96,12 @@ class GeonameLocationProvider implements LocationProvider
      */
     protected function searchForCities($hint)
     {
-        $cities = new Collection(DB::table(self::CITY_TABLE)->where('city', 'LIKE', '%' . $hint . '%')->get());
+        $cities = new Collection(
+            DB::table(self::CITY_TABLE)
+              ->where('city', 'LIKE', '%' . $hint . '%')
+              ->take(self::CITY_SEARCH_CAP)
+              ->get()
+        );
         return $cities;
     }
 
