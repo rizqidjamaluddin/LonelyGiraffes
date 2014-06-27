@@ -55,11 +55,11 @@ class GeolocationTest extends AcceptanceCase
         $results = $this->toJson($this->call('GET', '/api/locations?hint=gustavo'))->locations;
         $this->assertResponseOk();
 
-        $expectTamaulipasCity = $results[0];
+        $expectTamaulipasCity = $results[1];
         $this->assertEquals($expectTamaulipasCity->city, 'Gustavo A. Madero');
         $this->assertEquals($expectTamaulipasCity->state, 'Tamaulipas');
         $this->assertEquals($expectTamaulipasCity->country, 'Mexico');
-        $expectFederalCity = $results[1];
+        $expectFederalCity = $results[0];
         $this->assertEquals($expectFederalCity->city, 'Gustavo A. Madero');
         $this->assertEquals($expectFederalCity->state, 'The Federal District');
         $this->assertEquals($expectFederalCity->country, 'Mexico');

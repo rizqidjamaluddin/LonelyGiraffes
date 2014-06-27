@@ -62,7 +62,7 @@ class GeonameLocationProvider implements LocationProvider
                   ->first()
             );
         }
-        $stateCities->sortBy('population', SORT_NUMERIC, true);
+
         return $stateCities;
     }
 
@@ -76,8 +76,10 @@ class GeonameLocationProvider implements LocationProvider
             DB::table(self::CITY_TABLE)
               ->where('city', 'LIKE', '%' . $hint . '%')
               ->take(self::CITY_SEARCH_CAP)
+              ->orderBy('population', 'desc')
               ->get()
         );
+
         return $cities;
     }
 
@@ -89,7 +91,7 @@ class GeonameLocationProvider implements LocationProvider
     {
         // registry contains a list of cities in the result set to prevent duplicates
         $registry = [];
-        $results = [];
+        $results = new Collection();
         foreach ($cities as $city) {
 
             // skip duplicates
@@ -100,12 +102,18 @@ class GeonameLocationProvider implements LocationProvider
             // convert and fill it data
             $place = Location::makeFromCity($city->city, $city->state, $city->country);
             $place->provideCoordinates($city->lat, $city->long);
-            $results[] = $place;
+            $place->providePopulation($city->population);
+            $results->push($place);
 
             // register identifier for duplicate checks
             $registry[] = $this->getCompositeIdentifier($city);
         }
-        return $results;
+
+        $results = $results->sortBy(function($location){
+                return $location->population;
+            }, SORT_NUMERIC, true);
+
+        return $results->toArray();
     }
 
 }

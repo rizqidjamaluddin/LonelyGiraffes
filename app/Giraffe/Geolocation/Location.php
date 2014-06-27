@@ -18,6 +18,8 @@ class Location
     protected $lat;
     protected $long;
 
+    public $population;
+
     /**
      * @var Array
      */
@@ -38,6 +40,11 @@ class Location
         $this->lat = $lat;
         $this->long = $long;
         return $this;
+    }
+
+    public function providePopulation($population)
+    {
+        $this->population = $population;
     }
 
     public function getCoordinates()
