@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Geolocation\Providers;
 
 use DB;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationProvider;
 use Illuminate\Support\Collection;
@@ -113,11 +114,34 @@ class GeonameLocationProvider implements LocationProvider
             $registry[] = $this->getCompositeIdentifier($city);
         }
 
-        $results = $results->sortBy(function($location){
+        $results = $results->sortBy(
+            function ($location) {
                 return $location->population;
-            }, SORT_NUMERIC, true);
+            },
+            SORT_NUMERIC,
+            true
+        );
 
         return $results->toArray();
     }
 
+    /**
+     * @param string $city
+     * @param string $state
+     * @param string $country
+     * @return Location
+     */
+    public function findExact($city, $state, $country)
+    {
+        $result = DB::table(self::CITY_TABLE)
+                    ->where('city', $city)
+                    ->where('state', $state)
+                    ->where('country', $country)->first();
+
+        if (!$result) throw new NotFoundModelException;
+
+        $place = Location::makeFromCity($city, $state, $country);
+        $place->provideCoordinates($result->lat, $result->long);
+        return $place;
+    }
 }
