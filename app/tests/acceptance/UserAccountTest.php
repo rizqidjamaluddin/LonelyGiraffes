@@ -190,10 +190,9 @@ class UserAccountCase extends AcceptanceCase
      */
     public function an_administrator_can_change_a_users_data()
     {
-        $this->markTestIncomplete();
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
+        Artisan::call('lgutil:promote', ['email' => $this->anotherGenericUser['email'], '--force' => true]);
         $this->asUser($anotherModel->users[0]->hash);
 
         $response = $this->call(
@@ -243,11 +242,10 @@ class UserAccountCase extends AcceptanceCase
      */
     public function an_administrator_account_can_delete_a_user()
     {
-        $this->markTestIncomplete();
 
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
+        Artisan::call('lgutil:promote', ['email' => $this->anotherGenericUser['email'],  '--force' => true]);
         $this->asUser($anotherModel->users[0]->hash);
 
         $response = $this->call("DELETE", "/api/users/" . $model->users[0]->hash);
