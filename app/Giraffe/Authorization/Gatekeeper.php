@@ -115,6 +115,7 @@ class Gatekeeper
         $this->sudo = true;
         $this->sudoMessage = $message;
         $this->authenticated = true;
+        return $this;
     }
 
     /**
@@ -183,6 +184,7 @@ class Gatekeeper
 
         if ($this->sudo) {
             $this->log->notice($this, "Superuser invoked access", ['query' => $this->query]);
+            $result = true;
         } else {
             switch ($this->request) {
                 case self::REQUEST_PERMISSION :
