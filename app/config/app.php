@@ -115,6 +115,7 @@ return array(
 
         'Dingo\Api\ApiServiceProvider',
         'Mews\Purifier\PurifierServiceProvider',
+//        'Barryvdh\Cors\CorsServiceProvider',
 
         'Giraffe\GiraffeServiceProvider',
 	),

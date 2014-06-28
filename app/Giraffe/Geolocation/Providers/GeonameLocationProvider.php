@@ -51,7 +51,11 @@ class GeonameLocationProvider implements LocationProvider
     protected function searchViaState($hint)
     {
         /** @var Array $states */
+<<<<<<< HEAD
         $states = DB::table(self::STATES_TABLE)->where('name', 'LIKE', '%' . $hint . '%')
+=======
+        $states = DB::table('lookup_geoname_states')->where('name', 'LIKE', $hint . '%')
+>>>>>>> refs/heads/develop
                     ->take(self::STATE_SEARCH_CAP)
                     ->get();
         $stateCities = new Collection();
@@ -63,7 +67,7 @@ class GeonameLocationProvider implements LocationProvider
                   ->first()
             );
         }
-        $stateCities->sortBy('population', SORT_NUMERIC, true);
+
         return $stateCities;
     }
 
@@ -79,10 +83,15 @@ class GeonameLocationProvider implements LocationProvider
         $cities = new Collection(
             DB::table(self::CITY_TABLE)
               ->where('city', 'LIKE', $hint . '%')
+<<<<<<< HEAD
               ->take($limit)
+=======
+              ->take(self::CITY_SEARCH_CAP)
+>>>>>>> refs/heads/develop
               ->orderBy('population', 'desc')
               ->get()
         );
+
         return $cities;
     }
 
@@ -94,7 +103,7 @@ class GeonameLocationProvider implements LocationProvider
     {
         // registry contains a list of cities in the result set to prevent duplicates
         $registry = [];
-        $results = [];
+        $results = new Collection();
         foreach ($cities as $city) {
 
             // skip duplicates
@@ -105,12 +114,18 @@ class GeonameLocationProvider implements LocationProvider
             // convert and fill it data
             $place = Location::makeFromCity($city->city, $city->state, $city->country);
             $place->provideCoordinates($city->lat, $city->long);
-            $results[] = $place;
+            $place->providePopulation($city->population);
+            $results->push($place);
 
             // register identifier for duplicate checks
             $registry[] = $this->getCompositeIdentifier($city);
         }
-        return $results;
+
+        $results = $results->sortBy(function($location){
+                return $location->population;
+            }, SORT_NUMERIC, true);
+
+        return $results->toArray();
     }
 
 }

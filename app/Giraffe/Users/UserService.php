@@ -7,6 +7,7 @@ use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\Service;
 use Hash;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use stdClass;
 use Str;
@@ -61,6 +62,7 @@ class UserService extends Service
      * @param  int   $user_id
      * @param  array $attributes
      *
+     * @throws \Giraffe\Common\DuplicateCreationException
      * @return UserModel|null $userModel
      */
     public function updateUser($user_id, $attributes)
@@ -109,6 +111,11 @@ class UserService extends Service
         return $this->userRepository->get($id);
     }
 
+    public function getUserByEmail($email)
+    {
+        return $this->userRepository->getByEmail($email);
+    }
+
     /**
      * @param int    $user
      * @param string $email
@@ -152,8 +159,7 @@ class UserService extends Service
     }
 
     /**
-     * @param int  $user
-     *
+     * @param string $user
      * @return bool
      */
     public function promoteToAdmin($user)
@@ -161,16 +167,27 @@ class UserService extends Service
         $model = $this->userRepository->getByHash($user);
         $this->gatekeeper->mayI("promote", $model)->please();
         $this->setUserRole($model, 'admin');
+        $this->log->notice($this, "User {$model->email} promoted to administrator.");
         return true;
     }
 
-    public function setUserRole($user_hash, $role) 
+    /**
+     * @param string $user
+     * @return bool
+     */
+    public function demoteToMember($user)
     {
-        $this->userRepository->update($user_hash, [
-                'role' => $role
-            ]
-        );
-        
+        $model = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI("promote", $model)->please();
+        $this->setUserRole($model, 'member');
+        $this->log->notice($this, "User {$model->email} demoted to member.");
         return true;
     }
+
+    protected function setUserRole($user_hash, $role)
+    {
+        $this->userRepository->update($user_hash, ['role' => $role]);
+        return true;
+    }
+
 } 

@@ -13,3 +13,5 @@
 
 Artisan::add(new GenerateGeonames());
 Artisan::add(new GeonameFilter());
+
+Artisan::add(new Promote());
