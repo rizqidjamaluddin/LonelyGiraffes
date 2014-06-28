@@ -156,7 +156,7 @@ abstract class AcceptanceCase extends TestCase
     public function registerPeach()
     {
         $peach = $this->toJson($this->call("POST", "/api/users/", $this->peach))->users[0];
-        Artisan::call('lg:util', ['email' => $this->peach['email'], '--force' => true]);
+        Artisan::call('lgutil:promote', ['email' => $this->peach['email'], '--force' => true]);
         return $peach;
     }
 
