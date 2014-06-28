@@ -63,6 +63,10 @@ class UserRepository extends EloquentRepository
 
     public function getByEmail($email)
     {
+        if ($email instanceof UserModel) {
+            return $email;
+        }
+
         if (!$model = $this->model->where('email', '=', $email)->first()) {
             throw new NotFoundModelException();
         }
