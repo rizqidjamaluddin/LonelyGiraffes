@@ -18,15 +18,6 @@ Route::get(
          }
 );
 
-Route::filter(
-     'access-control',
-         function () {
-             header('Access-Control-Allow-Origin: *');
-         }
-);
-
-Route::when('*', 'access-control');
-
 Route::api(
      ['version' => 'v1'],
          function () {
