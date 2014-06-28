@@ -67,7 +67,7 @@ abstract class AcceptanceCase extends TestCase
      * -- Fake user data --
      */
 
-    protected $mario = [
+    public $mario = [
         'email'     => 'mario@test.lonelygiraffes.com',
         'password'  => 'password',
         'firstname' => 'Mario',
@@ -75,7 +75,7 @@ abstract class AcceptanceCase extends TestCase
         'gender'    => 'M'
     ];
 
-    protected $luigi = [
+    public $luigi = [
         'email'     => 'luigi@test.lonelygiraffes.com',
         'password'  => 'password',
         'firstname' => 'Luigi',
@@ -83,7 +83,7 @@ abstract class AcceptanceCase extends TestCase
         'gender'    => 'M'
     ];
 
-    protected $yoshi = [
+    public $yoshi = [
         'email'     => 'yoshi@test.lonelygiraffes.com',
         'password'  => 'password',
         'firstname' => 'Yoshi',
@@ -91,7 +91,7 @@ abstract class AcceptanceCase extends TestCase
         'gender'    => 'X'
     ];
 
-    protected $peach = [
+    public $peach = [
         'email'     => 'peach@test.lonelygiraffes.com',
         'password'  => 'password',
         'firstname' => 'Peach',
@@ -99,7 +99,7 @@ abstract class AcceptanceCase extends TestCase
         'gender'    => 'F'
     ];
 
-    protected $bowser = [
+    public $bowser = [
         'email'     => 'bowser@evil.test.lonelygiraffes.com',
         'password'  => 'password',
         'firstname' => 'Bowser',
