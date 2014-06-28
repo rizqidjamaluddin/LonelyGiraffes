@@ -61,6 +61,14 @@ class UserRepository extends EloquentRepository
         return $model;
     }
 
+    public function getByEmail($email)
+    {
+        if (!$model = $this->model->where('email', '=', $email)->first()) {
+            throw new NotFoundModelException();
+        }
+        return $model;
+    }
+
     /**
      * @param int    $id
      * @param string $email
@@ -101,4 +109,5 @@ class UserRepository extends EloquentRepository
     {
         return $this->userSettingModel->where('user_id', '=', $id)->update(['use_nickname' => (bool) $new_show_nickname_setting]);
     }
+
 } 
