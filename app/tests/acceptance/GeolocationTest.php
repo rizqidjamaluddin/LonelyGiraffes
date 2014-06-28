@@ -20,7 +20,9 @@ class GeolocationTest extends AcceptanceCase
         $this->it_cannot_return_results_for_one_letter_hints();
         $this->it_can_look_up_a_city_name_and_state_name();
         $this->it_can_distinguish_cities_of_the_same_name_in_one_country();
-        $this->it_can_find_nearby_cities();
+
+        $this->it_can_find_unicode_city_names();
+        $this->it_shows_a_bad_request_without_a_query_string();
     }
 
 
@@ -65,9 +67,20 @@ class GeolocationTest extends AcceptanceCase
         $this->assertEquals($expectFederalCity->country, 'Mexico');
     }
 
-    protected function it_can_find_nearby_cities()
+    protected function it_can_find_unicode_city_names()
     {
+        $results = $this->toJson($this->call('GET', '/api/locations', ['hint' => 'Ghāziābād']))->locations;
+        $this->assertResponseOk();
+        $expectNewYork = $results[0];
+        $this->assertEquals($expectNewYork->city, 'Ghāziābād');
+        $this->assertEquals($expectNewYork->state, 'Uttar Pradesh');
+        $this->assertEquals($expectNewYork->country, 'India');
+    }
 
+    protected function it_shows_a_bad_request_without_a_query_string()
+    {
+        $this->call('GET', '/api/locations');
+        $this->assertResponseStatus(400);
     }
 
 } 
