@@ -84,6 +84,59 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     * @depends it_can_find_a_user
+     * @outputBuffering enabled
+     */
+    public function it_can_find_a_user_by_email()
+    {   
+        $service = App::make('Giraffe\Users\UserService');
+        $model = $service->createUser(
+            [
+                "email"     => 'hello@lonelygiraffes.com',
+                "password"  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+        $response = $this->call("GET", "api/users", array('email' => $model->email));
+        $responseContent = json_decode($response->getContent())->data;
+
+        $this->assertGreaterThan(0, count($responseContent));
+
+        $this->assertResponseStatus(200);
+        $this->assertEquals('hello@lonelygiraffes.com', $responseContent[0]->email);
+        $this->assertEquals('Lonely', $responseContent[0]->firstname);
+        $this->assertEquals('Giraffe', $responseContent[0]->lastname);
+        $this->assertEquals('M', $responseContent[0]->gender);
+    }
+
+    /**
+     * @test
+     * @depends it_can_find_a_user_by_email
+     * @outputBuffering enabled
+     */
+    public function it_fails_to_find_a_nonexistant_email_address()
+    {
+        $service = App::make('Giraffe\Users\UserService');
+        $model = $service->createUser(
+            [
+                "email"     => 'hello@lonelygiraffes.com',
+                "password"  => 'password',
+                'firstname' => 'Lonely',
+                'lastname'  => 'Giraffe',
+                'gender'    => 'M'
+            ]
+        );
+        $response = $this->call("GET", "api/users", array('email' => '@lonelygiraffes.x'));
+        $responseContent = json_decode($response->getContent());
+
+        $this->assertResponseStatus(404);
+    }
+
+
+    /**
+     * @test
      * @depends it_can_create_a_new_user
      */
     public function a_user_can_update_information()

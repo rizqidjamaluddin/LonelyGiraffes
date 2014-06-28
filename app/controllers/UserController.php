@@ -30,6 +30,10 @@ class UserController extends Controller
         return $this->returnUserModel($model);
 	}
 
+    public function by_email() {
+        return $this->userService->getUserByEmail(Input::get('email'));
+    }
+
     public function update($id)
     {
         $model = $this->userService->updateUser($id, Input::all());
