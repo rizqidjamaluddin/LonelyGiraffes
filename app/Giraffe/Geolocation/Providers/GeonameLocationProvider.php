@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Geolocation\Providers;
 
 use DB;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationProvider;
 use Illuminate\Support\Collection;
@@ -10,6 +11,7 @@ class GeonameLocationProvider implements LocationProvider
     const CITY_TABLE = 'lookup_geoname_places';
     const STATE_SEARCH_CAP = 10;
     const CITY_SEARCH_CAP = 5;
+    const STATES_TABLE = 'lookup_geoname_states';
 
     /**
      * @param $hint
@@ -72,10 +74,13 @@ class GeonameLocationProvider implements LocationProvider
      */
     protected function searchForCities($hint)
     {
+        // soften the limit for long searches just in case of too many results
+        $limit = strlen($hint > 4) ? 20 : self::CITY_SEARCH_CAP;
+
         $cities = new Collection(
             DB::table(self::CITY_TABLE)
               ->where('city', 'LIKE', $hint . '%')
-              ->take(self::CITY_SEARCH_CAP)
+              ->take($limit)
               ->orderBy('population', 'desc')
               ->get()
         );
@@ -109,11 +114,34 @@ class GeonameLocationProvider implements LocationProvider
             $registry[] = $this->getCompositeIdentifier($city);
         }
 
-        $results = $results->sortBy(function($location){
+        $results = $results->sortBy(
+            function ($location) {
                 return $location->population;
-            }, SORT_NUMERIC, true);
+            },
+            SORT_NUMERIC,
+            true
+        );
 
         return $results->toArray();
     }
 
+    /**
+     * @param string $city
+     * @param string $state
+     * @param string $country
+     * @return Location
+     */
+    public function findExact($city, $state, $country)
+    {
+        $result = DB::table(self::CITY_TABLE)
+                    ->where('city', $city)
+                    ->where('state', $state)
+                    ->where('country', $country)->first();
+
+        if (!$result) throw new NotFoundModelException;
+
+        $place = Location::makeFromCity($city, $state, $country);
+        $place->provideCoordinates($result->lat, $result->long);
+        return $place;
+    }
 }

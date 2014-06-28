@@ -1,5 +1,6 @@
 <?php namespace Giraffe;
 use Giraffe\Geolocation\LocationService;
+use Giraffe\Geolocation\NearbySearchStrategies\FiveDegreeCellStrategy\FiveDegreeCellSearchStrategy;
 use Giraffe\Geolocation\Providers\GeonameLocationProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,6 +15,7 @@ class GiraffeServiceProvider extends ServiceProvider {
         $this->app->singleton('Giraffe\Parser\ParserDriver', 'Giraffe\Parser\ParsedownPurifierParserDriver');
         $this->app->singleton('Giraffe\Logging\Log');
         $this->app->singleton('Giraffe\Geolocation\LocationService');
+        $this->app->singleton('Giraffe\Geolocation\Providers\GeonameLocationProvider');
     }
 
     public function boot()
@@ -22,9 +24,13 @@ class GiraffeServiceProvider extends ServiceProvider {
 
         /** @var LocationService $locationService */
         $locationService = $this->app->make('Giraffe\Geolocation\LocationService');
-        $geonameLocationProvider = new GeonameLocationProvider();
+
+        $geonameLocationProvider = $this->app->make('Giraffe\Geolocation\Providers\GeonameLocationProvider');
         $locationService->pushProvider($geonameLocationProvider);
         $locationService->setCanonicalProvider($geonameLocationProvider);
+
+        $fiveDegreeCellStrat = new FiveDegreeCellSearchStrategy();
+        $locationService->setDefaultNearbySearchStrategy($fiveDegreeCellStrat);
     }
 
 }

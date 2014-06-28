@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Geolocation; 
 
 use Illuminate\Support\Contracts\JsonableInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Location
 {
@@ -25,6 +26,16 @@ class Location
      */
     protected $metadata;
 
+    /**
+     * @var LocationProvider
+     */
+    protected $canonicalSource;
+
+    public function __construct()
+    {
+        $this->canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
+    }
+
     public static function makeFromCity($city, $state, $country, $metadata = [])
     {
         $instance = new static;
@@ -33,6 +44,20 @@ class Location
         $instance->country = $country;
         $instance->metadata = $metadata;
         return $instance;
+    }
+
+    public static function makeFromString($location)
+    {
+        // catch for "City, State, Country" format
+        $fragments = explode(',', $location);
+        if (count($fragments) == 3) {
+            array_walk($fragments, function(&$v){ $v = trim($v); });
+            /** @var LocationProvider $canonicalSource */
+            $canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
+            return $canonicalSource->findExact($fragments[0], $fragments[1], $fragments[2]);
+        }
+
+        throw new NotFoundHttpException;
     }
 
     public function provideCoordinates($lat, $long)
