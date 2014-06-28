@@ -10,7 +10,7 @@ class ValidationException extends ResourceException
         $context = array_filter($context, function($value){
                 return strlen(trim($value)) !== 0;
             });
-        parent::__construct($message, $context);
+        parent::__construct($message, $context, null, $headers = ['Access-Control-Allow-Origin' => '*']);
     }
 
 } 
