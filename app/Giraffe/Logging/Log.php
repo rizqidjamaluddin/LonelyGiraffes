@@ -21,7 +21,7 @@ use Monolog\Processor\WebProcessor;
  */
 class Log
 {
-    protected $logInTests = true;
+    protected $logInTests = false;
 
     protected $path = '/app-logs';
 
