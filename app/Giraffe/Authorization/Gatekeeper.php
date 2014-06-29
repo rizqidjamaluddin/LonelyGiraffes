@@ -299,7 +299,10 @@ class Gatekeeper
         try {
             /** @var Shield $shield */
             $shield = \App::make('Dingo\Api\Auth\Shield');
-            $shield->authenticate(\Request::instance(), \Route::current());
+            $user = $shield->authenticate(\Request::instance(), \Route::current());
+            if($user) {
+                Auth::setUser($user);
+            }
         } catch (\Exception $e) {
         }
 
