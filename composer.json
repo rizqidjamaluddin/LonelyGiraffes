@@ -10,7 +10,8 @@
         "mews/purifier": "dev-master",
         "erusev/parsedown": "dev-master",
         "respect/validation": "dev-master",
-		"barryvdh/laravel-cors": "0.2.*"
+		"barryvdh/laravel-cors": "0.2.*",
+		"lucadegasperi/oauth2-server-laravel": "1.*"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",

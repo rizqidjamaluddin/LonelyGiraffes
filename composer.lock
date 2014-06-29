@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "713c56ed95d4411e9a7ebbb267382c2c",
+    "hash": "e40baa7aa68f292b1b0487c2be3a5b16",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -181,12 +181,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "43574ffdd1f0546a6c26fdd05fe3309696d06400"
+                "reference": "a6984c4b27953cea13a078354c2d1c77c0788a7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/43574ffdd1f0546a6c26fdd05fe3309696d06400",
-                "reference": "43574ffdd1f0546a6c26fdd05fe3309696d06400",
+                "url": "https://api.github.com/repos/dingo/api/zipball/a6984c4b27953cea13a078354c2d1c77c0788a7c",
+                "reference": "a6984c4b27953cea13a078354c2d1c77c0788a7c",
                 "shasum": ""
             },
             "require": {
@@ -238,7 +238,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-06-24 11:14:03"
+            "time": "2014-06-19 10:17:11"
         },
         {
             "name": "erusev/parsedown",
@@ -592,12 +592,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/fractal.git",
-                "reference": "4d814938278ae1379ceaba4c75cb3d6c6f9df597"
+                "reference": "d4aa9309af2cae8fed65735e35ff66bd722b5501"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/4d814938278ae1379ceaba4c75cb3d6c6f9df597",
-                "reference": "4d814938278ae1379ceaba4c75cb3d6c6f9df597",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/d4aa9309af2cae8fed65735e35ff66bd722b5501",
+                "reference": "d4aa9309af2cae8fed65735e35ff66bd722b5501",
                 "shasum": ""
             },
             "require": {
@@ -643,7 +643,119 @@
                 "league",
                 "rest"
             ],
-            "time": "2014-06-24 09:26:45"
+            "time": "2014-06-20 22:40:01"
+        },
+        {
+            "name": "league/oauth2-server",
+            "version": "2.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/oauth2-server.git",
+                "reference": "a9b52ab56a5bac383f7d300aec2e234285d7f861"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/a9b52ab56a5bac383f7d300aec2e234285d7f861",
+                "reference": "a9b52ab56a5bac383f7d300aec2e234285d7f861",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "replace": {
+                "league/oauth2server": "*",
+                "lncd/oauth2": "*"
+            },
+            "require-dev": {
+                "mockery/mockery": ">=0.7.2"
+            },
+            "suggest": {
+                "zetacomponents/database": "Allows use of the build in PDO storage classes"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "League\\OAuth2\\Server": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Bilbie",
+                    "email": "hello@alexbilbie.com",
+                    "homepage": "http://www.alexbilbie.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A lightweight and powerful OAuth 2.0 authorization and resource server library with support for all the core specification grants. This library will allow you to secure your API with OAuth and allow your applications users to approve apps that want to access their data from your API.",
+            "homepage": "https://github.com/php-loep/oauth2-server",
+            "keywords": [
+                "Authentication",
+                "api",
+                "authorization",
+                "oauth",
+                "oauth2",
+                "resource",
+                "server"
+            ],
+            "time": "2014-05-23 15:29:49"
+        },
+        {
+            "name": "lucadegasperi/oauth2-server-laravel",
+            "version": "1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lucadegasperi/oauth2-server-laravel.git",
+                "reference": "abd252c22a84329532c0cd1e558842a82f710592"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lucadegasperi/oauth2-server-laravel/zipball/abd252c22a84329532c0cd1e558842a82f710592",
+                "reference": "abd252c22a84329532c0cd1e558842a82f710592",
+                "shasum": ""
+            },
+            "require": {
+                "league/oauth2-server": "2.1.x",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": ">=0.7.2",
+                "orchestra/testbench": "2.0.*",
+                "phpunit/phpunit": "3.7.22",
+                "squizlabs/php_codesniffer": "1.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/migrations",
+                    "tests/TestCase.php"
+                ],
+                "psr-0": {
+                    "LucaDegasperi\\OAuth2Server": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Luca Degasperi",
+                    "email": "packages@lucadegasperi.com"
+                }
+            ],
+            "description": "A Laravel 4 wrapper for the popular OAuth 2.0 Server package league/oauth2-server",
+            "keywords": [
+                "api",
+                "laravel",
+                "oauth",
+                "oauth2",
+                "server"
+            ],
+            "time": "2014-05-30 16:48:54"
         },
         {
             "name": "mews/purifier",
@@ -2205,7 +2317,7 @@
                 {
                     "name": "Johannes Schmitt",
                     "email": "schmittjoh@gmail.com",
-                    "homepage": "https://github.com/schmittjoh",
+                    "homepage": "http://jmsyst.com",
                     "role": "Developer of wrapped JMSSerializerBundle"
                 }
             ],
@@ -3019,12 +3131,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/JeffreyWay/Laravel-4-Generators.git",
-                "reference": "53d2f84e6d75856c2ab72d49aeee9731de1a0af3"
+                "reference": "3d631c483849005005620a117624c39ad611a5d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JeffreyWay/Laravel-4-Generators/zipball/53d2f84e6d75856c2ab72d49aeee9731de1a0af3",
-                "reference": "53d2f84e6d75856c2ab72d49aeee9731de1a0af3",
+                "url": "https://api.github.com/repos/JeffreyWay/Laravel-4-Generators/zipball/3d631c483849005005620a117624c39ad611a5d4",
+                "reference": "3d631c483849005005620a117624c39ad611a5d4",
                 "shasum": ""
             },
             "require": {
@@ -3059,7 +3171,7 @@
                 }
             ],
             "description": "Rapidly generate resources, migrations, models, and much more.",
-            "time": "2014-06-27 00:26:58"
+            "time": "2014-06-02 14:21:07"
         }
     ],
     "aliases": [
