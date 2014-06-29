@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Geolocation;
 
+use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\Service;
 use Giraffe\Geolocation\NearbySearchableRepository;
 
@@ -15,6 +16,11 @@ class LocationService extends Service
      * @var LocationProvider
      */
     protected $canonicalProvider;
+
+    /**
+     * @var NearbySearchStrategy
+     */
+    protected $defaultNearbySearchStrategy;
 
     public function pushProvider(LocationProvider $provider)
     {
@@ -35,7 +41,12 @@ class LocationService extends Service
 
     public function getCanonicalProvider()
     {
+        return $this->canonicalProvider;
+    }
 
+    public function setDefaultNearbySearchStrategy(NearbySearchStrategy $nearbySearchStrategy)
+    {
+        $this->defaultNearbySearchStrategy = $nearbySearchStrategy;
     }
 
     public function search($hint, $limit = 5)
@@ -64,8 +75,13 @@ class LocationService extends Service
      * @param array                      $options
      * @param NearbySearchStrategy|null  $strategy
      */
-    public function getNearbyFromRepository(Locatable $location, NearbySearchableRepository $repository, $options = [], NearbySearchStrategy $strategy = null)
-    {
+    public function getNearbyFromRepository(
+        Locatable $location,
+        NearbySearchableRepository $repository,
+        $options = [],
+        NearbySearchStrategy $strategy = null
+    ) {
 
     }
+
 } 

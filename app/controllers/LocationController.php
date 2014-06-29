@@ -3,6 +3,7 @@
 use Giraffe\Common\Controller;
 use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\LocationTransformer;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class LocationController extends Controller
 {
@@ -20,7 +21,12 @@ class LocationController extends Controller
 
     public function search()
     {
-        $results = $this->locationService->search(Input::get('hint'));
-        return $this->withCollection($results, new LocationTransformer, 'locations');
+        if (Input::has('hint')) {
+            $results = $this->locationService->search(Input::get('hint'));
+            return $this->withCollection($results, new LocationTransformer, 'locations');
+        }
+
+        throw new BadRequestHttpException;
+
     }
 } 
