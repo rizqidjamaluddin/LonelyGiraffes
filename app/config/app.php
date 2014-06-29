@@ -109,14 +109,18 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
+        // utility providers
         'Way\Generators\GeneratorsServiceProvider',
         'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',
         'Clockwork\Support\Laravel\ClockworkServiceProvider',
 
+        // production-required packages
         'Dingo\Api\ApiServiceProvider',
         'Mews\Purifier\PurifierServiceProvider',
+        'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
 //        'Barryvdh\Cors\CorsServiceProvider',
 
+        // LG-specific
         'Giraffe\GiraffeServiceProvider',
 	),
 
