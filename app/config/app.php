@@ -67,7 +67,7 @@ return array(
 	|
 	*/
 
-	'key' => 'IQ8kNc95UhDbC3PvDBWly41TmsWfLrof',
+	'key' => 'FSGjsif5KZUTVI5J6nPLWcH1PHMciG6D',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -192,6 +192,8 @@ return array(
         'Controller'      => 'Dingo\Api\Routing\Controller',
 
         'Purifier' => 'Mews\Purifier\Facades\Purifier',
+        'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
+        'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
 	),
 
 );
