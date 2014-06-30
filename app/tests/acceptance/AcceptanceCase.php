@@ -31,23 +31,6 @@ abstract class AcceptanceCase extends TestCase
         'gender'   => 'F'
     ];
 
-    /**
-     * @var array
-     */
-    protected $event = [
-        'user_id'   => 1,
-        'name'      => 'My Awesome Event',
-        'body'      => 'Details of my awesome event',
-        'html_body' => 'Details of my awesome event',
-        'url'       => 'http://www.google.com',
-        'location'  => 'My Awesome Location',
-        'city'      => 'Athens',
-        'state'     => 'Georgia',
-        'country'   => 'US',
-        'cell'      => '',
-        'timestamp' => '0000-00-00 00:00:00'
-    ];
-
 
     public function setUp()
     {
