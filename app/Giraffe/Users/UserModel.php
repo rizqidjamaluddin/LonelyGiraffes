@@ -13,9 +13,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  *
  * @property int $id
  * @property string $hash
- * @property string $firstname
- * @property string $lastname
- * @property string $nickname
+ * @property string $name
  * @property string $password
  * @property string $email
  * @property Carbon $date_of_birth
@@ -41,7 +39,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
 	 */
 	protected $hidden = ['id', 'password', 'created_at'];
 
-    protected $fillable = ['hash', 'nickname', 'firstname', 'lastname', 'email', 'password', 'token', 'cell',
+    protected $fillable = ['hash', 'name', 'email', 'password', 'token', 'cell',
         'country', 'state', 'city', 'lat', 'long',
         'date_of_birth', 'gender', 'role'];
 
