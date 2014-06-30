@@ -30,6 +30,14 @@ class UserController extends Controller
         return $this->returnUserModel($model);
 	}
 
+    public function index() {
+        // Currently only for 'email'
+        if(!Input::get('email'))
+            throw new BadRequestHttpException();
+        $model = $this->userService->getUserByEmail(Input::get('email'));
+        return $this->returnUserModel($model);
+    }
+
     public function update($id)
     {
         $model = $this->userService->updateUser($id, Input::all());

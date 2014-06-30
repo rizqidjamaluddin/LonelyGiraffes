@@ -84,6 +84,35 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     * @depends it_can_find_a_user
+     * @outputBuffering enabled
+     */
+    public function it_can_find_a_user_by_email()
+    {
+        $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
+        $getModel = $this->toJson($this->call("GET", "/api/users", array('email' => $model->users[0]->email)));
+
+        $this->assertResponseStatus(200);
+        $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
+        $this->assertEquals('Lonely', $getModel->users[0]->firstname);
+        $this->assertEquals('Giraffe', $getModel->users[0]->lastname);
+        $this->assertEquals('M', $getModel->users[0]->gender);
+    }
+
+    /**
+     * @test
+     * @depends it_can_find_a_user_by_email
+     * @outputBuffering enabled
+     */
+    public function it_fails_to_find_a_nonexistant_email_address()
+    {
+        $this->call("GET", "/api/users", array('email' => '@lonelygiraffes.x'));
+        $this->assertResponseStatus(404);
+    }
+
+
+    /**
+     * @test
      * @depends it_can_create_a_new_user
      */
     public function a_user_can_update_information()
