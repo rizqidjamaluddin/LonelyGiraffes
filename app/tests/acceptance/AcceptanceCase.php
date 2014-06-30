@@ -51,6 +51,7 @@ abstract class AcceptanceCase extends TestCase
 
     public function setUp()
     {
+        DB::disableQueryLog();
         parent::setUp();
         Artisan::call('migrate');
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
