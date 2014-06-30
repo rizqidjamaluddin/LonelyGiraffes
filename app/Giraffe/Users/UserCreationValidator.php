@@ -10,8 +10,7 @@ class UserCreationValidator
 
     public function validate(array $data)
     {
-        $validator = V::key('firstname', V::string()->length(0, 100))
-                      ->key('lastname', V::string()->length(0, 100))
+        $validator = V::key('name', V::string()->length(0, 100))
                       ->key('email', V::email()->length(0, 200))
                       ->key('password', V::string()->length(0, 200))
                       ->key('gender', V::string()->in(['M', 'F', 'X']));
