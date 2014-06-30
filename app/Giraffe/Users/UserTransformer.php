@@ -8,8 +8,7 @@ class UserTransformer extends TransformerAbstract
     {
         return [
             'hash' => $userModel->hash,
-            'firstname' => $userModel->firstname,
-            'lastname' => $userModel->lastname,
+            'name' => $userModel->name,
             'gender' => $userModel->gender,
             'email' => $userModel->email
         ];

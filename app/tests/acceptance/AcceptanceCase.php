@@ -15,22 +15,20 @@ abstract class AcceptanceCase extends TestCase
      * @var array
      */
     protected $genericUser = [
-        'email'     => 'hello@lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Lonely',
-        'lastname'  => 'Giraffe',
-        'gender'    => 'M'
+        'email'    => 'hello@lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Lonely Giraffe',
+        'gender'   => 'M'
     ];
 
     /**
      * @var array
      */
     protected $anotherGenericUser = [
-        'email'     => 'anotherHello@lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Lonely',
-        'lastname'  => 'Giraffe',
-        'gender'    => 'M'
+        'email'    => 'anotherHello@lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Lonesome Penguin',
+        'gender'   => 'F'
     ];
 
     /**
@@ -68,43 +66,38 @@ abstract class AcceptanceCase extends TestCase
      */
 
     public $mario = [
-        'email'     => 'mario@test.lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Mario',
-        'lastname'  => 'N',
-        'gender'    => 'M'
+        'email'    => 'mario@test.lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Mario',
+        'gender'   => 'M'
     ];
 
     public $luigi = [
-        'email'     => 'luigi@test.lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Luigi',
-        'lastname'  => 'N',
-        'gender'    => 'M'
+        'email'    => 'luigi@test.lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Luigi',
+        'gender'   => 'M'
     ];
 
     public $yoshi = [
-        'email'     => 'yoshi@test.lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Yoshi',
-        'lastname'  => 'N',
-        'gender'    => 'X'
+        'email'    => 'yoshi@test.lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Yoshi',
+        'gender'   => 'X'
     ];
 
     public $peach = [
-        'email'     => 'peach@test.lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Peach',
-        'lastname'  => 'N',
-        'gender'    => 'F'
+        'email'    => 'peach@test.lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Peach',
+        'gender'   => 'F'
     ];
 
     public $bowser = [
-        'email'     => 'bowser@evil.test.lonelygiraffes.com',
-        'password'  => 'password',
-        'firstname' => 'Bowser',
-        'lastname'  => 'N',
-        'gender'    => 'M'
+        'email'    => 'bowser@evil.test.lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Bowser',
+        'gender'   => 'M'
     ];
 
     public function registerAndLoginAsMario()

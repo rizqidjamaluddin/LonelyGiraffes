@@ -9,8 +9,7 @@ class UserUpdateValidator
 {
     public function validate(array $data)
     {
-        $validator = V::key('firstname', V::string()->length(0, 100), false)
-                      ->key('lastname', V::string()->length(0, 100), false)
+        $validator = V::key('name', V::string()->length(0, 100), false)
                       ->key('email', V::email()->length(0, 200),false)
                       ->key('password', V::string()->length(0, 200), false)
                       ->key('gender', V::string()->in(['M', 'F', 'X']), false);

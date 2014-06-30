@@ -43,8 +43,7 @@ class UserAccountCase extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         $this->assertEquals('hello@lonelygiraffes.com', $response->users[0]->email);
-        $this->assertEquals('Lonely', $response->users[0]->firstname);
-        $this->assertEquals('Giraffe', $response->users[0]->lastname);
+        $this->assertEquals('Lonely Giraffe', $response->users[0]->name);
         $this->assertEquals('M', $response->users[0]->gender);
     }
 
@@ -54,12 +53,14 @@ class UserAccountCase extends AcceptanceCase
      */
     public function it_fails_to_create_a_user_with_a_bad_email()
     {
-        $response = $this->call("POST", "/api/users/", [
-                'email'     => '@lonelygiraffes.x',
-                'password'  => 'password',
-                'firstname' => 'Lonely',
-                'lastname'  => 'Giraffe',
-                'gender'    => 'M'        
+        $response = $this->call(
+            "POST",
+            "/api/users/",
+            [
+                'email'    => '@lonelygiraffes.x',
+                'password' => 'password',
+                'name'     => 'Lonely',
+                'gender'   => 'M'
             ]
         );
 
@@ -77,14 +78,13 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
-        $this->assertEquals('Lonely', $getModel->users[0]->firstname);
-        $this->assertEquals('Giraffe', $getModel->users[0]->lastname);
+        $this->assertEquals('Lonely Giraffe', $getModel->users[0]->name);
         $this->assertEquals('M', $getModel->users[0]->gender);
     }
 
     /**
      * @test
-     * @depends it_can_find_a_user
+     * @depends         it_can_find_a_user
      * @outputBuffering enabled
      */
     public function it_can_find_a_user_by_email()
@@ -94,14 +94,13 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
-        $this->assertEquals('Lonely', $getModel->users[0]->firstname);
-        $this->assertEquals('Giraffe', $getModel->users[0]->lastname);
+        $this->assertEquals('Lonely Giraffe', $getModel->users[0]->name);
         $this->assertEquals('M', $getModel->users[0]->gender);
     }
 
     /**
      * @test
-     * @depends it_can_find_a_user_by_email
+     * @depends         it_can_find_a_user_by_email
      * @outputBuffering enabled
      */
     public function it_fails_to_find_a_nonexistant_email_address()
@@ -120,20 +119,22 @@ class UserAccountCase extends AcceptanceCase
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
         $this->asUser($model->users[0]->hash);
 
-        $response = $this->toJson($this->call("PUT", "/api/users/" . $model->users[0]->hash,
-            [
-                'email'     => 'hello@notlonelygiraffes.com',
-                'password'  => 'anotherpassword',
-                'firstname' => 'Lonesome',
-                'lastname'  => 'Penguin',
-                'gender'    => 'F'
-            ]
-        ));
+        $response = $this->toJson(
+            $this->call(
+                "PUT",
+                "/api/users/" . $model->users[0]->hash,
+                [
+                    'email'    => 'hello@notlonelygiraffes.com',
+                    'password' => 'anotherpassword',
+                    'name'     => 'Lonesome Penguin',
+                    'gender'   => 'F'
+                ]
+            )
+        );
 
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@notlonelygiraffes.com', $response->users[0]->email);
-        $this->assertEquals('Lonesome', $response->users[0]->firstname);
-        $this->assertEquals('Penguin', $response->users[0]->lastname);
+        $this->assertEquals('Lonesome Penguin', $response->users[0]->name);
         $this->assertEquals('F', $response->users[0]->gender);
     }
 
