@@ -26,6 +26,11 @@ Route::filter(
          }
 );
 
+Route::post('oauth', function()
+    {
+        return \AuthorizationServer::performAccessTokenFlow();
+    });
+
 Route::when('*', 'access-control');
 
 Route::api(

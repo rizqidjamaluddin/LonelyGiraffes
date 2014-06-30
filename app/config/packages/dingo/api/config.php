@@ -1,5 +1,6 @@
 <?php
 
+use Giraffe\Users\UserRepository;
 use League\Fractal\Serializer\JsonApiSerializer;
 
 return [
@@ -66,6 +67,15 @@ return [
     'auth' => [
         'basic' => function ($app) {
             return new Dingo\Api\Auth\BasicProvider($app['auth']);
+        },
+        'oauth' => function ($app) {
+                $provider = new Dingo\Api\Auth\LeagueOAuth2Provider($app['oauth2.resource-server']);
+                $provider->setUserCallback(function($id) use ($app){
+                       /** @var UserRepository $userRepository */
+                       $userRepository = $app['Giraffe\Users\UserRepository'];
+                        return $userRepository->get($id);
+                    });
+                return $provider;
         }
     ],
 

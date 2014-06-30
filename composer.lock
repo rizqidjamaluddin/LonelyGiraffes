@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "713c56ed95d4411e9a7ebbb267382c2c",
+    "hash": "e40baa7aa68f292b1b0487c2be3a5b16",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -181,12 +181,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "43574ffdd1f0546a6c26fdd05fe3309696d06400"
+                "reference": "0b98bb0392fcc9b3e54af963bf9a4744dcbcac0a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/43574ffdd1f0546a6c26fdd05fe3309696d06400",
-                "reference": "43574ffdd1f0546a6c26fdd05fe3309696d06400",
+                "url": "https://api.github.com/repos/dingo/api/zipball/0b98bb0392fcc9b3e54af963bf9a4744dcbcac0a",
+                "reference": "0b98bb0392fcc9b3e54af963bf9a4744dcbcac0a",
                 "shasum": ""
             },
             "require": {
@@ -211,7 +211,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.6-dev"
+                    "dev-master": "0.7-dev"
                 }
             },
             "autoload": {
@@ -238,7 +238,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-06-24 11:14:03"
+            "time": "2014-06-27 13:33:30"
         },
         {
             "name": "erusev/parsedown",
@@ -471,16 +471,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v4.2.5",
+            "version": "v4.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "30088567a133fadf14b708dcc4001d6c639b8c59"
+                "reference": "2e73cd58ee42919166a51897b965e1135b85048c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/30088567a133fadf14b708dcc4001d6c639b8c59",
-                "reference": "30088567a133fadf14b708dcc4001d6c639b8c59",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/2e73cd58ee42919166a51897b965e1135b85048c",
+                "reference": "2e73cd58ee42919166a51897b965e1135b85048c",
                 "shasum": ""
             },
             "require": {
@@ -584,7 +584,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2014-06-26 17:33:59"
+            "time": "2014-06-29 00:16:51"
         },
         {
             "name": "league/fractal",
@@ -644,6 +644,118 @@
                 "rest"
             ],
             "time": "2014-06-24 09:26:45"
+        },
+        {
+            "name": "league/oauth2-server",
+            "version": "2.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/oauth2-server.git",
+                "reference": "a9b52ab56a5bac383f7d300aec2e234285d7f861"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/oauth2-server/zipball/a9b52ab56a5bac383f7d300aec2e234285d7f861",
+                "reference": "a9b52ab56a5bac383f7d300aec2e234285d7f861",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "replace": {
+                "league/oauth2server": "*",
+                "lncd/oauth2": "*"
+            },
+            "require-dev": {
+                "mockery/mockery": ">=0.7.2"
+            },
+            "suggest": {
+                "zetacomponents/database": "Allows use of the build in PDO storage classes"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "League\\OAuth2\\Server": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alex Bilbie",
+                    "email": "hello@alexbilbie.com",
+                    "homepage": "http://www.alexbilbie.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A lightweight and powerful OAuth 2.0 authorization and resource server library with support for all the core specification grants. This library will allow you to secure your API with OAuth and allow your applications users to approve apps that want to access their data from your API.",
+            "homepage": "https://github.com/php-loep/oauth2-server",
+            "keywords": [
+                "Authentication",
+                "api",
+                "authorization",
+                "oauth",
+                "oauth2",
+                "resource",
+                "server"
+            ],
+            "time": "2014-05-23 15:29:49"
+        },
+        {
+            "name": "lucadegasperi/oauth2-server-laravel",
+            "version": "1.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lucadegasperi/oauth2-server-laravel.git",
+                "reference": "abd252c22a84329532c0cd1e558842a82f710592"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lucadegasperi/oauth2-server-laravel/zipball/abd252c22a84329532c0cd1e558842a82f710592",
+                "reference": "abd252c22a84329532c0cd1e558842a82f710592",
+                "shasum": ""
+            },
+            "require": {
+                "league/oauth2-server": "2.1.x",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "mockery/mockery": ">=0.7.2",
+                "orchestra/testbench": "2.0.*",
+                "phpunit/phpunit": "3.7.22",
+                "squizlabs/php_codesniffer": "1.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/migrations",
+                    "tests/TestCase.php"
+                ],
+                "psr-0": {
+                    "LucaDegasperi\\OAuth2Server": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Luca Degasperi",
+                    "email": "packages@lucadegasperi.com"
+                }
+            ],
+            "description": "A Laravel 4 wrapper for the popular OAuth 2.0 Server package league/oauth2-server",
+            "keywords": [
+                "api",
+                "laravel",
+                "oauth",
+                "oauth2",
+                "server"
+            ],
+            "time": "2014-05-30 16:48:54"
         },
         {
             "name": "mews/purifier",
@@ -2806,12 +2918,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "76212f1e56646f972618fa359bee68b9c2feb57a"
+                "reference": "33b01619721a925db8b61e8623fa8acf2c2be496"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/76212f1e56646f972618fa359bee68b9c2feb57a",
-                "reference": "76212f1e56646f972618fa359bee68b9c2feb57a",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/33b01619721a925db8b61e8623fa8acf2c2be496",
+                "reference": "33b01619721a925db8b61e8623fa8acf2c2be496",
                 "shasum": ""
             },
             "require": {
@@ -2864,7 +2976,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2014-06-17 10:46:23"
+            "time": "2014-06-27 12:23:08"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
