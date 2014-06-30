@@ -46,7 +46,7 @@ class UserService extends Service
      */
     public function createUser($data)
     {
-        $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
+        $data = array_only($data, ['name', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
 
         $data['password'] = Hash::make($data['password']);
@@ -68,8 +68,7 @@ class UserService extends Service
     public function updateUser($user_id, $attributes)
     {
 
-        $acceptableAttributes = ['firstname', 'lastname', 'email', 'gender', 'password'];
-        $attributes = array_only($attributes, $acceptableAttributes);
+        $attributes = array_only($attributes, ['name', 'email', 'gender', 'password']);
 
         $user = $this->userRepository->get($user_id);
         $this->gatekeeper->mayI('update', $user)->please();
