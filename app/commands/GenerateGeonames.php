@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Schema\Blueprint;
 use Symfony\Component\Console\Helper\ProgressHelper;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -46,7 +47,7 @@ class GenerateGeonames extends Command
         $total_countries = 0;
         $total_states = 0;
 
-        $path = __DIR__ . '/../data/geonames-cities-15000.txt';
+        $path = __DIR__ . '/../../' . $this->argument('source');
         $filesize = File::size($path);
         $this->info('Importing Geonames database.');
         $this->info("Source File: $path ($filesize bytes)");
@@ -54,15 +55,26 @@ class GenerateGeonames extends Command
         $this->info('> Creating countries list table...');
         $countries = new SplFileObject(__DIR__ . '/../data/general-countries.csv');
         DB::statement('drop table if exists `lookup_countries`');
-        DB::statement(
-            'CREATE TABLE `lookup_countries` (
-                       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                       `code` char(2) DEFAULT NULL,
-                       `name` varchar(200) DEFAULT NULL,
-                       PRIMARY KEY (`id`),
-                       KEY `code` (`code`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8'
+//        DB::statement(
+//            'CREATE TABLE `lookup_countries` (
+//                       `id` int UNSIGNED NOT NULL AUTOINCREMENT,
+//                       `code` char(2) DEFAULT NULL,
+//                       `name` varchar(200) DEFAULT NULL,
+//                       PRIMARY KEY (`id`),
+//                       KEY `code` (`code`)
+//                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8'
+//        );
+
+        Schema::create(
+            'lookup_countries',
+            function (Blueprint $table) {
+                $table->increments('id');
+                $table->char('code', 2);
+                $table->string('name');
+                $table->unique('code');
+            }
         );
+
         $this->info('> Importing countries list table...');
         $country_statement = $pdo->prepare('INSERT INTO `lookup_countries` (`code`, `name`) VALUES (:code, :name)');
 
@@ -81,8 +93,14 @@ class GenerateGeonames extends Command
             if ($code == 'AX') {
                 $country_name = 'Åland Islands';
             }
+            if ($code == 'BL') {
+                $country_name = "Saint Barthélemy";
+            }
             if ($code == 'CI') {
                 $country_name = 'Côte d\'Ivoire';
+            }
+            if ($code == 'CW') {
+                $country_name = 'Curaçao';
             }
             $country_list[$code] = $country_name;
             $country_statement->execute(
@@ -101,18 +119,20 @@ class GenerateGeonames extends Command
         $this->info('> Creating administration district list table...');
         $states = new SplFileObject(__DIR__ . '/../data/geonames-states.txt');
         DB::statement('drop table if exists `lookup_geoname_states`');
-        DB::statement(
-            'CREATE TABLE `lookup_geoname_states` (
-                       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                       `country_code` char(2) DEFAULT NULL,
-                       `state_code` varchar(20) DEFAULT NULL,
-                       `population` bigint(20) DEFAULT NULL,
-                       `country` varchar(200) DEFAULT NULL,
-                       `name` varchar(200) DEFAULT NULL,
-                       PRIMARY KEY (`id`),
-                       KEY `code` (`country_code`, `state_code`)
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8'
+
+        Schema::create(
+            'lookup_geoname_states',
+            function (Blueprint $table) {
+                $table->increments('id');
+                $table->char('country_code', 2);
+                $table->string('state_code', 20);
+                $table->string('population', 20)->nullable();
+                $table->string('country', 200)->nullable();
+                $table->string('name', 200);
+                $table->unique(['country_code', 'state_code']);
+            }
         );
+
         $this->info('> Importing administration district list table...');
         $state_statement = $pdo->prepare(
             'INSERT INTO `lookup_geoname_states` (`country_code`, `state_code`, `name`) VALUES (:country_code, :state_code, :name)'
@@ -125,8 +145,8 @@ class GenerateGeonames extends Command
             $state_statement->execute(
                 [
                     ':country_code' => $country_code,
-                    ':state_code' => $state_code,
-                    ':name' => $row[1]
+                    ':state_code'   => $state_code,
+                    ':name'         => $row[1]
                 ]
             );
             $total_states++;
@@ -135,26 +155,26 @@ class GenerateGeonames extends Command
 
         $this->info('> Creating import table...');
         DB::statement('drop table if exists `lookup_geoname_places`');
-        DB::statement(
-            'CREATE TABLE `lookup_geoname_places` (
-           `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-           `geoname_id` int(11) DEFAULT NULL,
-           `city` varchar(200) DEFAULT NULL,
-           `ascii_city` varchar(200) DEFAULT NULL,
-           `lat` decimal(18,12) DEFAULT NULL,
-           `long` decimal(18,12) DEFAULT NULL,
-           `country_code` char(2) DEFAULT NULL,
-           `state_code` varchar(20) DEFAULT NULL,
-           `country` varchar(200) DEFAULT NULL,
-           `state` varchar(200) DEFAULT NULL,
-           `timezone` varchar(40) DEFAULT NULL,
-           `population` bigint(20) DEFAULT NULL,
-           PRIMARY KEY (`id`),
-           KEY `lat` (`lat`,`long`),
-           KEY `autocomplete` (`population`,`country`,`state`,`city`),
-           KEY `city` (`city`,`ascii_city`)
-           ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-        '
+
+        Schema::create(
+            'lookup_geoname_places',
+            function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('geoname_id');
+                $table->string('city');
+                $table->string('ascii_city');
+                $table->decimal('lat', 18, 12);
+                $table->decimal('long', 18, 12);
+                $table->string('country_code');
+                $table->string('state_code');
+                $table->string('country');
+                $table->string('state');
+                $table->string('timezone');
+                $table->bigInteger('population');
+                $table->index(['lat', 'long']);
+                $table->index(['population', 'country', 'state', 'city']);
+                $table->index(['city', 'ascii_city']);
+            }
         );
 
         $this->info('> Importing data using PHP import...');
@@ -175,6 +195,7 @@ class GenerateGeonames extends Command
 
         $prepared = $pdo->prepare($sql);
 
+        // loop through file to get contents
         while (!$file->eof()) {
 
             $row = $file->fgets();
@@ -183,9 +204,9 @@ class GenerateGeonames extends Command
             }
             $row = explode("\t", $row);
 
-            // $this->info("#$counter " . implode(',', [$row[0],$row[1],$row[2], $row[4], $row[5], $row[8], $row[10], $row[14], $row[17]]));
-
             try {
+
+                // there are certain places that simply don't have a state (e.g. Singapore, Vatican)
                 if (!array_key_exists($row[8] . '.' . $row[10], $state_list)) {
                     $composite_state_code = '';
                 } else {
@@ -194,17 +215,17 @@ class GenerateGeonames extends Command
 
                 $prepared->execute(
                     [
-                        ':geoname_id' => $row[0],
-                        ':city' => $row[1],
-                        ':ascii_city' => $row[2],
-                        ':lat' => $row[4],
-                        ':long' => $row[5],
+                        ':geoname_id'   => $row[0],
+                        ':city'         => $row[1],
+                        ':ascii_city'   => $row[2],
+                        ':lat'          => $row[4],
+                        ':long'         => $row[5],
                         ':country_code' => $row[8],
-                        ':state_code' => $row[10],
-                        ':country' => $country_list[$row[8]],
-                        ':state' => $composite_state_code,
-                        ':population' => $row[14],
-                        ':timezone' => $row[17]
+                        ':state_code'   => $row[10],
+                        ':country'      => $country_list[$row[8]],
+                        ':state'        => $composite_state_code,
+                        ':population'   => $row[14],
+                        ':timezone'     => $row[17]
                     ]
                 );
             } catch (Exception $e) {
@@ -218,7 +239,7 @@ class GenerateGeonames extends Command
                         "%-30s",
                         "Processing #$counter"
                     ) .
-                    "{$row[1]}, " . ($composite_state_code ?: '') . ", " . trim($country_list[$row[8]])
+                    "{$row[1]}, " . ($composite_state_code ? : '') . ", " . trim($country_list[$row[8]])
                 );
             }
 
@@ -280,7 +301,14 @@ class GenerateGeonames extends Command
      */
     protected function getArguments()
     {
-        return array();
+        return array(
+            array(
+                'source',
+                InputArgument::OPTIONAL,
+                'Source geonames file',
+                'app/data/geonames-cities-15000.txt'
+            ),
+        );
     }
 
     /**

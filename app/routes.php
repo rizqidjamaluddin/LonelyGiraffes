@@ -11,9 +11,27 @@
 |
 */
 
-Route::get('/', function(){
-        return View::make('hello');
+Route::get(
+     '/',
+         function () {
+             return View::make('hello');
+         }
+);
+
+Route::filter(
+     'access-control',
+         function () {
+             header('Access-Control-Allow-Origin: *');
+//             header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+         }
+);
+
+Route::post('oauth', function()
+    {
+        return \AuthorizationServer::performAccessTokenFlow();
     });
+
+Route::when('*', 'access-control');
 
 Route::api(
      ['version' => 'v1'],
@@ -41,13 +59,16 @@ Route::api(
 
              Route::post('shouts', ['uses' => 'ShoutController@store']);
              Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
+             Route::get('shouts/user/{resource}', ['uses' => 'ShoutController@showAll']);
+             Route::delete('shouts/{resource}', ['uses' => 'ShoutController@destroy']);
 
              Route::post('users', ['uses' => 'UserController@store']);
              Route::delete('users/{resource}', ['uses' => 'UserController@destroy']);
              Route::get('users/{resource}', ['uses' => 'UserController@show']);
              Route::put('users/{resource}', ['uses' => 'UserController@update']);
              Route::post('users/{resource}/promote', ['uses' => 'UserController@promote']);
-
+             Route::get('users', ['uses' => 'UserController@index']);
+             
              Route::get('users/{resource}/buddies', ['uses' => 'BuddyController@show']);
              Route::post('users/{resource}/buddies', ['uses' => 'BuddyController@create']);
              Route::delete('users/{resource}/buddies/{buddy}', ['uses' => 'BuddyController@delete']);
@@ -56,12 +77,17 @@ Route::api(
              Route::post('conversations', ['uses' => 'ConversationController@create']);
              Route::delete('conversations/{conversation}', ['uses' => 'ConversationController@leave']);
              Route::post('conversations/{conversation}/messages', ['uses' => 'ConversationController@createMessage']);
-             Route::delete('conversations/{conversation}/messages/{message}', ['uses' => 'ConversationController@deleteMessage']);
+             Route::delete(
+                  'conversations/{conversation}/messages/{message}',
+                  ['uses' => 'ConversationController@deleteMessage']
+             );
              Route::post('conversations/{conversation}/invite', ['uses' => 'ConversationController@invite']);
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);
              Route::post('notifications/clear', ['uses' => 'NotificationController@dismissAll']);
+
+             Route::get('locations', ['uses' => 'LocationController@search']);
 
          }
 );

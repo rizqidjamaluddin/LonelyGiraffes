@@ -5,6 +5,8 @@
  * @method assertFalse($a)
  * @method assertEquals($a, $b)
  * @method setExpectedException($exception)
+ * @method markTestIncomplete($message = "")
+ * @method markTestSkipped($message = "")
  */
 abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 

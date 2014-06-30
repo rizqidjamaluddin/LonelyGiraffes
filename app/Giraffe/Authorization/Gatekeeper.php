@@ -58,6 +58,16 @@ class Gatekeeper
     protected $enable = true;
 
     /**
+     * @var bool
+     */
+    protected $sudo = false;
+
+    /**
+     * @var string
+     */
+    protected $sudoMessage;
+
+    /**
      * @var GatekeeperProvider
      */
     private $provider;
@@ -100,10 +110,19 @@ class Gatekeeper
 
     }
 
+    public function sudo($message = '')
+    {
+        $this->sudo = true;
+        $this->sudoMessage = $message;
+        $this->authenticated = true;
+        return $this;
+    }
+
     /**
      * @param $verb string
      * @param $noun string|ProtectedResource
      *
+     * @throws \Giraffe\Common\ConfigurationException
      * @return $this
      */
     public function mayI($verb, $noun)
@@ -163,17 +182,23 @@ class Gatekeeper
     {
         $result = null;
 
-        switch ($this->request) {
-            case self::REQUEST_PERMISSION :
-            {
-                if (!$this->enable) {
-                    $result = true;
+        if ($this->sudo) {
+            $this->log->notice($this, "Superuser invoked access", ['query' => $this->query]);
+            $result = true;
+        } else {
+            switch ($this->request) {
+                case self::REQUEST_PERMISSION :
+                {
+                    if (!$this->enable) {
+                        $result = true;
+                        break;
+                    }
+                    $result = $this->resolveRequestPermission();
                     break;
                 }
-                $result = $this->resolveRequestPermission();
-                break;
             }
         }
+
 
         $this->log->debug($this, "Attempted resource access", ['query' => $this->query, 'result' => $result]);
 
@@ -219,6 +244,7 @@ class Gatekeeper
     {
         $this->request = self::REQUEST_NOT_SET;
         $this->query = Array();
+        $this->sudo = false;
     }
 
 
@@ -273,8 +299,12 @@ class Gatekeeper
         try {
             /** @var Shield $shield */
             $shield = \App::make('Dingo\Api\Auth\Shield');
-            $shield->authenticate(\Request::instance(), \Route::current());
-        } catch (\Exception $e) {}
+            $user = $shield->authenticate(\Request::instance(), \Route::current());
+            if($user) {
+                Auth::setUser($user);
+            }
+        } catch (\Exception $e) {
+        }
 
         if (!$this->authenticatedUser) {
             $this->iAm(Auth::user());

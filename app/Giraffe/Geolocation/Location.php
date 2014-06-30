@@ -1,99 +1,83 @@
-<?php  namespace Giraffe\Geolocation;
+<?php  namespace Giraffe\Geolocation; 
 
-use App;
 use Illuminate\Support\Contracts\JsonableInterface;
-use JsonSerializable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/**
- * Class Location
- *
- * A location value object for representing a location.
- *
- * @package Giraffe\Helpers\Geolocation
- */
-class Location implements JsonableInterface, JsonSerializable
+class Location
 {
 
-    public $lat;
-    public $long;
+    /**
+     * Indicates if a location has been synced with the canonical data provider.
+     * @var bool
+     */
+    protected $canonized = false;
 
     public $country;
     public $state;
     public $city;
 
-    public $is_assumed = false;
-    public $assumed_location;
+    protected $lat;
+    protected $long;
+
+    public $population;
 
     /**
-     * @var GeolocationProviderInterface
+     * @var Array
      */
-    protected $provider;
-
-    public function __construct(GeolocationProviderInterface $provider)
-    {
-        $this->provider = $provider;
-    }
+    protected $metadata;
 
     /**
-     * @param array  $coordinates
-     * @param string $country
-     * @param string $state
-     * @param string $city
-     *
-     * @return Location
+     * @var LocationProvider
      */
-    public static function make($coordinates, $country = '', $state = '', $city = '')
+    protected $canonicalSource;
+
+    public function __construct()
     {
-        /** @var Location $location */
-        $location = App::make('Giraffe\Helpers\Geolocation\Location');
-        return $location->setPlace($coordinates, $country, $state, $city);
+        $this->canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
     }
 
-    /**
-     * Create a new "assumed" location, used for when the user gives an incomplete location. The embedded 'assumed'
-     * object lets us inform the user of where we think they are. Arrays are numeric-indexed that mimic make().
-     *
-     * @param array $given
-     * @param array $assumed
-     *
-     * @return Location
-     */
-    public static function makeAssumed(array $given, array $assumed)
+    public static function makeFromCity($city, $state, $country, $metadata = [])
     {
-        $location = self::make($given[0], $given[1], $given [2] ?: '', $given[3] ?: '');
-        $location->setAssumedPlace($assumed[0], $assumed[1], $assumed[2] ?: '', $assumed[3] ?: '');
-        return $location;
+        $instance = new static;
+        $instance->city = $city;
+        $instance->state = $state;
+        $instance->country = $country;
+        $instance->metadata = $metadata;
+        return $instance;
     }
 
-    protected function setPlace($coordinates, $country = '', $state = '', $city ='')
+    public static function makeFromString($location)
     {
-        $this->lat = $coordinates[0];
-        $this->long = $coordinates[1];
-        $this->country = $country;
-        $this->state = $state;
-        $this->city = $city;
+        // catch for "City, State, Country" format
+        $fragments = explode(',', $location);
+        if (count($fragments) == 3) {
+            array_walk($fragments, function(&$v){ $v = trim($v); });
+            /** @var LocationProvider $canonicalSource */
+            $canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
+            return $canonicalSource->findExact($fragments[0], $fragments[1], $fragments[2]);
+        }
+
+        throw new NotFoundHttpException;
+    }
+
+    public function provideCoordinates($lat, $long)
+    {
+        $this->lat = $lat;
+        $this->long = $long;
         return $this;
     }
 
-    public function setAssumedPlace($coordinates, $country, $state = '', $city = '')
+    public function providePopulation($population)
     {
-        $this->is_assumed = true;
-        $this->assumed_location = $this->make($coordinates, $country, $state, $city);
+        $this->population = $population;
     }
 
-    public function toJson($options = 0)
+    public function getCoordinates()
     {
-        $obj = new \stdClass;
-        $obj->lat = $this->lat;
-        $obj->long = $this->long;
-        $obj->country = $this->country;
-        $obj->state = $this->state;
-        $obj->city = $this->city;
-        return json_encode($obj);
+        if (isset($this->lat) && isset($this->long)) {
+            return [$this->lat, $this->long];
+        }
+        return [null, null];
     }
 
-    public function jsonSerialize()
-    {
-        return $this->toJson();
-    }
 }

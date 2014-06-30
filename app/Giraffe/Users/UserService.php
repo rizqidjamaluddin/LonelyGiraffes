@@ -7,6 +7,7 @@ use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\Service;
 use Hash;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use stdClass;
 use Str;
@@ -45,7 +46,7 @@ class UserService extends Service
      */
     public function createUser($data)
     {
-        $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
+        $data = array_only($data, ['name', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
 
         $data['password'] = Hash::make($data['password']);
@@ -61,13 +62,13 @@ class UserService extends Service
      * @param  int   $user_id
      * @param  array $attributes
      *
+     * @throws \Giraffe\Common\DuplicateCreationException
      * @return UserModel|null $userModel
      */
     public function updateUser($user_id, $attributes)
     {
 
-        $acceptableAttributes = ['firstname', 'lastname', 'email', 'gender', 'password'];
-        $attributes = array_only($attributes, $acceptableAttributes);
+        $attributes = array_only($attributes, ['name', 'email', 'gender', 'password']);
 
         $user = $this->userRepository->get($user_id);
         $this->gatekeeper->mayI('update', $user)->please();
@@ -102,11 +103,16 @@ class UserService extends Service
     /**
      * @param $id
      *
-     * @return mixed|void
+     * @return UserModel
      */
     public function getUser($id)
     {
         return $this->userRepository->get($id);
+    }
+
+    public function getUserByEmail($email)
+    {
+        return $this->userRepository->getByEmail($email);
     }
 
     /**
@@ -152,8 +158,7 @@ class UserService extends Service
     }
 
     /**
-     * @param int  $user
-     *
+     * @param string $user
      * @return bool
      */
     public function promoteToAdmin($user)
@@ -161,16 +166,27 @@ class UserService extends Service
         $model = $this->userRepository->getByHash($user);
         $this->gatekeeper->mayI("promote", $model)->please();
         $this->setUserRole($model, 'admin');
+        $this->log->notice($this, "User {$model->email} promoted to administrator.");
         return true;
     }
 
-    public function setUserRole($user_hash, $role) 
+    /**
+     * @param string $user
+     * @return bool
+     */
+    public function demoteToMember($user)
     {
-        $this->userRepository->update($user_hash, [
-                'role' => $role
-            ]
-        );
-        
+        $model = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI("promote", $model)->please();
+        $this->setUserRole($model, 'member');
+        $this->log->notice($this, "User {$model->email} demoted to member.");
         return true;
     }
+
+    protected function setUserRole($user_hash, $role)
+    {
+        $this->userRepository->update($user_hash, ['role' => $role]);
+        return true;
+    }
+
 } 

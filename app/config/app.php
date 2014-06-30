@@ -67,7 +67,7 @@ return array(
 	|
 	*/
 
-	'key' => 'IQ8kNc95UhDbC3PvDBWly41TmsWfLrof',
+	'key' => 'FSGjsif5KZUTVI5J6nPLWcH1PHMciG6D',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -109,13 +109,18 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
+        // utility providers
         'Way\Generators\GeneratorsServiceProvider',
         'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider',
         'Clockwork\Support\Laravel\ClockworkServiceProvider',
 
+        // production-required packages
         'Dingo\Api\ApiServiceProvider',
         'Mews\Purifier\PurifierServiceProvider',
+        'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
+//        'Barryvdh\Cors\CorsServiceProvider',
 
+        // LG-specific
         'Giraffe\GiraffeServiceProvider',
 	),
 
@@ -187,6 +192,8 @@ return array(
         'Controller'      => 'Dingo\Api\Routing\Controller',
 
         'Purifier' => 'Mews\Purifier\Facades\Purifier',
+        'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
+        'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
 	),
 
 );

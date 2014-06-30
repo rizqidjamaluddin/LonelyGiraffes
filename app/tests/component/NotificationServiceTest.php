@@ -65,8 +65,7 @@ class NotificationServiceTest extends TestCase
             [
                 "email"     => 'hello@lonelygiraffes.com',
                 "password"  => 'password',
-                'firstname' => 'Lonely',
-                'lastname'  => 'Giraffe',
+                'name' => 'Lonely',
                 'gender'    => 'M'
             ]
         );

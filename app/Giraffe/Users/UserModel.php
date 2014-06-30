@@ -1,5 +1,7 @@
 <?php namespace Giraffe\Users;
 
+use Carbon\Carbon;
+use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
@@ -9,23 +11,15 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 /**
  * Class UserModel
  *
- * @property $id int
- * @property $hash string
- * @property $firstname string
- * @property $lastname string
- * @property $nickname string
- * @property $password string
- * @property $date_of_birth Carbon
- * @property $gender string
- *
- * @property $setting UserSettingModel
- * @property $country string
- * @property $state string
- * @property $city string
- *
- * @property $role string
+ * @property int $id
+ * @property string $hash
+ * @property string $name
+ * @property string $password
+ * @property string $email
+ * @property Carbon $date_of_birth
+ * @property string $gender
  */
-class UserModel extends Eloquent implements UserInterface, RemindableInterface, ProtectedResource {
+class UserModel extends Eloquent implements UserInterface, RemindableInterface, ProtectedResource, TransformableInterface {
 
     use HasEloquentHash;
 
@@ -45,7 +39,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
 	 */
 	protected $hidden = ['id', 'password', 'created_at'];
 
-    protected $fillable = ['hash', 'nickname', 'firstname', 'lastname', 'email', 'password', 'token', 'cell',
+    protected $fillable = ['hash', 'name', 'email', 'password', 'token', 'cell',
         'country', 'state', 'city', 'lat', 'long',
         'date_of_birth', 'gender', 'role'];
 
@@ -140,5 +134,15 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
     public function getRememberTokenName()
     {
         // TODO: Implement getRememberTokenName() method.
+    }
+
+    /**
+     * Get the transformer instance.
+     *
+     * @return mixed
+     */
+    public function getTransformer()
+    {
+        return new UserTransformer();
     }
 }
