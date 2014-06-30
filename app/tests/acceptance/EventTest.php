@@ -55,7 +55,7 @@ class EventCase extends AcceptanceCase
     {
         $this->registerAndLoginAsMario();
 
-        $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->event[0];
+        $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->events[0];
         $this->assertResponseStatus(200);
 
         $this->assertEquals('My Awesome Event', $model->name);
@@ -68,7 +68,7 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('US', $model->country);
         $this->assertEquals('0000-00-00 00:00:00', $model->timestamp);
 
-        $model = $this->toJson($this->call('GET', '/api/events/' . $model->hash))->event[0];
+        $model = $this->toJson($this->call('GET', '/api/events/' . $model->hash))->events[0];
         $this->assertResponseStatus(200);
 
         $this->assertEquals('My Awesome Event', $model->name);
@@ -87,31 +87,33 @@ class EventCase extends AcceptanceCase
      */
     public function a_user_can_delete_their_event_by_hash()
     {
-        $this->markTestIncomplete();
-
         $this->registerAndLoginAsMario();
-        $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent));
+        $event = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->events[0];
 
-        $response = $this->call('DELETE', '/api/events/' . $model->event->hash);
+        $response = $this->call('DELETE', '/api/events/' . $event->hash);
         $this->assertResponseStatus(200);
 
-        $check = $this->call('GET', '/api/events/' . $model->event->hash);
+        $check = $this->call('GET', '/api/events/' . $event->hash);
         $this->assertResponseStatus(404);
     }
 
+    /**
+     * @test
+     */
     public function other_users_cannot_delete_an_event()
     {
-        $this->markTestIncomplete();
 
         $this->registerAndLoginAsMario();
-        $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent));
+        $event = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->events[0];
 
         $this->registerAndLoginAsBowser();
-        $response = $this->call('DELETE', '/api/events/' . $model->event->hash);
+        $response = $this->call('DELETE', '/api/events/' . $event->hash);
         $this->assertResponseStatus(403);
 
-        $check = $this->call('GET', '/api/events/' . $model->event->hash);
-        $this->assertResponseStatus(404);
+        $check = $this->toJson($this->call('GET', '/api/events/' . $event->hash))->events[0];
+        $this->assertResponseStatus(200);
+
+        $this->assertEquals('My Awesome Event', $check->name);
     }
 
     /**
@@ -119,13 +121,12 @@ class EventCase extends AcceptanceCase
      */
     public function it_can_update_an_event_by_hash()
     {
-        $this->markTestIncomplete();
         $this->registerAndLoginAsMario();
-        $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent));
+        $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->events[0];
         $editEvent = $this->toJson(
             $this->call(
                 'PUT',
-                '/api/events/' . $model->event->hash,
+                '/api/events/' . $model->hash,
                 [
                     'name'     => 'My Edited Awesome Event',
                     'body'     => 'Details of my edited awesome event',
@@ -133,13 +134,14 @@ class EventCase extends AcceptanceCase
                     'location' => 'My Edited Awesome Location'
                 ]
             )
-        );
+        )->events[0];
         $this->assertResponseStatus(200);
 
-        $this->assertEquals('My Edited Awesome Event', $editEvent->event->name);
-        $this->assertEquals('Details of my edited awesome event', $editEvent->event->body);
-        $this->assertEquals('<p>Details of my edited awesome event</p>', $editEvent->event->html_body);
-        $this->assertEquals('http://www.notgoogle.com', $editEvent->event->url);
-        $this->assertEquals('My Edited Awesome Location', $editEvent->event->location);
+
+        $this->assertEquals('My Edited Awesome Event', $editEvent->name);
+        $this->assertEquals('Details of my edited awesome event', $editEvent->body);
+        $this->assertEquals('<p>Details of my edited awesome event</p>', $editEvent->html_body);
+        $this->assertEquals('http://www.notgoogle.com', $editEvent->url);
+        $this->assertEquals('My Edited Awesome Location', $editEvent->location);
     }
 }
