@@ -11,24 +11,28 @@ class GiraffePermissionsLookup
     public function getGroupPermissions()
     {
         $guest = [
-            'self' => [
+            'self'   => [
             ],
             'global' => [
-                'post' => ['read']
+                'post' => ['read'],
+                'event' => ['read'],
             ]
         ];
         $member = array_merge_recursive(
             $guest,
             [
-                'self' => [
-                    'test' => ['test'],
-                    'post' => ['delete'],
-                    'user' => ['update', 'deactivate'],
+                'self'   => [
+                    'event' => ['create', 'edit', 'delete'],
                     'notification_container' => ['read', 'delete', 'dismiss_all'],
-                    'shout' => ['post', 'delete']
+                    'post'                   => ['delete'],
+                    'shout'                  => ['post', 'delete'],
+                    'user'                   => ['update', 'deactivate'],
+                    'test'                   => ['test'],
+
                 ],
                 'global' => [
-                    'post' => ['comment'],
+                    'event' => ['comment'],
+                    'post'  => ['comment'],
                     'shout' => ['comment']
                 ]
             ]
@@ -36,7 +40,7 @@ class GiraffePermissionsLookup
         $mod = array_merge_recursive(
             $member,
             [
-                'self' => [
+                'self'   => [
                 ],
                 'global' => [
                     'post' => ['delete']
@@ -46,7 +50,7 @@ class GiraffePermissionsLookup
         $admin = array_merge_recursive(
             $mod,
             [
-                'self' => [
+                'self'   => [
                 ],
                 'global' => [
                     'user' => ['update', 'deactivate', 'delete'],
@@ -55,10 +59,10 @@ class GiraffePermissionsLookup
         );
 
         return [
-            'guest' => $guest,
+            'guest'  => $guest,
             'member' => $member,
-            'mod' => $mod,
-            'admin' => $admin,
+            'mod'    => $mod,
+            'admin'  => $admin,
         ];
     }
 
