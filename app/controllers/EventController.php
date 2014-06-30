@@ -20,22 +20,33 @@ class EventController extends Controller
 
     public function store() {
         $new = $this->eventService->createEvent($this->gatekeeper->me(), Input::all());
-        return $this->withItem($new, new EventTransformer(), 'event');
+        return $this->returnEventModel($new);
     }
 
     public function show($event)
     {
         $model = $this->eventService->getEvent($event);
-        return $this->withItem($model, new EventTransformer(), 'event');
+        return $this->returnEventModel($model);
     }
 
     public function delete($event)
     {
-        return $this->eventService->deleteEvent($event);
+        $delete = $this->eventService->deleteEvent($event);
+        return $this->returnEventModel($delete);
     }
 
     public function update($event)
     {
-        return $this->eventService->updateEvent($event, Input::all());
+        $edit = $this->eventService->updateEvent($event, Input::all());
+        return $this->returnEventModel($edit);
+    }
+
+    /**
+     * @param $edit
+     * @return \Illuminate\Http\Response
+     */
+    protected function returnEventModel($edit)
+    {
+        return $this->withItem($edit, new EventTransformer(), 'events');
     }
 } 
