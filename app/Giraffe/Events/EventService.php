@@ -72,6 +72,7 @@ class EventService extends Service
     public function deleteEvent($hash)
     {
         $event = $this->eventRepository->getByHash($hash);
+        $this->gatekeeper->mayI('delete', $event)->please();
         $this->eventRepository->deleteByHash($hash);
         return $event;
     }
@@ -79,7 +80,7 @@ class EventService extends Service
     public function updateEvent($hash, $data)
     {
         $event = $this->eventRepository->getByHash($hash);
-        $this->gatekeeper->mayI('update', $hash)->please();
+        $this->gatekeeper->mayI('update', $event)->please();
 
         $data = array_only($data, ['name', 'body', 'url', 'location', 'city', 'state', 'country', 'timestamp']);
         if (array_key_exists('body', $data)) {
