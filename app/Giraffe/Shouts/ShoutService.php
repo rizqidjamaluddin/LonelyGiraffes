@@ -27,12 +27,17 @@ class ShoutService extends Service
      * @var \Giraffe\Feed\PostGeneratorHelper
      */
     private $postGeneratorHelper;
+    /**
+     * @var ShoutCreationValidator
+     */
+    private $creationValidator;
 
     public function __construct(
         UserRepository $userRepository,
         ShoutRepository $shoutRepository,
         Parser $parser,
-        PostGeneratorHelper $postGeneratorHelper
+        PostGeneratorHelper $postGeneratorHelper,
+    ShoutCreationValidator $creationValidator
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
@@ -40,12 +45,19 @@ class ShoutService extends Service
 
         $this->parser = $parser;
         $this->postGeneratorHelper = $postGeneratorHelper;
+        $this->creationValidator = $creationValidator;
     }
 
     public function createShout($user, $body)
     {
+        $this->gatekeeper->mayI('create', 'shout')->please();
+
+        $body = trim($body);
         $parsed = $this->parser->parseComment($body);
         $hash = Str::random(32);
+
+        $this->creationValidator->validate(['body' => $body]);
+
         /** @var ShoutModel $shout */
         $shout = $this->shoutRepository->create(
             [
