@@ -32,6 +32,13 @@ class EventCase extends AcceptanceCase
         'timestamp' => '0000-00-00 00:00:00'
     ];
 
+    protected $editedGenericEvent = [
+        'name'     => 'My Edited Awesome Event',
+        'body'     => 'Details of my edited awesome event',
+        'url'      => 'http://www.notgoogle.com',
+        'location' => 'My Edited Awesome Location'
+    ];
+
     public function setUp()
     {
         parent::setUp();
@@ -119,24 +126,12 @@ class EventCase extends AcceptanceCase
     /**
      * @test
      */
-    public function it_can_update_an_event_by_hash()
+    public function the_owner_can_update_an_event_by_hash()
     {
         $this->registerAndLoginAsMario();
         $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->events[0];
-        $editEvent = $this->toJson(
-            $this->call(
-                'PUT',
-                '/api/events/' . $model->hash,
-                [
-                    'name'     => 'My Edited Awesome Event',
-                    'body'     => 'Details of my edited awesome event',
-                    'url'      => 'http://www.notgoogle.com',
-                    'location' => 'My Edited Awesome Location'
-                ]
-            )
-        )->events[0];
+        $editEvent = $this->toJson( $this->call('PUT', '/api/events/' . $model->hash, $this->editedGenericEvent))->events[0];
         $this->assertResponseStatus(200);
-
 
         $this->assertEquals('My Edited Awesome Event', $editEvent->name);
         $this->assertEquals('Details of my edited awesome event', $editEvent->body);
