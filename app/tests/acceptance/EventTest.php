@@ -128,8 +128,46 @@ class EventCase extends AcceptanceCase
      */
     public function the_owner_can_update_an_event_by_hash()
     {
-        $this->registerAndLoginAsMario();
+        $mario = $this->registerAndLoginAsMario();
         $model = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->events[0];
+
+        /*
+         * Evil edit as guest
+         */
+
+        $this->asGuest();
+        $this->toJson( $this->call('PUT', '/api/events/' . $model->hash, $this->editedGenericEvent));
+        $this->assertResponseStatus(401);
+
+
+        $checkGuestEdit = $this->toJson( $this->call('GET', '/api/events/' . $model->hash))->events[0];
+        $this->assertEquals('My Awesome Event', $checkGuestEdit->name);
+        $this->assertEquals('Details of my awesome event', $checkGuestEdit->body);
+        $this->assertEquals('<p>Details of my awesome event</p>', $checkGuestEdit->html_body);
+        $this->assertEquals('http://www.google.com', $checkGuestEdit->url);
+        $this->assertEquals('My Awesome Location', $checkGuestEdit->location);
+
+        /*
+         * Evil edit as bowser
+         */
+
+        $bowser = $this->registerAndLoginAsBowser();
+        $evilEdit = $this->toJson( $this->call('PUT', '/api/events/' . $model->hash, $this->editedGenericEvent));
+        $this->assertResponseStatus(403);
+
+
+        $checkEvilEdit = $this->toJson( $this->call('GET', '/api/events/' . $model->hash))->events[0];
+        $this->assertEquals('My Awesome Event', $checkEvilEdit->name);
+        $this->assertEquals('Details of my awesome event', $checkEvilEdit->body);
+        $this->assertEquals('<p>Details of my awesome event</p>', $checkEvilEdit->html_body);
+        $this->assertEquals('http://www.google.com', $checkEvilEdit->url);
+        $this->assertEquals('My Awesome Location', $checkEvilEdit->location);
+
+        /*
+         * Proper edit by user
+         */
+
+        $this->asUser($mario->hash);
         $editEvent = $this->toJson( $this->call('PUT', '/api/events/' . $model->hash, $this->editedGenericEvent))->events[0];
         $this->assertResponseStatus(200);
 
