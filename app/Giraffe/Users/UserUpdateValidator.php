@@ -17,13 +17,8 @@ class UserUpdateValidator
         try {
             $validator->assert($data);
         } catch (AbstractNestedException $e) {
-            $errors = $e->findMessages(
-                [
-                    'email' => $data['email'] . ' is not a valid email', // custom error message
-                    'length' // use default error message, shown if any 'length' test fails
-                ]
-            );
-            throw new ValidationException('Could not create a new user.', $errors);
+            $errors = $e->findMessages(['email', 'length', 'in']);
+            throw new ValidationException('Could not update user.', $errors);
         }
 
         return true;
