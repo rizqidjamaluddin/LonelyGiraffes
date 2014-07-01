@@ -111,7 +111,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
      */
     public function getRememberToken()
     {
-        // TODO: Implement getRememberToken() method.
+        return null;
     }
 
     /**
@@ -123,7 +123,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
      */
     public function setRememberToken($value)
     {
-        // TODO: Implement setRememberToken() method.
+        return;
     }
 
     /**
@@ -133,7 +133,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
      */
     public function getRememberTokenName()
     {
-        // TODO: Implement getRememberTokenName() method.
+        return 'unused_token';
     }
 
     /**

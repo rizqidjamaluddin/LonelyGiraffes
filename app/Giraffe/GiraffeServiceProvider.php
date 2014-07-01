@@ -16,6 +16,8 @@ class GiraffeServiceProvider extends ServiceProvider {
         $this->app->singleton('Giraffe\Logging\Log');
         $this->app->singleton('Giraffe\Geolocation\LocationService');
         $this->app->singleton('Giraffe\Geolocation\Providers\GeonameLocationProvider');
+
+        $this->app->singleton('Giraffe\Users\UserService');
     }
 
     public function boot()

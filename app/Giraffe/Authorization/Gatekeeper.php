@@ -113,7 +113,7 @@ class Gatekeeper
     public function iAmAGuest()
     {
         $this->authenticated = false;
-        unset($this->authenticatedUser);
+        $this->authenticatedUser = null;
         return $this;
     }
 
