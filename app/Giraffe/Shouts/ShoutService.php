@@ -74,7 +74,9 @@ class ShoutService extends Service
 
     public function getShout($hash)
     {
-        return $this->shoutRepository->getByHash($hash);
+        $shout = $this->shoutRepository->getByHash($hash);
+        $this->gatekeeper->mayI('read', $shout);
+            return $shout;
     }
 
     public function getShouts($userHash)
