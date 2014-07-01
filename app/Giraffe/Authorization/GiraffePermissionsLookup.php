@@ -25,7 +25,7 @@ class GiraffePermissionsLookup
                     'event' => ['create', 'edit', 'update', 'delete'],
                     'notification_container' => ['read', 'delete', 'dismiss_all'],
                     'post'                   => ['delete'],
-                    'shout'                  => ['post', 'delete'],
+                    'shout'                  => ['create', 'delete'],
                     'user'                   => ['update', 'deactivate'],
                     'test'                   => ['test'],
 
