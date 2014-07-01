@@ -46,6 +46,8 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
     public function asGuest()
     {
+        $g = App::make('Giraffe\Authorization\Gatekeeper');
+        $g->iAmAGuest();
         /** @var \Illuminate\Auth\Guard $guard */
         $guard = $this->app['auth']->driver();
         $guard->logout();
