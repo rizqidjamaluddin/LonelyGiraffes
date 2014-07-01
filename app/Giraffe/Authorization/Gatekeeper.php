@@ -110,6 +110,13 @@ class Gatekeeper
 
     }
 
+    public function iAmAGuest()
+    {
+        $this->authenticated = false;
+        unset($this->authenticatedUser);
+        return $this;
+    }
+
     public function sudo($message = '')
     {
         $this->sudo = true;

@@ -1,15 +1,9 @@
 <?php  namespace Giraffe\Users;
 
-use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Common\DuplicateCreationException;
 use Giraffe\Common\DuplicateUpdateException;
-use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\Service;
 use Hash;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
-use stdClass;
 use Str;
 
 class UserService extends Service
