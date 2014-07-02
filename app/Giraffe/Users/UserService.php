@@ -119,9 +119,9 @@ class UserService extends Service
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getUserByName($name)
+    public function getUsersByName($name)
     {
-        return $this->userRepository->getByName($name);
+        return $this->userRepository->findByName($name);
     }
 
     /**

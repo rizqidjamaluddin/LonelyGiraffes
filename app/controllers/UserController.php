@@ -37,12 +37,17 @@ class UserController extends Controller
         )
             throw new BadRequestHttpException();
 
-        if(Input::get('email'))
+        if(Input::get('email')) {
             $model = $this->userService->getUserByEmail(Input::get('email'));
-        if(Input::get('name'))
-            $model = $this->userService->getUserByName(Input::get('name'));
+            $model = $this->returnUserModel($model);
+            return $model;
+        }
 
-        return $this->returnUserModel($model);
+        if(Input::get('name')) {
+            $models = $this->userService->getUsersByName(Input::get('name'));
+            $models = $this->returnUserModels($models);
+            return $models;
+        }
     }
 
     public function update($id)
@@ -60,4 +65,13 @@ class UserController extends Controller
     {
         return $this->withItem($model, $model->getTransformer(), 'users');
     }
-} 
+
+    /**
+     * @param Illuminate\Database\Eloquent\Collection $models
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function returnUserModels(Illuminate\Database\Eloquent\Collection $models) {
+        return $this->withCollection($models, $models->first()->getTransformer(), 'users');
+    }
+}

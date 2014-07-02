@@ -87,14 +87,11 @@ class UserRepository extends EloquentRepository
      */
     public function getByName($name)
     {
-        if ($name instanceof UserModel) {
-            return $name;
-        }
-
-        if (!$model = $this->model->where('name', '=', $name)->first()) {
+        $models = $this->model->where('name', '=', $name)->get();
+        if ($models->isEmpty()) {
             throw new NotFoundModelException();
         }
-        return $model;
+        return $models;
     }
 
     /**

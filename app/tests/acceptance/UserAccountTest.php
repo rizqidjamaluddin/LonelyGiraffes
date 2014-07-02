@@ -109,16 +109,34 @@ class UserAccountCase extends AcceptanceCase
      */
     public function it_can_find_a_user_by_name()
     {
-        $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
-        $getModel = $this->toJson($this->call("GET", "/api/users", array('name' => $model->users[0]->name)));
+        $model1 = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
+        $model2 = $this->toJson($this->call("POST", "/api/users/", $this->anotherGenericUser));
+        $model3 = $this->toJson($this->call("POST", "/api/users/", $this->similarGenericUser));
 
+
+        // Retrieve 1 user
+        $getModels = $this->toJson($this->call("GET", "/api/users", array('name' => $model1->users[0]->name)));
         $this->assertResponseStatus(200);
-        $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
-        $this->assertEquals('Lonely Giraffe', $getModel->users[0]->name);
-        $this->assertEquals('M', $getModel->users[0]->gender);
+        $this->assertEquals(1, count($getModels->users));
+        $this->assertEquals('hello@lonelygiraffes.com', $getModels->users[0]->email);
+        $this->assertEquals('Lonely Giraffe', $getModels->users[0]->name);
+        $this->assertEquals('M', $getModels->users[0]->gender);
+
+
+        // Retrieve n users
+        $getModels = $this->toJson($this->call("GET", "/api/users", array('name' => $model2->users[0]->name)));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(2, count($getModels->users));
+        $this->assertEquals('anotherHello@lonelygiraffes.com', $getModels->users[0]->email);
+        $this->assertEquals('Lonesome Penguin', $getModels->users[0]->name);
+        $this->assertEquals('F', $getModels->users[0]->gender);
+        $this->assertEquals('similarHello@lonelygiraffes.com', $getModels->users[1]->email);
+        $this->assertEquals('Lonesome Penguin', $getModels->users[1]->name);
+        $this->assertEquals('M', $getModels->users[1]->gender);
+
 
         //It should fail when it needs to fail
-        $this->call("GET", "/api/users", array('name' => 'poopy head'));
+        $this->call("GET", "/api/users", array('name' => 'Benadryl Cabbagepatch'));
         $this->assertResponseStatus(404);
     }
 
