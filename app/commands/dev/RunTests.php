@@ -51,24 +51,57 @@ class RunTests extends Command
         $this->info('Starting test gauntlet.');
         /** @var \Symfony\Component\Console\Helper\FormatterHelper $formatter */
         $formatter = $this->getHelperSet()->get('formatter');
-        $this->output->getFormatter()->setStyle('rep', new OutputFormatterStyle('blue'));
-        $this->output->getFormatter()->setStyle('name', new OutputFormatterStyle('red'));
-        $this->output->getFormatter()->setStyle('exec', new OutputFormatterStyle('magenta'));
+        $this->output->getFormatter()->setStyle('rep', new OutputFormatterStyle('blue', null, []));
+        $this->output->getFormatter()->setStyle('name', new OutputFormatterStyle('red', null, []));
+        $this->output->getFormatter()->setStyle('exec', new OutputFormatterStyle('magenta', null, []));
+        $this->output->getFormatter()->setStyle('out', new OutputFormatterStyle('black', null, []));
+        $this->output->getFormatter()->setStyle('safe', new OutputFormatterStyle('white', 'green', []));
+        $this->output->getFormatter()->setStyle('rep-ok', new OutputFormatterStyle('green', null, []));
+        $this->output->getFormatter()->setStyle('rep-fail', new OutputFormatterStyle('red', null, []));
         $this->drawLine();
+
+        $failing = false;
+        $failed = [];
+        $succeeded = [];
 
         foreach ($this->commands as $process => $command) {
             $this->line("<exec>$process > $command</exec>");
+            $output = [];
             $lastLine = exec($command, $output, $exitCode);
             if ($exitCode == 0) {
                 $this->line("<rep>Test \"<name>$process</name>\" completed successfully.</rep>");
                 $this->info("\n");
                 $this->line($lastLine);
+                $succeeded[] = $process;
                 $this->drawLine();
             } else {
                 // test fail
                 $this->error('Test failed!');
+                foreach ($output as $line) {
+                    $this->line("[FAIL] <out>$line</out>");
+                }
+                $failing = true;
+                $failed[] = $process;
+                $this->drawLine();
 
             }
+        }
+
+
+
+        foreach ($failed as $test) {
+            $this->line("[FAIL] <rep-fail>$test</rep-fail>");
+        }
+        foreach ($succeeded as $test) {
+            $this->line("[OK] <rep-ok>$test</rep-ok>");
+        }
+
+        if ($failing) {
+            $this->error("Tests FAIL");
+            return 1;
+        } else {
+            $this->line("<safe>Tests OK</safe>");
+            return 0;
         }
     }
 
