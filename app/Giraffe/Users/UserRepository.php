@@ -61,6 +61,12 @@ class UserRepository extends EloquentRepository
         return $model;
     }
 
+    /**
+     * @param string $email
+     *
+     * @throws \Giraffe\Common\NotFoundModelException
+     * @return UserModel
+     */
     public function getByEmail($email)
     {
         if ($email instanceof UserModel) {
@@ -68,6 +74,24 @@ class UserRepository extends EloquentRepository
         }
 
         if (!$model = $this->model->where('email', '=', $email)->first()) {
+            throw new NotFoundModelException();
+        }
+        return $model;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @throws \Giraffe\Common\NotFoundModelException
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getByName($name)
+    {
+        if ($name instanceof UserModel) {
+            return $name;
+        }
+
+        if (!$model = $this->model->where('name', '=', $name)->first()) {
             throw new NotFoundModelException();
         }
         return $model;
