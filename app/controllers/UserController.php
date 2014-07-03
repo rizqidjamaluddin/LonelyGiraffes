@@ -31,11 +31,23 @@ class UserController extends Controller
 	}
 
     public function index() {
-        // Currently only for 'email'
-        if(!Input::get('email'))
+        // Currently only for 'email' OR 'name', but not both simultaneously.
+        if((!Input::get('email') && !Input::get('name')) ||
+            (Input::get('email') && Input::get('name'))
+        )
             throw new BadRequestHttpException();
-        $model = $this->userService->getUserByEmail(Input::get('email'));
-        return $this->returnUserModel($model);
+
+        if(Input::get('email')) {
+            $model = $this->userService->getUserByEmail(Input::get('email'));
+            $model = $this->returnUserModel($model);
+            return $model;
+        }
+
+        if(Input::get('name')) {
+            $models = $this->userService->getUsersByName(Input::get('name'));
+            $models = $this->returnUserModels($models);
+            return $models;
+        }
     }
 
     public function update($id)
@@ -53,4 +65,13 @@ class UserController extends Controller
     {
         return $this->withItem($model, $model->getTransformer(), 'users');
     }
-} 
+
+    /**
+     * @param Illuminate\Database\Eloquent\Collection $models
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function returnUserModels(Illuminate\Database\Eloquent\Collection $models) {
+        return $this->withCollection($models, $models->first()->getTransformer(), 'users');
+    }
+}

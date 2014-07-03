@@ -104,9 +104,24 @@ class UserService extends Service
         return $this->userRepository->get($id);
     }
 
+    /**
+     * @param $email
+     *
+     * @return UserModel
+     */
     public function getUserByEmail($email)
     {
         return $this->userRepository->getByEmail($email);
+    }
+
+    /**
+     * @param $name
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getUsersByName($name)
+    {
+        return $this->userRepository->getByName($name);
     }
 
     /**

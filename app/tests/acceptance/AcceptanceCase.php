@@ -31,6 +31,16 @@ abstract class AcceptanceCase extends TestCase
         'gender'   => 'F'
     ];
 
+    /**
+     * @var array
+     */
+    protected $similarGenericUser = [
+        'email'    => 'similarHello@lonelygiraffes.com',
+        'password' => 'password',
+        'name'     => 'Lonesome Penguin',
+        'gender'   => 'M'
+    ];
+
 
     public function setUp()
     {
