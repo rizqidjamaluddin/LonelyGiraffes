@@ -37,5 +37,10 @@ class FeedService extends Service
         $this->postRepository = $postRepository;
     }
 
+    public function getGlobalFeed($page = 0)
+    {
+        return $this->postRepository->getGlobal($page);
+    }
+
 
 } 

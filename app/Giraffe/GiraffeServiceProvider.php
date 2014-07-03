@@ -8,7 +8,7 @@ class GiraffeServiceProvider extends ServiceProvider {
 
     public function register()
     {
-        $this->app->singleton('Giraffe\Helpers\Geolocation\GeolocationProvider', 'Giraffe\Helpers\Geolocation\GeonameGeolocationProvider');
+        $this->app->singleton('Giraffe\Geolocation\LocationProvider', 'Giraffe\Geolocation\Providers\GeonameLocationProvider');
         $this->app->singleton('Giraffe\Authorization\Gatekeeper');
         $this->app->singleton('Giraffe\Authorization\GatekeeperProvider', 'Giraffe\Authorization\GiraffeGatekeeperProvider');
 
