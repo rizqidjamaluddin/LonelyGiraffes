@@ -361,7 +361,6 @@ class UserAccountCase extends AcceptanceCase
     public function user_genders_are_optional()
     {
         $data = array_only($this->genericUser, ['name', 'password', 'email']);
-        dd($data);
         $insert = $this->toJson($this->call('POST', '/api/users', $data))->users[0];
         $this->assertResponseOk();
         $this->assertEquals($insert->name, $this->genericUser['name']);
