@@ -47,7 +47,7 @@ class UserController extends Controller
                 $model = $this->returnUserModel($model);
                 return $model;
             } catch (NotFoundModelException $e) {
-                $this->returnUserModels(new Collection());
+                return $this->returnUserModels(new Collection());
             }
         }
 
