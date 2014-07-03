@@ -1,10 +1,13 @@
 <?php  namespace Giraffe\Events; 
+use Giraffe\Users\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
 class EventTransformer extends TransformerAbstract
 {
     public function transform(EventModel $model)
     {
+        $author = (new UserTransformer())->transform($model->owner);
+
         return [
             'hash' => $model->hash,
             'name' => $model->name,
@@ -15,7 +18,10 @@ class EventTransformer extends TransformerAbstract
             'city' => $model->city,
             'state' => $model->state,
             'country' => $model->country,
-            'timestamp' => $model->timestamp
+            'timestamp' => $model->timestamp,
+            'links' => [
+                'owner' => $author
+            ]
         ];
     }
 } 
