@@ -353,4 +353,23 @@ class UserAccountCase extends AcceptanceCase
         $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
         $this->assertEquals($getModel->users[0]->hash, $model->users[0]->hash);
     }
+
+    /**
+     * @test
+     * @see Issue #2
+     */
+    public function user_genders_are_optional()
+    {
+        $data = array_only($this->genericUser, ['name', 'password', 'email']);
+        dd($data);
+        $insert = $this->toJson($this->call('POST', '/api/users', $data))->users[0];
+        $this->assertResponseOk();
+        $this->assertEquals($insert->name, $this->genericUser['name']);
+        $this->assertEquals($insert->email, $this->genericUser['email']);
+
+        $check = $this->toJson($this->call('GET', '/api/users/' . $insert->hash))->users[0];
+        $this->assertResponseOk();
+        $this->assertEquals($check->name, $this->genericUser['name']);
+        $this->assertEquals($check->email, $this->genericUser['email']);
+    }
 }
