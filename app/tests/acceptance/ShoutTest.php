@@ -27,6 +27,7 @@ class ShoutTest extends AcceptanceCase
 
         $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shout->hash))->shouts[0];
         $this->assertEquals('This is a shout!', $getShout->body);
+        $this->assertEquals($getShout->links->author->name, 'Mario');
 
         $this->assertResponseStatus(200);
     }

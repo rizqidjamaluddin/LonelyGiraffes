@@ -74,6 +74,7 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('Georgia', $model->state);
         $this->assertEquals('US', $model->country);
         $this->assertEquals('0000-00-00 00:00:00', $model->timestamp);
+        $this->assertEquals($model->links->owner->name, 'Mario');
 
         $model = $this->toJson($this->call('GET', '/api/events/' . $model->hash))->events[0];
         $this->assertResponseStatus(200);
@@ -87,6 +88,8 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('Georgia', $model->state);
         $this->assertEquals('US', $model->country);
         $this->assertEquals('0000-00-00 00:00:00', $model->timestamp);
+        $this->assertEquals($model->links->owner->name, 'Mario');
+
     }
 
     /**
