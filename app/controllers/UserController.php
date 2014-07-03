@@ -1,9 +1,13 @@
 <?php
 
 use Giraffe\Common\Controller;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserService;
 use Dingo\Api\Http\ResponseBuilder;
+use Giraffe\Users\UserTransformer;
+use Illuminate\Support\Collection;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserController extends Controller
 {
@@ -38,9 +42,13 @@ class UserController extends Controller
             throw new BadRequestHttpException();
 
         if(Input::get('email')) {
-            $model = $this->userService->getUserByEmail(Input::get('email'));
-            $model = $this->returnUserModel($model);
-            return $model;
+            try {
+                $model = $this->userService->getUserByEmail(Input::get('email'));
+                $model = $this->returnUserModel($model);
+                return $model;
+            } catch (NotFoundModelException $e) {
+                $this->returnUserModels(new Collection());
+            }
         }
 
         if(Input::get('name')) {
@@ -48,6 +56,8 @@ class UserController extends Controller
             $models = $this->returnUserModels($models);
             return $models;
         }
+
+        throw new BadRequestHttpException();
     }
 
     public function update($id)
@@ -63,15 +73,15 @@ class UserController extends Controller
      */
     public function returnUserModel(UserModel $model)
     {
-        return $this->withItem($model, $model->getTransformer(), 'users');
+        return $this->withItem($model, new UserTransformer(), 'users');
     }
 
     /**
-     * @param Illuminate\Database\Eloquent\Collection $models
+     * @param Collection $models
      *
      * @return \Illuminate\Http\Response
      */
-    public function returnUserModels(Illuminate\Database\Eloquent\Collection $models) {
-        return $this->withCollection($models, $models->first()->getTransformer(), 'users');
+    public function returnUserModels(Collection $models) {
+        return $this->withCollection($models, new UserTransformer(), 'users');
     }
 }
