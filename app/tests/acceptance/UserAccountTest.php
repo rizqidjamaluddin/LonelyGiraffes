@@ -83,6 +83,11 @@ class UserAccountCase extends AcceptanceCase
         // missing password and name
         $this->call('POST', '/api/users', ['email' => 'valid@example.com']);
         $this->assertResponseStatus(422);
+
+        // check to make sure it's not registered
+        $check = $this->call('GET', '/api/users', ['email' => 'valid@example.com']);
+        $this->assertResponseOk();
+        $this->assertEquals(count($this->toJson($check)->users[0]), 0);
     }
 
     /**
