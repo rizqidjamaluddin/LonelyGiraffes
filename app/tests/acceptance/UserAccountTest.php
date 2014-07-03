@@ -69,6 +69,29 @@ class UserAccountCase extends AcceptanceCase
 
     /**
      * @test
+     */
+    public function it_requires_name_email_and_password_in_registration()
+    {
+        // missing name
+        $this->call('POST', '/api/users', ['email' => 'valid@example.com', 'password' => '12345']);
+        $this->assertResponseStatus(422);
+
+        // missing password
+        $this->call('POST', '/api/users', ['email' => 'valid@example.com', 'name' => 'John']);
+        $this->assertResponseStatus(422);
+
+        // missing password and name
+        $this->call('POST', '/api/users', ['email' => 'valid@example.com']);
+        $this->assertResponseStatus(422);
+
+        // check to make sure it's not registered
+        $check = $this->call('GET', '/api/users', ['email' => 'valid@example.com']);
+        $this->assertResponseOk();
+        $this->assertEquals(count($this->toJson($check)->users), 0);
+    }
+
+    /**
+     * @test
      * @depends it_can_create_a_new_user
      */
     public function it_can_find_a_user()
@@ -98,8 +121,9 @@ class UserAccountCase extends AcceptanceCase
         $this->assertEquals('M', $getModel->users[0]->gender);
 
         //It should fail when it needs to fail
-        $this->call("GET", "/api/users", array('email' => '@lonelygiraffes.x'));
-        $this->assertResponseStatus(404);
+        $fail =$this->call("GET", "/api/users", array('email' => '@lonelygiraffes.x'));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(count($this->toJson($fail)->users), 0);
     }
 
     /**
