@@ -23,7 +23,6 @@ class CreateUserDisplayNameField extends Migration {
         Schema::table('users', function(Blueprint $table)
             {
                 $table->dropColumn('lastname');
-                $table->unique('name');
             });
         Schema::table('users', function(Blueprint $table)
             {

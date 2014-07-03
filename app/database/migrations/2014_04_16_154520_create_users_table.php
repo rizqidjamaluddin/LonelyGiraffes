@@ -32,14 +32,14 @@ class CreateUsersTable extends Migration {
 //            $table->decimal('long', 18, 12)->nullable();
 
             $table->timestamp('date_of_birth')->nullable();
-            $table->enum('gender', ['M', 'F', 'X']);
+            $table->string('gender', 1);
 			$table->timestamps();
             $table->softDeletes();
 
             $table->unique('email');
             $table->unique('token');
 
-            $table->enum('role', ['member', 'mod', 'admin'])->default('member');
+            $table->string('role')->default('member');
 		});
 	}
 
