@@ -121,7 +121,7 @@ class UserService extends Service
      */
     public function getUsersByName($name)
     {
-        return $this->userRepository->findByName($name);
+        return $this->userRepository->getByName($name);
     }
 
     /**
