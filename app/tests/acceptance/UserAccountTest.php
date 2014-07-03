@@ -87,7 +87,7 @@ class UserAccountCase extends AcceptanceCase
         // check to make sure it's not registered
         $check = $this->call('GET', '/api/users', ['email' => 'valid@example.com']);
         $this->assertResponseOk();
-        $this->assertEquals(count($this->toJson($check)->users[0]), 0);
+        $this->assertEquals(count($this->toJson($check)->users), 0);
     }
 
     /**
@@ -121,8 +121,9 @@ class UserAccountCase extends AcceptanceCase
         $this->assertEquals('M', $getModel->users[0]->gender);
 
         //It should fail when it needs to fail
-        $this->call("GET", "/api/users", array('email' => '@lonelygiraffes.x'));
-        $this->assertResponseStatus(404);
+        $fail =$this->call("GET", "/api/users", array('email' => '@lonelygiraffes.x'));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(count($this->toJson($fail)->users), 0);
     }
 
     /**
