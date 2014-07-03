@@ -20,7 +20,7 @@ class ShoutController extends Controller
     public function store()
     {
         $body = Input::get('body');
-        $shout = $this->shoutService->createShout(Auth::user(), $body);
+        $shout = $this->shoutService->createShout($this->gatekeeper->me(), $body);
         return $this->withItem($shout, new ShoutTransformer(), 'shouts');
     }
 
