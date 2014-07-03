@@ -6,16 +6,20 @@ class UserTransformer extends TransformerAbstract
 
     public function transform($userModel)
     {
-        if(get_class($userModel)=='Illuminate\Database\Eloquent\Collection') {
-            return $userModel->map(function($model) { return $this->transform($model); })->toArray();
-        }
 
-        return [
+        $gender = $userModel->gender ? ['gender' => $userModel->gender] : [];
+
+        return array_merge([
             'hash' => $userModel->hash,
             'name' => $userModel->name,
-            'gender' => $userModel->gender,
-            'email' => $userModel->email
-        ];
+            'email' => $userModel->email,
+            'href' => $this->buildUrl($userModel->hash)
+        ], $gender);
+    }
+
+    protected function buildUrl($hash)
+    {
+        return url('api/users/'.$hash);
     }
 
 } 
