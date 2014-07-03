@@ -19,7 +19,7 @@ class UserTransformer extends TransformerAbstract
 
     protected function buildUrl($hash)
     {
-        return link_to('api/users/'.$hash);
+        return url('api/users/'.$hash);
     }
 
 } 
