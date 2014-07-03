@@ -23,7 +23,7 @@ class LocationHelper
 
     private $geolocationProvider;
 
-    public function __construct(GeolocationProvider $geolocationProvider)
+    public function __construct(LocationProvider $geolocationProvider)
     {
         $this->geolocationProvider = $geolocationProvider;
     }
