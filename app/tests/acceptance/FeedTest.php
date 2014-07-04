@@ -85,7 +85,7 @@ class FeedTest extends AcceptanceCase
         $fetch = $this->toJson($this->call('GET', '/api/posts'))->posts;
         $this->assertResponseOk();
         $this->assertEquals(count($fetch), 1);
-        $this->assertEquals($fetch->body->body, 'Details of my awesome event');
+        $this->assertEquals($fetch[0]->body->body, 'Details of my awesome event');
     }
 
 
