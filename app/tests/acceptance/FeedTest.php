@@ -59,6 +59,34 @@ class FeedTest extends AcceptanceCase
         $this->assertEquals(count($lastChunk->posts), 0);
     }
 
+    /**
+     * @test
+     */
+    public function it_can_display_event_posts()
+    {
+         $genericEvent = [
+            'user_id'   => 1,
+            'name'      => 'My Awesome Event',
+            'body'      => 'Details of my awesome event',
+            'html_body' => 'Details of my awesome event',
+            'url'       => 'http://www.google.com',
+            'location'  => 'My Awesome Location',
+            'city'      => 'Athens',
+            'state'     => 'Georgia',
+            'country'   => 'US',
+            'cell'      => '',
+            'timestamp' => '0000-00-00 00:00:00'
+        ];
+
+        $this->registerAndLoginAsMario();
+        $this->call('POST', 'api/events', $genericEvent);
+        $this->assertResponseOk();
+
+        $fetch = $this->toJson($this->call('GET', 'api/posts'))->posts;
+        $this->assertResponseOk();
+        $this->assertEquals(count($fetch), 1);
+        $this->assertEquals($fetch->body->body, 'Details of my awesome event');
+    }
 
 
 } 
