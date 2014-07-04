@@ -33,12 +33,13 @@ class FeedTest extends AcceptanceCase
     {
         $this->registerAndLoginAsMario();
 
-        for ($i = 0; $i < 10; $i++) {
-            $this->call('POST', '/api/shouts', ['body' => $this->otherGenericShoutBody]);
-        }
-
+        // these posts should be on the second chunk
         for ($i = 0; $i < 10; $i++) {
             $this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+        }
+        // these posts should be the first to load
+        for ($i = 0; $i < 10; $i++) {
+            $this->call('POST', '/api/shouts', ['body' => $this->otherGenericShoutBody]);
         }
 
         $firstChunk = $this->toJson($this->call('GET', '/api/posts'));
@@ -49,9 +50,9 @@ class FeedTest extends AcceptanceCase
 
         $nextChunk = $this->toJson($this->call('GET', '/api/posts', ['before' => $cursor]));
         $this->assertResponseOk();
-        $this->assertEquals($firstChunk->posts[0]->body->body, $this->genericShoutBody);
-        $this->assertEquals($firstChunk->posts[9]->body->body, $this->genericShoutBody);
-        $cursor = end($firstChunk->posts)->hash;
+        $this->assertEquals($nextChunk->posts[0]->body->body, $this->genericShoutBody);
+        $this->assertEquals($nextChunk->posts[9]->body->body, $this->genericShoutBody);
+        $cursor = end($nextChunk->posts)->hash;
 
         $lastChunk = $this->toJson($this->call('GET', '/api/posts', ['before' => $cursor]));
         $this->assertResponseOk();
