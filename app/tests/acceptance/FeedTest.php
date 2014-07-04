@@ -79,10 +79,10 @@ class FeedTest extends AcceptanceCase
         ];
 
         $this->registerAndLoginAsMario();
-        $this->call('POST', 'api/events', $genericEvent);
+        $this->call('POST', '/api/events', $genericEvent);
         $this->assertResponseOk();
 
-        $fetch = $this->toJson($this->call('GET', 'api/posts'))->posts;
+        $fetch = $this->toJson($this->call('GET', '/api/posts'))->posts;
         $this->assertResponseOk();
         $this->assertEquals(count($fetch), 1);
         $this->assertEquals($fetch->body->body, 'Details of my awesome event');
