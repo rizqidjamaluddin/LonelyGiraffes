@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Events;
 
 use Giraffe\Common\Service;
+use Giraffe\Feed\PostGeneratorHelper;
 use Giraffe\Parser\Parser;
 use Giraffe\Users\UserRepository;
 use Giraffe\Users\UserService;
@@ -33,6 +34,10 @@ class EventService extends Service
      * @var Parser
      */
     private $parser;
+    /**
+     * @var PostGeneratorHelper
+     */
+    private $postGeneratorHelper;
 
     public function __construct(
         EventRepository $eventRepository,
@@ -40,7 +45,8 @@ class EventService extends Service
         EventInvitationRepository $invitationRepository,
         EventRequestRepository $requestRepository,
         UserRepository $userRepository,
-        Parser $parser
+        Parser $parser,
+        PostGeneratorHelper $postGeneratorHelper
     ) {
         parent::__construct();
 
@@ -50,6 +56,7 @@ class EventService extends Service
         $this->requestRepository = $requestRepository;
         $this->userRepository = $userRepository;
         $this->parser = $parser;
+        $this->postGeneratorHelper = $postGeneratorHelper;
     }
 
     public function createEvent($user, $data)
@@ -61,7 +68,10 @@ class EventService extends Service
         $data['html_body'] = $this->parser->parseComment($data['body']);
         $user = $this->userRepository->getByHash($user);
         $data['user_id'] = $user->id;
-        return $this->eventRepository->create($data);
+
+        $event = $this->eventRepository->create($data);
+        $this->postGeneratorHelper->generate($event);
+        return $event;
     }
 
     public function getEvent($hash)

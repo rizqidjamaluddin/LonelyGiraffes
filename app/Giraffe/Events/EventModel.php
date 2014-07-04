@@ -3,9 +3,10 @@
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Feed\Postable;
 use Giraffe\Users\UserModel;
 
-class EventModel extends Eloquent implements ProtectedResource{
+class EventModel extends Eloquent implements Postable, ProtectedResource{
     use HasEloquentHash;
 
     protected $table = 'events';
@@ -35,5 +36,15 @@ class EventModel extends Eloquent implements ProtectedResource{
     public function checkOwnership(UserModel $user)
     {
         return $user->id === $this->user_id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getOwnerId()
+    {
+        return $this->user_id;
     }
 }
