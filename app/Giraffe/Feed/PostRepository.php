@@ -19,7 +19,7 @@ class PostRepository extends EloquentRepository
 
     public function getGlobal($page)
     {
-        return $this->model->with('postable', 'postable.author')->take(10)->skip($page * 10)->get();
+        return $this->model->with('author', 'postable', 'postable.author')->take(10)->skip($page * 10)->get();
     }
 
 } 
