@@ -12,6 +12,7 @@ class NotFoundLocationException extends NotFoundHttpException
     public function __construct(array $hints = [])
     {
         $this->hints = $hints;
+        parent::__construct();
     }
 
     public function getHints()

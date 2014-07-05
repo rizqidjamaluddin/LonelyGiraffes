@@ -14,34 +14,40 @@ class UserController extends Controller
     /**
      * @param Giraffe\Users\UserService $userService
      */
-	public function __construct(UserService $userService) {
-		$this->userService = $userService;
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
         parent::__construct();
-	}
+    }
 
-	public function store() {
-		$model = $this->userService->createUser(Input::all());
+    public function store()
+    {
+        $model = $this->userService->createUser(Input::all());
         return $this->returnUserModel($model);
-	}
+    }
 
-	public function destroy($id) {
-		$model = $this->userService->deleteUser($id);
+    public function destroy($id)
+    {
+        $model = $this->userService->deleteUser($id);
         return $this->returnUserModel($model);
-	}
+    }
 
-	public function show($id) {
-		$model = $this->userService->getUser($id);
+    public function show($id)
+    {
+        $model = $this->userService->getUser($id);
         return $this->returnUserModel($model);
-	}
+    }
 
-    public function index() {
+    public function index()
+    {
         // Currently only for 'email' OR 'name', but not both simultaneously.
-        if((!Input::get('email') && !Input::get('name')) ||
+        if ((!Input::get('email') && !Input::get('name')) ||
             (Input::get('email') && Input::get('name'))
-        )
+        ) {
             throw new BadRequestHttpException();
+        }
 
-        if(Input::get('email')) {
+        if (Input::get('email')) {
             try {
                 $model = $this->userService->getUserByEmail(Input::get('email'));
                 $model = $this->returnUserModel($model);
@@ -51,7 +57,7 @@ class UserController extends Controller
             }
         }
 
-        if(Input::get('name')) {
+        if (Input::get('name')) {
             $models = $this->userService->getUsersByName(Input::get('name'));
             $models = $this->returnUserModels($models);
             return $models;
@@ -81,7 +87,8 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function returnUserModels(Collection $models) {
+    public function returnUserModels(Collection $models)
+    {
         return $this->withCollection($models, new UserTransformer(), 'users');
     }
 }
