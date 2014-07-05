@@ -46,7 +46,7 @@ class Location
         return $instance;
     }
 
-    public static function makeFromString($location)
+    public static function buildFromString($location)
     {
         // catch for "City, State, Country" format
         $fragments = explode(',', $location);
@@ -58,6 +58,13 @@ class Location
         }
 
         throw new NotFoundHttpException;
+    }
+
+    public static function buildFromCity($city, $state, $country)
+    {
+        /** @var LocationProvider $canonicalSource */
+        $canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
+        return $canonicalSource->findExact($city, $state, $country);
     }
 
     public function provideCoordinates($lat, $long)
