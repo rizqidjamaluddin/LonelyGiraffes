@@ -17,4 +17,19 @@ class UserGeolocationTest extends GeolocationCase
         $this->assertEquals($check->country, $this->cities['nyc']['country']);
 
     }
+
+    public function a_user_cannot_enter_an_invalid_location()
+    {
+
+    }
+
+    public function a_user_can_change_their_location()
+    {
+
+    }
+
+    public function a_user_cannot_change_another_users_location()
+    {
+        
+    }
 }
