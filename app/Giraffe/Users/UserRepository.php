@@ -55,7 +55,7 @@ class UserRepository extends EloquentRepository
      */
     public function getByPublicId($nickname)
     {
-        if (!$model = $this->model->where('nickname', '=', $nickname)->first()) {
+        if (!$model = $this->model->where('name', '=', $nickname)->first()) {
             throw new NotFoundModelException();
         }
         return $model;
