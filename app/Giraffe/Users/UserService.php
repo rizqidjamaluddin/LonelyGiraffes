@@ -3,6 +3,7 @@
 use Giraffe\Common\DuplicateCreationException;
 use Giraffe\Common\DuplicateUpdateException;
 use Giraffe\Common\Service;
+use Giraffe\Geolocation\Location;
 use Hash;
 use Str;
 
@@ -62,16 +63,26 @@ class UserService extends Service
     public function updateUser($user_id, $attributes)
     {
 
-        $attributes = array_only($attributes, ['name', 'email', 'gender', 'password']);
+        $attributes = array_only($attributes, ['name', 'email', 'gender', 'password', 'city', 'state', 'country']);
 
         $user = $this->userRepository->get($user_id);
         $this->gatekeeper->mayI('update', $user)->please();
 
         $this->updateValidator->validate($attributes);
 
+        // intercept password change
         if (array_key_exists('password', $attributes)) {
-            $user->password = Hash::make($attributes['password']);
+            $attributes['password'] = Hash::make($attributes['password']);
         }
+
+        // intercept location change
+        if (array_key_exists('city', $attributes) ||
+            array_key_exists('state', $attributes) ||
+            array_key_exists('country', $attributes)) {
+            // build location object, then load it back into the attributes; this will 404 if location is missing
+            $location = Location::buildFromCity($attributes['city'], $attributes['state'], $attributes['country']);
+        }
+
         try {
             $this->userRepository->update($user, $attributes);
         } catch (DuplicateUpdateException $e) {
@@ -198,4 +209,4 @@ class UserService extends Service
         return true;
     }
 
-} 
+}
