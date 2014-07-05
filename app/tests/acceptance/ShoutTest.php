@@ -40,6 +40,12 @@ class ShoutTest extends AcceptanceCase
         $this->registerAndLoginAsMario();
         $this->call('POST', '/api/shouts', ['body' => 'Short']);
         $this->assertResponseStatus(422);
+
+        $this->call('POST', '/api/shouts', ['body' => '']);
+        $this->assertResponseStatus(422);
+
+        $this->call('POST', '/api/shouts');
+        $this->assertResponseStatus(422);
     }
 
     /**

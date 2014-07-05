@@ -8,7 +8,7 @@ class ShoutCreationValidator
 {
     public function validate(array $data)
     {
-        $validator = V::key('body', V::string()->length(10));
+        $validator = V::key('body', V::string()->notEmpty()->length(10));
 
         try {
             $validator->assert($data);
