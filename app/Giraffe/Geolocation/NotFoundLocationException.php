@@ -1,6 +1,8 @@
 <?php  namespace Giraffe\Geolocation;
 
-class NotFoundLocationException extends \Exception
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+class NotFoundLocationException extends NotFoundHttpException
 {
     /**
      * @var array

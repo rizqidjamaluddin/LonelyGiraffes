@@ -4,6 +4,7 @@ use DB;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationProvider;
+use Giraffe\Geolocation\NotFoundLocationException;
 use Illuminate\Support\Collection;
 
 class GeonameLocationProvider implements LocationProvider
@@ -138,7 +139,7 @@ class GeonameLocationProvider implements LocationProvider
                     ->where('state', $state)
                     ->where('country', $country)->first();
 
-        if (!$result) throw new NotFoundModelException;
+        if (!$result) throw new NotFoundLocationException;
 
         $place = Location::makeFromCity($city, $state, $country);
         $place->provideCoordinates($result->lat, $result->long);
