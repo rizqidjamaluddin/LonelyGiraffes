@@ -13,6 +13,9 @@ class UserTransformer extends TransformerAbstract
             'hash' => $userModel->hash,
             'name' => $userModel->name,
             'email' => $userModel->email,
+            'city' => $userModel->city,
+            'state' => $userModel->state,
+            'country' => $userModel->country,
             'href' => $this->buildUrl($userModel->hash)
         ], $gender);
     }
