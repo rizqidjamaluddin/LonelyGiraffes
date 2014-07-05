@@ -37,5 +37,16 @@ class FeedService extends Service
         $this->postRepository = $postRepository;
     }
 
+    public function getGlobalFeed($cursor = null)
+    {
+        $this->gatekeeper->mayI('read', 'feed')->please();
+        if ($cursor) {
+            $bottomPost = $this->postRepository->getByHash($cursor);
+            return $this->postRepository->getGlobalBeforeId($bottomPost->id);
+        } else {
+            return $this->postRepository->getGlobal();
+        }
+    }
+
 
 } 

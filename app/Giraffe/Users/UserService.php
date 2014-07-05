@@ -1,15 +1,9 @@
 <?php  namespace Giraffe\Users;
 
-use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Common\DuplicateCreationException;
 use Giraffe\Common\DuplicateUpdateException;
-use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\Service;
 use Hash;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
-use stdClass;
 use Str;
 
 class UserService extends Service
@@ -46,7 +40,7 @@ class UserService extends Service
      */
     public function createUser($data)
     {
-        $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
+        $data = array_only($data, ['name', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
 
         $data['password'] = Hash::make($data['password']);
@@ -68,8 +62,7 @@ class UserService extends Service
     public function updateUser($user_id, $attributes)
     {
 
-        $acceptableAttributes = ['firstname', 'lastname', 'email', 'gender', 'password'];
-        $attributes = array_only($attributes, $acceptableAttributes);
+        $attributes = array_only($attributes, ['name', 'email', 'gender', 'password']);
 
         $user = $this->userRepository->get($user_id);
         $this->gatekeeper->mayI('update', $user)->please();
@@ -111,9 +104,24 @@ class UserService extends Service
         return $this->userRepository->get($id);
     }
 
+    /**
+     * @param $email
+     *
+     * @return UserModel
+     */
     public function getUserByEmail($email)
     {
         return $this->userRepository->getByEmail($email);
+    }
+
+    /**
+     * @param $name
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getUsersByName($name)
+    {
+        return $this->userRepository->getByName($name);
     }
 
     /**

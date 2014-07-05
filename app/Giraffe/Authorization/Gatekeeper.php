@@ -110,6 +110,13 @@ class Gatekeeper
 
     }
 
+    public function iAmAGuest()
+    {
+        $this->authenticated = false;
+        $this->authenticatedUser = null;
+        return $this;
+    }
+
     public function sudo($message = '')
     {
         $this->sudo = true;
@@ -294,18 +301,27 @@ class Gatekeeper
      */
     protected function iAmImplicit()
     {
+        // break if the user is already authenticated
+        if ($this->authenticated && $this->authenticatedUser) {
+            return;
+        }
+
         // silence exceptions. If shield authentication fails, simply do nothing.
         // for instance, a test may fail because Route::current() is null (since it's being called from a test).
         try {
             /** @var Shield $shield */
             $shield = \App::make('Dingo\Api\Auth\Shield');
-            $shield->authenticate(\Request::instance(), \Route::current());
+            $user = $shield->authenticate(\Request::instance(), \Route::current());
+            if($user) {
+                Auth::setUser($user);
+            }
         } catch (\Exception $e) {
         }
 
         if (!$this->authenticatedUser) {
             $this->iAm(Auth::user());
         }
+        return;
     }
 
 }

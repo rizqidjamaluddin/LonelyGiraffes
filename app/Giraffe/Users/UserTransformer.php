@@ -4,15 +4,22 @@ use League\Fractal\TransformerAbstract;
 class UserTransformer extends TransformerAbstract
 {
 
-    public function transform(UserModel $userModel)
+    public function transform($userModel)
     {
-        return [
+
+        $gender = $userModel->gender ? ['gender' => $userModel->gender] : [];
+
+        return array_merge([
             'hash' => $userModel->hash,
-            'firstname' => $userModel->firstname,
-            'lastname' => $userModel->lastname,
-            'gender' => $userModel->gender,
-            'email' => $userModel->email
-        ];
+            'name' => $userModel->name,
+            'email' => $userModel->email,
+            'href' => $this->buildUrl($userModel->hash)
+        ], $gender);
+    }
+
+    protected function buildUrl($hash)
+    {
+        return url('api/users/'.$hash);
     }
 
 } 

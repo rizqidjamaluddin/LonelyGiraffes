@@ -4,41 +4,48 @@ use Json\Validator;
 
 class ShoutTest extends AcceptanceCase
 {
+    protected $genericShout = ['body' => 'This is a shout!'];
+
+    /**
+     * @test
+     */
+    public function guests_cannot_post_shouts()
+    {
+        $this->call('POST', '/api/shouts', $this->genericShout);
+        $this->assertResponseStatus(401);
+    }
+
     /**
      * @test
      */
     public function users_can_post_shouts()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
+        $this->registerAndLoginAsMario();
+        $shout = $this->toJson($this->call('POST', '/api/shouts', $this->genericShout))->shouts[0];
 
-        $shout = $this->toJson($this->call('POST', '/api/shouts', [
-                'body' => 'This is a shout!'
-            ]
-        ));
+        $this->assertResponseStatus(200);
+
+        $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shout->hash))->shouts[0];
+        $this->assertEquals('This is a shout!', $getShout->body);
+        $this->assertEquals($getShout->links->author->name, 'Mario');
 
         $this->assertResponseStatus(200);
     }
 
     /**
      * @test
-     * @depends users_can_post_shouts
      */
-    public function users_can_get_specific_shouts()
+    public function a_user_cannot_post_a_shout_under_ten_characters_long()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
+        $this->registerAndLoginAsMario();
+        $this->call('POST', '/api/shouts', ['body' => 'Short']);
+        $this->assertResponseStatus(422);
 
-        $shout = $this->toJson($this->call('POST', '/api/shouts', [
-                'body' => 'This is a shout!'
-            ]
-        ));
+        $this->call('POST', '/api/shouts', ['body' => '']);
+        $this->assertResponseStatus(422);
 
-        $shoutChild = $shout->shouts[0];
-        
-        $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->hash));
-        $this->assertResponseStatus(200);
-        $this->assertEquals('This is a shout!', $getShout->shouts[0]->body);
+        $this->call('POST', '/api/shouts');
+        $this->assertResponseStatus(422);
     }
 
     /**

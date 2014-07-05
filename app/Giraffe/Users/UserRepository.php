@@ -55,12 +55,18 @@ class UserRepository extends EloquentRepository
      */
     public function getByPublicId($nickname)
     {
-        if (!$model = $this->model->where('nickname', '=', $nickname)->first()) {
+        if (!$model = $this->model->where('name', '=', $nickname)->first()) {
             throw new NotFoundModelException();
         }
         return $model;
     }
 
+    /**
+     * @param string $email
+     *
+     * @throws \Giraffe\Common\NotFoundModelException
+     * @return UserModel
+     */
     public function getByEmail($email)
     {
         if ($email instanceof UserModel) {
@@ -71,6 +77,21 @@ class UserRepository extends EloquentRepository
             throw new NotFoundModelException();
         }
         return $model;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @throws \Giraffe\Common\NotFoundModelException
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getByName($name)
+    {
+        $models = $this->model->where('name', '=', $name)->get();
+        if ($models->isEmpty()) {
+            throw new NotFoundModelException();
+        }
+        return $models;
     }
 
     /**

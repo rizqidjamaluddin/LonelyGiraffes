@@ -9,8 +9,7 @@ class UserUpdateValidator
 {
     public function validate(array $data)
     {
-        $validator = V::key('firstname', V::string()->length(0, 100), false)
-                      ->key('lastname', V::string()->length(0, 100), false)
+        $validator = V::key('name', V::string()->length(0, 100), false)
                       ->key('email', V::email()->length(0, 200),false)
                       ->key('password', V::string()->length(0, 200), false)
                       ->key('gender', V::string()->in(['M', 'F', 'X']), false);
@@ -18,13 +17,8 @@ class UserUpdateValidator
         try {
             $validator->assert($data);
         } catch (AbstractNestedException $e) {
-            $errors = $e->findMessages(
-                [
-                    'email' => $data['email'] . ' is not a valid email', // custom error message
-                    'length' // use default error message, shown if any 'length' test fails
-                ]
-            );
-            throw new ValidationException('Could not create a new user.', $errors);
+            $errors = $e->findMessages(['email', 'length', 'in']);
+            throw new ValidationException('Could not update user.', $errors);
         }
 
         return true;

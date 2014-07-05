@@ -1,9 +1,13 @@
 <?php
 
 use Giraffe\Common\Controller;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserService;
 use Dingo\Api\Http\ResponseBuilder;
+use Giraffe\Users\UserTransformer;
+use Illuminate\Support\Collection;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserController extends Controller
 {
@@ -30,6 +34,32 @@ class UserController extends Controller
         return $this->returnUserModel($model);
 	}
 
+    public function index() {
+        // Currently only for 'email' OR 'name', but not both simultaneously.
+        if((!Input::get('email') && !Input::get('name')) ||
+            (Input::get('email') && Input::get('name'))
+        )
+            throw new BadRequestHttpException();
+
+        if(Input::get('email')) {
+            try {
+                $model = $this->userService->getUserByEmail(Input::get('email'));
+                $model = $this->returnUserModel($model);
+                return $model;
+            } catch (NotFoundModelException $e) {
+                return $this->returnUserModels(new Collection());
+            }
+        }
+
+        if(Input::get('name')) {
+            $models = $this->userService->getUsersByName(Input::get('name'));
+            $models = $this->returnUserModels($models);
+            return $models;
+        }
+
+        throw new BadRequestHttpException();
+    }
+
     public function update($id)
     {
         $model = $this->userService->updateUser($id, Input::all());
@@ -43,6 +73,15 @@ class UserController extends Controller
      */
     public function returnUserModel(UserModel $model)
     {
-        return $this->withItem($model, $model->getTransformer(), 'users');
+        return $this->withItem($model, new UserTransformer(), 'users');
     }
-} 
+
+    /**
+     * @param Collection $models
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function returnUserModels(Collection $models) {
+        return $this->withCollection($models, new UserTransformer(), 'users');
+    }
+}
