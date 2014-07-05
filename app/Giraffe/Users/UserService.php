@@ -3,7 +3,9 @@
 use Giraffe\Common\DuplicateCreationException;
 use Giraffe\Common\DuplicateUpdateException;
 use Giraffe\Common\Service;
+use Giraffe\Common\ValidationException;
 use Giraffe\Geolocation\Location;
+use Giraffe\Geolocation\NotFoundLocationException;
 use Hash;
 use Str;
 
@@ -79,8 +81,19 @@ class UserService extends Service
         if (array_key_exists('city', $attributes) ||
             array_key_exists('state', $attributes) ||
             array_key_exists('country', $attributes)) {
+            // if one exists, they all have to
+            if (!(array_key_exists('city', $attributes) &&
+                array_key_exists('state', $attributes) &&
+                array_key_exists('country', $attributes))) {
+                throw new ValidationException('User location invalid; city, state and country required', []);
+            }
+
             // build location object, then load it back into the attributes; this will 404 if location is missing
-            $location = Location::buildFromCity($attributes['city'], $attributes['state'], $attributes['country']);
+            try {
+                $location = Location::buildFromCity($attributes['city'], $attributes['state'], $attributes['country']);
+            } catch (NotFoundLocationException $e) {
+                throw new ValidationException('User location invalid', []);
+            }
         }
 
         try {
