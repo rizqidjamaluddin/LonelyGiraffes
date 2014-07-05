@@ -13,7 +13,8 @@ class RunTests extends Command
      */
     protected $commands = [
         'unit'       => 'phpunit --testsuite=unit',
-        'acceptance' => 'phpunit --testsuite=acceptance',
+        'acceptance.general' => 'phpunit --testsuite=acceptance-general',
+        'acceptance.geolocation' => 'phpunit --testsuite=acceptance-geolocation',
         'component'  => 'phpunit --testsuite=component',
     ];
 
@@ -67,9 +68,11 @@ class RunTests extends Command
         foreach ($this->commands as $process => $command) {
             $this->line("<exec>$process > $command</exec>");
             $output = [];
+            $startTime = microtime(true);
             $lastLine = exec($command, $output, $exitCode);
+            $duration = round(microtime(true) - $startTime, 2);
             if ($exitCode == 0) {
-                $this->line("<rep>Test \"<name>$process</name>\" completed successfully.</rep>");
+                $this->line("<rep>Test \"<name>$process</name>\" completed successfully ({$duration}s).</rep>");
                 $this->info("\n");
                 $this->line($lastLine);
                 $succeeded[] = $process;
