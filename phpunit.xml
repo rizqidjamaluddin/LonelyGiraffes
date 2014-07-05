@@ -20,6 +20,12 @@
         <testsuite name="acceptance">
             <directory>./app/tests/acceptance/</directory>
         </testsuite>
+        <testsuite name="acceptance-general">
+            <directory>./app/tests/acceptance/general/</directory>
+        </testsuite>
+        <testsuite name="acceptance-geolocation">
+            <directory>./app/tests/acceptance/geolocation/</directory>
+        </testsuite>
         <testsuite name="component">
             <directory>./app/tests/component/</directory>
         </testsuite>
