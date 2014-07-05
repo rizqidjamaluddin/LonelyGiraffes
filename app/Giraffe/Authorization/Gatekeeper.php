@@ -301,6 +301,11 @@ class Gatekeeper
      */
     protected function iAmImplicit()
     {
+        // break if the user is already authenticated
+        if ($this->authenticated && $this->authenticatedUser) {
+            return;
+        }
+
         // silence exceptions. If shield authentication fails, simply do nothing.
         // for instance, a test may fail because Route::current() is null (since it's being called from a test).
         try {
@@ -316,6 +321,7 @@ class Gatekeeper
         if (!$this->authenticatedUser) {
             $this->iAm(Auth::user());
         }
+        return;
     }
 
 }
