@@ -7,7 +7,7 @@ class PostTransformer extends TransformerAbstract
 {
     public function transform(PostModel $post)
     {
-        $author = $post->user;
+        $author = $post->author;
 
         if ($author instanceof TransformableInterface) {
             $transformer = $author->getTransformer();
@@ -24,6 +24,7 @@ class PostTransformer extends TransformerAbstract
         return [
             'hash' => $post->hash,
             'body' => $body,
+            'href' => url('api/posts/'.$post->hash),
             'links' => [
                 'author' => $author,
             ],

@@ -12,6 +12,7 @@ class GiraffePermissionsLookup
     {
         $guest = [
             'self'   => [
+                'feed' => ['read'],
             ],
             'global' => [
                 'post' => ['read'],

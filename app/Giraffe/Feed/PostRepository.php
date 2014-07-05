@@ -17,9 +17,23 @@ class PostRepository extends EloquentRepository
         return $this->model->with('postable', 'postable.author')->where('hash', $hash)->first();
     }
 
-    public function getGlobal($page)
+    public function getGlobal()
     {
-        return $this->model->with('postable', 'postable.author')->take(10)->skip($page * 10)->get();
+        return $this->model
+            ->with('author', 'postable', 'postable.author')
+            ->take(10)
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
+    public function getGlobalBeforeId($cursor)
+    {
+        return $this->model
+            ->with('author', 'postable', 'postable.author')
+            ->take(10)
+            ->where('id', '<', $cursor)
+            ->orderBy('id', 'desc')
+            ->get();
     }
 
 } 

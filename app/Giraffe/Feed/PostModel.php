@@ -22,7 +22,7 @@ class PostModel extends Eloquent implements ProtectedResource, TransformableInte
         return $this->morphTo();
     }
 
-    public function user()
+    public function author()
     {
         return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
     }
