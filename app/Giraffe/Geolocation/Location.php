@@ -69,8 +69,8 @@ class Location
 
     public function provideCoordinates($lat, $long)
     {
-        $this->lat = $lat;
-        $this->long = $long;
+        $this->lat = (float) $lat;
+        $this->long = (float) $long;
         return $this;
     }
 
