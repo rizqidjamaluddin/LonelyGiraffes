@@ -67,7 +67,7 @@ class UserService extends Service
 
         $attributes = array_only($attributes, ['name', 'email', 'gender', 'password', 'city', 'state', 'country']);
 
-        $user = $this->userRepository->get($user_id);
+        $user = $this->userRepository->getByHash($user_id);
         $this->gatekeeper->mayI('update', $user)->please();
 
         $this->updateValidator->validate($attributes);
@@ -112,7 +112,7 @@ class UserService extends Service
      */
     public function deleteUser($id)
     {
-        $user = $this->userRepository->get($id);
+        $user = $this->userRepository->getByHash($id);
         $this->gatekeeper->mayI('delete', $user)->please();
         $user->delete();
         return $user;
@@ -125,7 +125,7 @@ class UserService extends Service
      */
     public function getUser($id)
     {
-        return $this->userRepository->get($id);
+        return $this->userRepository->getByHash($id);
     }
 
     /**
