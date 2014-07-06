@@ -28,8 +28,8 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
      *
      * Cells are defined by their center point.
      *
-     * The cell cache, in the format of 2DC:10:-20, refers to the cell LAT +19~21/LONG -39~41 (multiplied by 2 from the
-     * cache syntax).
+     * The cell cache, in the format of "2DC 10,-20", which refers to the cell LAT +19~21/LONG -39~41 (multiplied by 2
+     * from the cache syntax).
      *
      * @param Location $location
      * @param array    $metadata
@@ -39,8 +39,17 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
     {
         list($lat, $long) = $location->getCoordinates();
 
-        
+        $cellLat = round($lat / 2);
+        $cellLong = round($long / 2);
 
-        return;
+        // make sure nobody gets stuck in a 0 cell
+        if ($cellLong == 0) {
+            $cellLong += 1;
+        }
+        if ($cellLat == 0) {
+            $cellLat += 1;
+        }
+
+        return '2DC ' . $cellLat . ',' . $cellLong;
     }
 }
