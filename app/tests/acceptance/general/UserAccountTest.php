@@ -171,8 +171,10 @@ class UserAccountCase extends AcceptanceCase
     public function it_can_find_a_user_only_by_hash() {
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
 
+        $raw_user = $this->service->getUser($model->users[0]->hash);
+
         // ID
-        $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->id));
+        $this->toJson($this->call("GET", "/api/users/" . $raw_user->id));
         $this->assertResponseStatus(404);
 
         // Name
