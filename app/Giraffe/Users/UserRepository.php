@@ -56,6 +56,10 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
      */
     public function getByHash($hash)
     {
+        if ($hash instanceof UserModel) {
+            return $hash;
+        }
+
         if (!$model = $this->model->where('hash', '=', $hash)->first()) {
             throw new NotFoundModelException();
         }
@@ -70,6 +74,10 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
      */
     public function getByPublicId($name)
     {
+        if ($name instanceof UserModel) {
+            return $name;
+        }
+
         if (!$model = $this->model->where('name', '=', $name)->first()) {
             throw new NotFoundModelException();
         }
