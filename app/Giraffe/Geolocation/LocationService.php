@@ -3,6 +3,7 @@
 use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\Service;
 use Giraffe\Geolocation\NearbySearchableRepository;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class LocationService extends Service
 {
@@ -49,6 +50,19 @@ class LocationService extends Service
         $this->defaultNearbySearchStrategy = $nearbySearchStrategy;
     }
 
+    /**
+     * @throws \Giraffe\Common\ConfigurationException
+     * @return NearbySearchStrategy
+     */
+    public function getDefaultNearbySearchStrategy()
+    {
+        if ($this->defaultNearbySearchStrategy) {
+            return $this->defaultNearbySearchStrategy;
+        } else {
+            throw new ConfigurationException('No default search strategy set');
+        }
+    }
+
     public function search($hint, $limit = 5)
     {
         if (strlen($hint) < 2) {
@@ -70,18 +84,21 @@ class LocationService extends Service
      * Will use the default strategy if not set. Repository must implement the strategy's respective
      * repository interface.
      *
-     * @param Locatable                  $location
+     * @param Locatable                  $locatable
      * @param NearbySearchableRepository $repository
      * @param array                      $options
      * @param NearbySearchStrategy|null  $strategy
+     * @return array
+     * @throws \Giraffe\Common\ConfigurationException
      */
     public function getNearbyFromRepository(
-        Locatable $location,
+        Locatable $locatable,
         NearbySearchableRepository $repository,
         $options = [],
         NearbySearchStrategy $strategy = null
     ) {
-
+        if (!$strategy) $strategy = $this->getDefaultNearbySearchStrategy();
+        return $strategy->searchRepository($locatable->getLocation(), $repository, 10, $options);
     }
 
 } 
