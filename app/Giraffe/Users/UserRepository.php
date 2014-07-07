@@ -2,12 +2,13 @@
 
 use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchableRepository;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserSettingModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRepository extends EloquentRepository
+class UserRepository extends EloquentRepository implements TwoDegreeCellSearchableRepository
 {
 
     /**
@@ -135,4 +136,13 @@ class UserRepository extends EloquentRepository
         return $this->userSettingModel->where('user_id', '=', $id)->update(['use_nickname' => (bool) $new_show_nickname_setting]);
     }
 
-} 
+    public function TwoDegreeCellSearch($cell, $limit, $options = [])
+    {
+        if (array_key_exists('exclude', $options)) {
+            $excludes = is_array($options['exclude']) ? $options['exclude'] : [$options['exclude']];
+            return $this->model->where('cell', $cell)->whereNotIn('id', $excludes)->take($limit)->get();
+        } else {
+            return $this->model->where('cell', $cell)->take($limit)->get();
+        }
+    }
+}
