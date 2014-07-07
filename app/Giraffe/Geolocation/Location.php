@@ -24,7 +24,7 @@ class Location
     /**
      * @var Array
      */
-    protected $metadata;
+    public $cacheMetadata = '';
 
     /**
      * @var LocationProvider
@@ -42,7 +42,7 @@ class Location
         $instance->city = $city;
         $instance->state = $state;
         $instance->country = $country;
-        $instance->metadata = $metadata;
+        $instance->cacheMetadata = $metadata;
         return $instance;
     }
 
@@ -77,6 +77,20 @@ class Location
     public function providePopulation($population)
     {
         $this->population = $population;
+    }
+
+    public function provideCity($city, $state, $country)
+    {
+        $this->city = $city;
+        $this->state = $state;
+        $this->country = $country;
+        return $this;
+    }
+
+    public function provideCacheMetadata($data)
+    {
+        $this->cacheMetadata = $data;
+        return $this;
     }
 
     public function getCoordinates()
