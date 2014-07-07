@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy;
 
+use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\Repository;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\NearbySearchStrategy;
@@ -10,13 +11,32 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
     /**
      * @param Location   $location
      * @param Repository $repository
-     * @param array      $metadata
      * @param int        $limit
+     * @param array      $options
+     * @throws \Giraffe\Common\ConfigurationException
      * @return array
      */
-    public function searchRepository(Location $location, Repository $repository, $metadata = [], $limit = 10)
+    public function searchRepository(Location $location, Repository $repository, $limit = 10, $options = [])
     {
-        // TODO: Implement searchRepository() method.
+        $cacheMetadata = $location->cacheMetadata;
+
+        // validate cache metadata
+        if (strpos($cacheMetadata, '2DC') === false) {
+            // figure out proper cache if it's not available
+            list($lat, $long) = $location->getCoordinates();
+            if (!$lat || !$long) {
+                // if no coordinates are given, make a new location object and re-call this method with it
+                $location = Location::buildFromCity($location->city, $location->state, $location->country);
+                return $this->searchRepository($location, $repository, $cacheMetadata, $limit);
+            }
+            $cacheMetadata = $this->getCacheMetadata($location);
+        }
+
+        if (!($repository instanceof TwoDegreeCellSearchableRepository)) {
+            throw new ConfigurationException(get_class($repository) . ' must implement TwoDegreeCellSearchableRepository');
+        }
+
+        return $repository->twoDegreeCellSearch($cacheMetadata, $limit, $options);
     }
 
     /**
@@ -38,6 +58,11 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
     public function getCacheMetadata(Location $location, $metadata = [])
     {
         list($lat, $long) = $location->getCoordinates();
+
+        // return false if there's no available lat/long
+        if (!$lat || !$long) {
+            return '';
+        }
 
         $cellLat = round($lat / 2);
         $cellLong = round($long / 2);
