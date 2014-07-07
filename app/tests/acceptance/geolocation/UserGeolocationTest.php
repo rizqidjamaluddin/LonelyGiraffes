@@ -23,9 +23,7 @@ class UserGeolocationTest extends GeolocationCase
      */
     public function a_user_cannot_enter_an_invalid_location()
     {
-        $mario = $this->registerAndLoginAsMario();
-
-        $this->call('PUT', '/api/users/' . $mario->hash, $this->cities['nyc']);
+        $mario = $this->registerNYCMario();
         $this->assertResponseOk();
 
         $this->call(
@@ -56,8 +54,7 @@ class UserGeolocationTest extends GeolocationCase
      */
     public function a_user_cannot_change_another_users_location()
     {
-        $mario = $this->registerAndLoginAsMario();
-        $this->call('PUT', '/api/users/' . $mario->hash, $this->cities['nyc']);
+        $mario = $this->registerNYCMario();
         $this->assertResponseOk();
 
         $bowser = $this->registerAndLoginAsBowser();
@@ -67,6 +64,45 @@ class UserGeolocationTest extends GeolocationCase
         $this->assertEquals($check->city, $this->cities['nyc']['city']);
         $this->assertEquals($check->state, $this->cities['nyc']['state']);
         $this->assertEquals($check->country, $this->cities['nyc']['country']);
+    }
 
+    /**
+     * @test
+     */
+    public function a_user_can_find_people_near_them()
+    {
+        $mario = $this->registerNYCMario();
+        $luigi = $this->registerManhattanLuigi();
+        $yoshi = $this->registerSeattleYoshi();
+
+        $this->asUser($mario->hash);
+        $results = $this->toJson($this->call('GET', '/api/users?nearby'));
+        $this->assertResponseOk();
+
+        // luigi should be in range, but not yoshi
+        $this->assertEquals(count($results->cities), 1);
+        $this->assertEquals($results->cities[0]->name, $luigi->name);
+
+    }
+
+    protected function registerNYCMario()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $this->call('PUT', '/api/users/' . $mario->hash, $this->cities['nyc']);
+        return $mario;
+    }
+
+    protected function registerManhattanLuigi()
+    {
+        $luigi = $this->registerAndLoginAsLuigi();
+        $this->call('PUT', '/api/users/' . $luigi->hash, $this->cities['manhattan']);
+        return $luigi;
+    }
+
+    protected function registerSeattleYoshi()
+    {
+        $yoshi = $this->registerAndLoginAsYoshi();
+        $this->call('PUT', '/api/users/' . $yoshi->hash, $this->cities['seattle']);
+        return $yoshi;
     }
 }
