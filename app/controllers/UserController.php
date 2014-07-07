@@ -40,12 +40,6 @@ class UserController extends Controller
 
     public function index()
     {
-        // Currently only for 'email' OR 'name', but not both simultaneously.
-        if ((!Input::get('email') && !Input::get('name')) ||
-            (Input::get('email') && Input::get('name'))
-        ) {
-            throw new BadRequestHttpException();
-        }
 
         if (Input::get('email')) {
             try {
@@ -61,6 +55,11 @@ class UserController extends Controller
             $models = $this->userService->getUsersByName(Input::get('name'));
             $models = $this->returnUserModels($models);
             return $models;
+        }
+
+        if (Input::exists('nearby')) {
+            $models = $this->userService->getNearbyUsers($this->gatekeeper->me());
+            return $this->returnUserModels($models);
         }
 
         throw new BadRequestHttpException();
