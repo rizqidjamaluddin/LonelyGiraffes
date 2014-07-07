@@ -74,14 +74,21 @@ class UserGeolocationTest extends GeolocationCase
         $mario = $this->registerNYCMario();
         $luigi = $this->registerManhattanLuigi();
         $yoshi = $this->registerSeattleYoshi();
+        // register peach with no location
+        $peach = $this->registerPeach();
 
         $this->asUser($mario->hash);
         $results = $this->toJson($this->call('GET', '/api/users?nearby'));
         $this->assertResponseOk();
 
-        // luigi should be in range, but not yoshi
-        $this->assertEquals(count($results->cities), 1);
-        $this->assertEquals($results->cities[0]->name, $luigi->name);
+        // luigi should be in range, but not yoshi nor peach
+        $this->assertEquals(count($results->users), 1);
+        $this->assertEquals($results->users[0]->name, $luigi->name);
+
+        // peach should get a 428 Precondition Required because she hasn't declared a location
+        $this->asUser($peach->hash);
+        $results = $this->toJson($this->call('GET', '/api/users?nearby'));
+        $this->assertResponseStatus(428);
 
     }
 
