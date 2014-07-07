@@ -5,6 +5,7 @@ use Giraffe\Common\DuplicateUpdateException;
 use Giraffe\Common\Service;
 use Giraffe\Common\ValidationException;
 use Giraffe\Geolocation\Location;
+use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\NotFoundLocationException;
 use Hash;
 use Str;
@@ -24,16 +25,22 @@ class UserService extends Service
      * @var UserUpdateValidator
      */
     private $updateValidator;
+    /**
+     * @var LocationService
+     */
+    private $locationService;
 
     public function __construct(
         UserRepository $userRepository,
         UserCreationValidator $creationValidator,
-        UserUpdateValidator $updateValidator
+        UserUpdateValidator $updateValidator,
+        LocationService $locationService
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
         $this->creationValidator = $creationValidator;
         $this->updateValidator = $updateValidator;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -94,6 +101,10 @@ class UserService extends Service
             } catch (NotFoundLocationException $e) {
                 throw new ValidationException('User location invalid', []);
             }
+
+            // set cache data if possible
+            $cacheString = $this->locationService->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
+            $attributes['cell'] = $cacheString;
         }
 
         try {
@@ -188,6 +199,13 @@ class UserService extends Service
     public function setUserNicknameSetting($user, $useNickname)
     {
         return (bool)$this->userRepository->setUserNicknameSettingById($user, $useNickname);
+    }
+
+    public function getNearbyUsers($user)
+    {
+        /** @var UserModel $user */
+        $user = $this->userRepository->getByHash($user);
+        return $this->locationService->getNearbyFromRepository($user, $this->userRepository, ['exclude' => $user->id]);
     }
 
     /**
