@@ -3,6 +3,7 @@
 use Giraffe\Common\Controller;
 use Giraffe\Buddies\BuddyService;
 use Giraffe\Users\UserTransformer;
+use Illuminate\Database\Eloquent\Collection;
 
 class BuddyController extends Controller
 {
@@ -26,7 +27,7 @@ class BuddyController extends Controller
 
     }
 
-    public function returnUserModels(Array $models)
+    public function returnUserModels(Collection $models)
     {
         return $this->withCollection($models, new UserTransformer(), 'users');
     }

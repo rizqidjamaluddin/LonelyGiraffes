@@ -2,14 +2,21 @@
 
 use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\NotFoundModelException;
-use Illuminate\Support\Facades\DB;
+use Giraffe\Users\UserRepository;
+use Giraffe\Users\UserModel;
 
 class BuddyRepository extends EloquentRepository
 {
 
-    public function __construct(BuddyModel $buddyModel)
+    /**
+     * @var \Giraffe\Users\UserRepository
+     */
+    private $userRepository;
+    public function __construct(BuddyModel $buddyModel,
+                                UserRepository $userRepository)
     {
         parent::__construct($buddyModel);
+
     }
 
     /**
@@ -26,18 +33,18 @@ class BuddyRepository extends EloquentRepository
             return $user;
         }
 
-        // God help me for this.
-        $models = DB::table('users as u')
-            ->leftJoin('buddies as b1', 'u.id', '=', 'b1.user1_id')
-            ->leftJoin('users as u1', 'u1.id', '=', 'b1.user2_id')
-            ->leftJoin('buddies as b2', 'u.id', '=', 'b2.user2_id')
-            ->leftJoin('users as u2', 'u2.id', '=', 'b2.user1_id')
-            ->select('u.*')
-            ->distinct()
-            ->where('u1.id', '=', $user->id)->orWhere('u2.id', '=', $user->id)
-            ->get();
+        $users = $this->model->where('user1_id', '=', $user->id)->orWhere('user2_id', '=', $user->id)->get(array('user1_id', 'user2_id'));
 
-        if (count($models)==0) {
+        // Flatten results array into ids, picking the one that IS NOT $user's.
+        $users = $users->map(function($u) use ($user) {
+            if($u->user1_id == $user->id)
+                return $u->user2_id;
+            return $u->user1_id;
+        });
+        $models = UserModel::whereIn('id', $users->toArray())->get();
+
+
+        if ($models->isEmpty()) {
             throw new NotFoundModelException();
         }
         return $models;
