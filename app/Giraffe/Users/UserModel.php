@@ -145,4 +145,14 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
     {
         return new UserTransformer();
     }
+
+    public function receivedBuddyRequests()
+    {
+        return $this->belongsTo('Giraffe\BuddyRequests\BuddyRequestModel', 'to_user_id');
+    }
+
+    public function sentBuddyRequests()
+    {
+        return $this->hasMany('Giraffe\BuddyRequests\BuddyRequestModel', 'from_user_id');
+    }
 }
