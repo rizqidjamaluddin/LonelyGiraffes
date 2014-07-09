@@ -81,7 +81,7 @@ class Promote extends Command
              [
                  ['id', $user->id],
                  ['hash', $user->hash],
-                 ['name', $user->firstname],
+                 ['name', $user->name],
                  ['email', $user->email],
                  ['current role', $user->role]
              ]

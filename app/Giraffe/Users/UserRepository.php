@@ -41,7 +41,7 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
         }
 
         try {
-            $model = $this->getByPublicId($identifier);
+            $model = $this->getByHash($identifier);
         } catch (NotFoundModelException $e) {
             return parent::get($identifier);
         }
@@ -49,14 +49,36 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
     }
 
     /**
-     * @param string $nickname
+     * @param string $hash
      *
      * @throws \Giraffe\Common\NotFoundModelException
      * @return UserModel
      */
-    public function getByPublicId($nickname)
+    public function getByHash($hash)
     {
-        if (!$model = $this->model->where('name', '=', $nickname)->first()) {
+        if ($hash instanceof UserModel) {
+            return $hash;
+        }
+
+        if (!$model = $this->model->where('hash', '=', $hash)->first()) {
+            throw new NotFoundModelException();
+        }
+        return $model;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @throws \Giraffe\Common\NotFoundModelException
+     * @return UserModel
+     */
+    public function getByPublicId($name)
+    {
+        if ($name instanceof UserModel) {
+            return $name;
+        }
+
+        if (!$model = $this->model->where('name', '=', $name)->first()) {
             throw new NotFoundModelException();
         }
         return $model;
