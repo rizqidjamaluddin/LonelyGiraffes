@@ -4,5 +4,5 @@ use Giraffe\Geolocation\NearbySearchableRepository;
 
 interface TwoDegreeCellSearchableRepository extends NearbySearchableRepository
 {
-    public function twoDegreeCellSearch($cell, $limit, $options = []);
+    public function twoDegreeCellSearch(array $cell, $limit, $options = []);
 } 
