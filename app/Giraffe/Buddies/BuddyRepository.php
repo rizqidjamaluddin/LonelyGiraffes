@@ -6,7 +6,8 @@ use Giraffe\Common\NotFoundModelException;
 class BuddyRepository extends EloquentRepository
 {
 
-    public function __construct(BuddyModel $buddyModel)
+    public function __construct(UserRepository $userRepository,
+                                BuddyModel $buddyModel)
     {
         parent::__construct($buddyModel);
     }
@@ -14,21 +15,18 @@ class BuddyRepository extends EloquentRepository
     /**
      * Gets Buddy relationships for a user.
      *
-     * @param string|BuddyModel $user_hash
+     * @param string|BuddyModel $user
      *
      * @throws \Giraffe\Common\NotFoundModelException
      * @return BuddyModel
      */
-    public function getByUser($user_hash)
+    public function getByUser($user)
     {
-        if ($user_hash instanceof BuddyModel) {
-            return $user_hash;
+        if ($user instanceof BuddyModel) {
+            return $user;
         }
 
-        //!!! How do I find user?
-        $user = $this->userRepository.getUser($user_hash);
-
-        $model = $this->model->where('user1_id', '=', $user.id)->orWhere('user2_id', '=', $user->id);
+        $model = $this->model->where('user1_id', '=', $user->id)->orWhere('user2_id', '=', $user->id);
 
         if ($model->isEmpty()) {
             throw new NotFoundModelException();
@@ -39,24 +37,15 @@ class BuddyRepository extends EloquentRepository
     /**
      * Gets a Buddy relationship of two users.
      *
-     * @param \Eloquent|int $user_hash
-     * @param \Eloquent|int $friend_hash
+     * @param \Eloquent|int $user
+     * @param \Eloquent|int $friend
      * @return BuddyModel|null
      * @throws NotFoundModelException
      */
-    public function getFromPair($user_hash, $friend_hash){
+    public function getFromPair($user, $friend){
 
-        if ($user_hash instanceof BuddyModel)
-            return $user_hash;
-        if ($friend_hash instanceof BuddyModel)
-            return $friend_hash;
-
-        //!!! How do I find user?
-        $user = $this->userRepository->getUser($user_hash);
-        $friend = $this->userRepository->getUser($friend_hash);
-
-        $model = $this->model->
-            where('user1_id', '=', $user->id)->where('user2_id', '=', $friend->id)
+        $model = $this->model
+            ->where('user1_id', '=', $user->id)->where('user2_id', '=', $friend->id)
             ->orWhere('user1_id', '=', $friend->id)->where('user2_id', '=', $user->id)
             ->first();
         if(!$model)

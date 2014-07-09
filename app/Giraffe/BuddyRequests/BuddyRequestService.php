@@ -6,6 +6,10 @@ use Giraffe\Common\Service;
 class BuddyRequestService extends Service
 {
     /**
+     * @var \Giraffe\Users\UserRepository
+     */
+    private $userRepository;
+    /**
      * @var \Giraffe\BuddyRequests\BuddyRequestRepository
      */
     private $buddyRequestRepository;
@@ -19,6 +23,7 @@ class BuddyRequestService extends Service
     private $updateValidator;
 
     public function __construct(
+        UserRepository $userRepository,
         BuddyRepository $userRepository,
         BuddyCreationValidator $creationValidator,
         BuddyUpdateValidator $updateValidator
@@ -30,13 +35,12 @@ class BuddyRequestService extends Service
     }
 
 
-    public function createBuddyRequest($user_hash, $target_hash)
+    public function createBuddyRequest($userHash, $targetHash)
     {
         $this->gatekeeper->mayI('create', 'buddy_request')->please();
 
-        //TODO: HOW DO I DO THIS
-        $user = User.find($user_hash);
-        $target = User.find($target_hash);
+        $user = $this->userRepository->getByHash($userHash);
+        $target = $this->userRepository->getByHash($targetHash);
 
         $data = [];
         $data['from_user_id'] = $user->id;
@@ -45,26 +49,26 @@ class BuddyRequestService extends Service
 
         $this->creationValidator->validate($data);
 
-        $buddy_request = $this->buddyRequestRepository->create($data);
-        $this->log->info($this, 'Buddy Request created', $buddy_request->toArray());
-        return $buddy_request;
+        $buddyRequest = $this->buddyRequestRepository->create($data);
+        $this->log->info($this, 'Buddy Request created', $buddyRequest->toArray());
+        return $buddyRequest;
     }
 
     public function acceptBuddyRequest($request_id)
     {
-        $this->gatekeeper->mayI('destory', 'buddy_request')->please();
+        $this->gatekeeper->mayI('destroy', 'buddy_request')->please();
         $this->gatekeeper->mayI('create', 'buddy')->please();
 
     }
 
-    public function denyBuddyRequest($request)
+    public function denyBuddyRequest($request_id)
     {
-        $this->gatekeeper->mayI('destory', 'buddy_request')->please();
+        $this->gatekeeper->mayI('destroy', 'buddy_request')->please();
 
     }
 
     public function removeBuddy($user)
     {
-
+        $this->gatekeeper->mayI('destroy', 'buddy')->please();
     }
 } 
