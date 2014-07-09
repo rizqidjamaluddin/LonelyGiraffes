@@ -12,6 +12,8 @@ class BuddyRepository extends EloquentRepository
     }
 
     /**
+     * Gets Buddy relationships for a user.
+     *
      * @param string|BuddyModel $user_hash
      *
      * @throws \Giraffe\Common\NotFoundModelException
@@ -35,7 +37,7 @@ class BuddyRepository extends EloquentRepository
     }
 
     /**
-     * Extend the base get() method to accept a user's public_id
+     * Gets a Buddy relationship of two users.
      *
      * @param \Eloquent|int $user_hash
      * @param \Eloquent|int $friend_hash
