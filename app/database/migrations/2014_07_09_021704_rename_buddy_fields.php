@@ -30,7 +30,7 @@ class RenameBuddyFields extends Migration {
         {
             $table->renameColumn('user1_id', 'user_id');
             $table->renameColumn('user2_id', 'friend_id');
-        };
+        });
 	}
 
 }
