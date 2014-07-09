@@ -19,16 +19,10 @@ class EventCase extends AcceptanceCase
      * @var array
      */
     protected $genericEvent = [
-        'user_id'   => 1,
         'name'      => 'My Awesome Event',
         'body'      => 'Details of my awesome event',
-        'html_body' => 'Details of my awesome event',
         'url'       => 'http://www.google.com',
         'location'  => 'My Awesome Location',
-        'city'      => 'Athens',
-        'state'     => 'Georgia',
-        'country'   => 'US',
-        'cell'      => '',
         'timestamp' => '0000-00-00 00:00:00'
     ];
 
@@ -70,9 +64,6 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('<p>Details of my awesome event</p>', $model->html_body);
         $this->assertEquals('http://www.google.com', $model->url);
         $this->assertEquals('My Awesome Location', $model->location);
-        $this->assertEquals('Athens', $model->city);
-        $this->assertEquals('Georgia', $model->state);
-        $this->assertEquals('US', $model->country);
         $this->assertEquals('0000-00-00 00:00:00', $model->timestamp);
         $this->assertEquals($model->links->owner->name, 'Mario');
 
@@ -84,9 +75,6 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('<p>Details of my awesome event</p>', $model->html_body);
         $this->assertEquals('http://www.google.com', $model->url);
         $this->assertEquals('My Awesome Location', $model->location);
-        $this->assertEquals('Athens', $model->city);
-        $this->assertEquals('Georgia', $model->state);
-        $this->assertEquals('US', $model->country);
         $this->assertEquals('0000-00-00 00:00:00', $model->timestamp);
         $this->assertEquals($model->links->owner->name, 'Mario');
 
