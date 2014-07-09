@@ -136,13 +136,13 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
         return $this->userSettingModel->where('user_id', '=', $id)->update(['use_nickname' => (bool) $new_show_nickname_setting]);
     }
 
-    public function TwoDegreeCellSearch($cell, $limit, $options = [])
+    public function TwoDegreeCellSearch(array $cell, $limit, $options = [])
     {
         if (array_key_exists('exclude', $options)) {
             $excludes = is_array($options['exclude']) ? $options['exclude'] : [$options['exclude']];
-            return $this->model->where('cell', $cell)->whereNotIn('id', $excludes)->take($limit)->get();
+            return $this->model->whereIn('cell', $cell)->whereNotIn('id', $excludes)->take($limit)->get();
         } else {
-            return $this->model->where('cell', $cell)->take($limit)->get();
+            return $this->model->whereIn('cell', $cell)->take($limit)->get();
         }
     }
 }
