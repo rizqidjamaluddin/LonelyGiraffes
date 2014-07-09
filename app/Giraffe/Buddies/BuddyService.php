@@ -1,39 +1,38 @@
 <?php  namespace Giraffe\Buddies;
 
-use Giraffe\Users\UserModel;
+use Giraffe\Common\Service;
+use Giraffe\Buddies\BuddyModel;
 
-class BuddyService
+class BuddyService extends Service
 {
     /**
-     * @var \Giraffe\Users\UserModel
+     * @var \Giraffe\Buddies\BuddyRepository
      */
-    private $userModel;
+    private $buddyRepository;
+    /**
+     * @var BuddyCreationValidator
+     */
+    private $creationValidator;
+    /**
+     * @var BuddyUpdateValidator
+     */
+    private $updateValidator;
 
-    public function __construct(UserModel $userModel)
-    {
-        $this->userModel = $userModel;
+    public function __construct(
+        BuddyRepository $userRepository,
+        BuddyCreationValidator $creationValidator,
+        BuddyUpdateValidator $updateValidator
+    ) {
+        parent::__construct();
+        $this->userRepository = $userRepository;
+        $this->creationValidator = $creationValidator;
+        $this->updateValidator = $updateValidator;
     }
 
-    public function acceptBuddyRequest($user, $request)
+    public function getBuddies($user)
     {
-        /** @var $user UserModel */
-        $this->userModel->instantiate($user);
-
-    }
-
-    public function createBuddyRequest($user, $destination)
-    {
-
-    }
-
-    public function denyBuddyRequest($request)
-    {
-
-    }
-
-    public function getUserBuddies($user)
-    {
-
+        $this->gatekeeper->mayI('get', 'buddies')->please();
+        return $this->buddyRepository->getByUser($user);
     }
 
     public function unbuddy($user, $buddy)

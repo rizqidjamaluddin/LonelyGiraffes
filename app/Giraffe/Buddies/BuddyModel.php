@@ -10,9 +10,4 @@ class BuddyModel extends Eloquent {
     {
         return "buddy";
     }
-
-    public function checkOwnership(UserModel $userModel)
-    {
-        return $this->id == $userModel->id;
-    }
 }
