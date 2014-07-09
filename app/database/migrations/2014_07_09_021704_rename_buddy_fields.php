@@ -12,9 +12,10 @@ class RenameBuddyFields extends Migration {
 	 */
 	public function up()
 	{
-        Schema::table('buddies', function($table)
-        {
+        Schema::table('buddies', function($table) {
             $table->renameColumn('user_id', 'user1_id');
+        });
+        Schema::table('buddies', function($table) {
             $table->renameColumn('friend_id', 'user2_id');
         });
 	}
@@ -26,9 +27,10 @@ class RenameBuddyFields extends Migration {
 	 */
 	public function down()
 	{
-        Schema::table('buddies', function($table)
-        {
+        Schema::table('buddies', function($table) {
             $table->renameColumn('user1_id', 'user_id');
+        });
+        Schema::table('buddies', function($table) {
             $table->renameColumn('user2_id', 'friend_id');
         });
 	}
