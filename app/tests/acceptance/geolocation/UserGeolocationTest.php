@@ -73,7 +73,8 @@ class UserGeolocationTest extends GeolocationCase
     {
         $mario = $this->registerNYCMario();
         $luigi = $this->registerManhattanLuigi();
-        $yoshi = $this->registerSeattleYoshi();
+        $yoshi = $this->registerLondonYoshi();
+        $this->assertResponseOk();
         // register peach with no location
         $peach = $this->registerPeach();
 
@@ -106,10 +107,10 @@ class UserGeolocationTest extends GeolocationCase
         return $luigi;
     }
 
-    protected function registerSeattleYoshi()
+    protected function registerLondonYoshi()
     {
         $yoshi = $this->registerAndLoginAsYoshi();
-        $this->call('PUT', '/api/users/' . $yoshi->hash, $this->cities['seattle']);
+        $this->call('PUT', '/api/users/' . $yoshi->hash, $this->cities['london']);
         return $yoshi;
     }
 }

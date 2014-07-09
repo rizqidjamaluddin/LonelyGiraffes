@@ -26,10 +26,10 @@ abstract class GeolocationCase extends AcceptanceCase
             'state' => 'New York',
             'country' => 'United States'
         ],
-        'seattle' => [
-            'city' => 'Seattle',
-            'state' => 'Washington',
-            'country' => 'United States'
+        'london' => [
+            'city' => 'London',
+            'state' => 'England',
+            'country' => 'United Kingdom'
         ]
     ];
 

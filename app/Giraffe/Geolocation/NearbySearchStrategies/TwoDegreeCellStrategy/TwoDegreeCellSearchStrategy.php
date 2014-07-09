@@ -9,10 +9,10 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
 {
 
     /**
-     * @param Location   $location
+     * @param Location $location
      * @param Repository $repository
-     * @param int        $limit
-     * @param array      $options
+     * @param int $limit
+     * @param array $options
      * @throws \Giraffe\Common\ConfigurationException
      * @return array
      */
@@ -33,12 +33,24 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
         }
 
         if (!($repository instanceof TwoDegreeCellSearchableRepository)) {
-            throw new ConfigurationException(get_class($repository) . ' must implement TwoDegreeCellSearchableRepository');
+            throw new ConfigurationException(
+                get_class($repository) . ' must implement TwoDegreeCellSearchableRepository'
+            );
         }
 
         // generate cache string for all the adjacent cells as well
         $cacheList = [];
-
+        list($identifier, $fragment) = explode(' ', $cacheMetadata);
+        list($fragmentLat, $fragmentLong) = explode(',', $fragment);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat - 2) . ',' . ((int)$fragmentLong - 2);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat - 2) . ',' . ((int)$fragmentLong + 0);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat - 2) . ',' . ((int)$fragmentLong + 2);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat + 0) . ',' . ((int)$fragmentLong - 2);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat + 0) . ',' . ((int)$fragmentLong + 0);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat + 0) . ',' . ((int)$fragmentLong + 2);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat + 2) . ',' . ((int)$fragmentLong - 2);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat + 2) . ',' . ((int)$fragmentLong + 0);
+        $cacheList[] = '2DC ' . ((int)$fragmentLat + 2) . ',' . ((int)$fragmentLong + 2);
 
         return $repository->twoDegreeCellSearch($cacheList, $limit, $options);
     }
