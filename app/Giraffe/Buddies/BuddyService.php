@@ -20,18 +20,19 @@ class BuddyService extends Service
 
     public function __construct(
         UserRepository $userRepository,
-        BuddyRepository $userRepository,
+        BuddyRepository $buddyRepository,
         BuddyCreationValidator $creationValidator
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
+        $this->buddyRepository = $buddyRepository;
         $this->creationValidator = $creationValidator;
     }
 
     public function getBuddies($userHash)
     {
+        //$this->gatekeeper->mayI('get', 'buddies')->please();
         $user = $this->userRepository->getByHash($userHash);
-        $this->gatekeeper->mayI('get', 'buddies')->please();
         return $this->buddyRepository->getByUser($user);
     }
 
