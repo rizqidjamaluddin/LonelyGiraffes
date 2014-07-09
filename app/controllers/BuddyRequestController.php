@@ -2,6 +2,8 @@
 
 use Giraffe\Common\Controller;
 use Giraffe\BuddyRequests\BuddyRequestService;
+use Giraffe\Users\UserModel;
+use Giraffe\Users\UserTransformer;
 
 class BuddyRequestController extends Controller
 {
@@ -10,7 +12,7 @@ class BuddyRequestController extends Controller
      */
     public function __construct(BuddyRequestService $buddyRequestService)
     {
-        $this->$buddyRequestService = $buddyRequestService;
+        $this->buddyRequestService = $buddyRequestService;
         parent::__construct();
     }
 
@@ -22,7 +24,8 @@ class BuddyRequestController extends Controller
 
     public function create($user_hash)
     {
-        return $this->buddyRequestService->createBuddyRequest($user_hash, Input::get("target"));
+        $user = $this->buddyRequestService->createBuddyRequest($user_hash, Input::get("target"));
+        return $this->returnUserModel($user);
     }
 
     public function accept($user_hash, $request)
@@ -33,5 +36,10 @@ class BuddyRequestController extends Controller
     public function destroy($user_hash, $request)
     {
 
+    }
+
+    public function returnUserModel(UserModel $model)
+    {
+        return $this->withItem($model, new UserTransformer(), 'users');
     }
 }

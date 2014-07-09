@@ -2,6 +2,7 @@
 
 
 use Giraffe\Common\Service;
+use Giraffe\Users\UserRepository;
 
 class BuddyRequestService extends Service
 {
@@ -14,30 +15,25 @@ class BuddyRequestService extends Service
      */
     private $buddyRequestRepository;
     /**
-     * @var BuddyRequestCreationValidator
+     * @var \Giraffe\BuddyRequests\BuddyRequestCreationValidator
      */
     private $creationValidator;
-    /**
-     * @var BuddyRequestUpdateValidator
-     */
-    private $updateValidator;
 
     public function __construct(
         UserRepository $userRepository,
-        BuddyRepository $userRepository,
-        BuddyCreationValidator $creationValidator,
-        BuddyUpdateValidator $updateValidator
+        BuddyRequestRepository $buddyRequestRepository,
+        BuddyRequestCreationValidator $creationValidator
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
+        $this->buddyRequestRepository = $buddyRequestRepository;
         $this->creationValidator = $creationValidator;
-        $this->updateValidator = $updateValidator;
     }
 
 
     public function createBuddyRequest($userHash, $targetHash)
     {
-        $this->gatekeeper->mayI('create', 'buddy_request')->please();
+        //$this->gatekeeper->mayI('create', 'buddy_request')->please();
 
         $user = $this->userRepository->getByHash($userHash);
         $target = $this->userRepository->getByHash($targetHash);
@@ -51,7 +47,7 @@ class BuddyRequestService extends Service
 
         $buddyRequest = $this->buddyRequestRepository->create($data);
         $this->log->info($this, 'Buddy Request created', $buddyRequest->toArray());
-        return $buddyRequest;
+        return $target;
     }
 
     public function acceptBuddyRequest($request_id)

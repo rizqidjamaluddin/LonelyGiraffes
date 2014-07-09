@@ -6,9 +6,8 @@ use Giraffe\Common\NotFoundModelException;
 class BuddyRequestRepository extends EloquentRepository
 {
 
-    public function __construct(BuddyModel $buddyModel)
+    public function __construct(BuddyRequestModel $buddyRequestModel)
     {
-        parent::__construct($buddyModel);
+        parent::__construct($buddyRequestModel);
     }
-
 } 
