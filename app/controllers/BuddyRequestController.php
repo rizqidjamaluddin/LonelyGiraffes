@@ -1,9 +1,12 @@
 <?php
 
+use Giraffe\BuddyRequests\BuddyRequestModel;
+use Giraffe\BuddyRequests\BuddyRequestTransformer;
 use Giraffe\Common\Controller;
 use Giraffe\BuddyRequests\BuddyRequestService;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserTransformer;
+use Illuminate\Database\Eloquent\Collection;
 
 class BuddyRequestController extends Controller
 {
@@ -18,14 +21,14 @@ class BuddyRequestController extends Controller
 
     public function index($user_hash)
     {
-        $models = $this->buddyRequestService->getBuddyRequests($user_hash);
-        return $this->returnUserModels($models);
+        $models = $this->buddyRequestService->getBuddyRequests($user_hash, Input::get('method'));
+        return $this->returnBuddyRequestModels($models);
     }
 
     public function create($user_hash)
     {
         $user = $this->buddyRequestService->createBuddyRequest($user_hash, Input::get("target"));
-        return $this->returnUserModel($user);
+        return $this->returnBuddyRequestModel($user);
     }
 
     public function accept($user_hash, $request)
@@ -38,8 +41,13 @@ class BuddyRequestController extends Controller
 
     }
 
-    public function returnUserModel(UserModel $model)
+    public function returnBuddyRequestModel(BuddyRequestModel $models)
     {
-        return $this->withItem($model, new UserTransformer(), 'users');
+        return $this->withItem($models, new BuddyRequestTransformer(), 'buddy_requests');
+    }
+
+    public function returnBuddyRequestModels(Collection $models)
+    {
+        return $this->withCollection($models, new BuddyRequestTransformer(), 'buddy_requests');
     }
 }

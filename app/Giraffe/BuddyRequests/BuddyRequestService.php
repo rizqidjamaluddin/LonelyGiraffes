@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\BuddyRequests;
 
 
+use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
 
@@ -47,7 +48,19 @@ class BuddyRequestService extends Service
 
         $buddyRequest = $this->buddyRequestRepository->create($data);
         $this->log->info($this, 'Buddy Request created', $buddyRequest->toArray());
-        return $target;
+        return $buddyRequest->load(array('sender', 'recipient'));
+    }
+
+    public function getBuddyRequests($userHash, $sentOrReceived)
+    {
+        $user = $this->userRepository->getByHash($userHash);
+
+        if($sentOrReceived=="sent")
+            return $this->buddyRequestRepository->getSentByUser($user);
+        elseif($sentOrReceived=="received")
+            return $this->buddyRequestRepository->getReceivedByUser($user);
+        else
+            throw new NotImplementedException();
     }
 
     public function acceptBuddyRequest($request_id)
