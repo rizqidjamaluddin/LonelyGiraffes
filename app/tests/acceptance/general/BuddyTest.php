@@ -27,18 +27,6 @@ class BuddyTest extends AcceptanceCase
     /**
      * @test
      */
-    public function it_can_fail_to_find_buddies()
-    {
-        $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
-        $this->assertResponseStatus(200);
-
-        $response = $this->call('GET', '/api/users/' . $model->users[0]->hash . '/buddies');
-        $this->assertResponseStatus(404);
-    }
-
-    /**
-     * @test
-     */
     public function it_can_create_and_find_buddy_requests()
     {
         // Create users
@@ -48,6 +36,10 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(200);
         $receiver2 = $this->toJson($this->call("POST", "/api/users/", $this->similarGenericUser));
         $this->assertResponseStatus(200);
+
+        //////// Fail to find buddies ////////
+        $this->call('GET', '/api/users/' . $sender->users[0]->hash . '/buddies');
+        $this->assertResponseStatus(404);
 
         //////// Create the requests ////////
 
@@ -98,8 +90,8 @@ class BuddyTest extends AcceptanceCase
         $this->assertEquals('hello@lonelygiraffes.com', $getModels->buddy_requests[0]->sender->email);
         $this->assertEquals('similarHello@lonelygiraffes.com', $getModels->buddy_requests[0]->recipient->email);
 
-
         //////// Accept a request ////////
+
         $getModels = $this->toJson($this->call("PUT", "/api/users/" . $receiver1->users[0]->hash . "/buddies/requests/" . $sender->users[0]->hash));
         $users = array($getModels->users[0]->email, $getModels->users[1]->email);
         sort($users);
@@ -110,15 +102,47 @@ class BuddyTest extends AcceptanceCase
         $this->assertEquals('hello@lonelygiraffes.com', $users[1]);
 
 
-        return;
+        //////// Deny a request ////////
+
+        $this->toJson($this->call("DELETE", "/api/users/" . $receiver2->users[0]->hash . "/buddies/requests/" . $sender->users[0]->hash));
+        $this->assertResponseStatus(200);
+
+        //////// Check that they both gone, for all parties ////////
+
+        $this->toJson($this->call("GET", "/api/users/" . $sender->users[0]->hash . "/buddies/requests",
+            array('method' => 'sent')));
+        $this->assertResponseStatus(404);
+
+        $this->toJson($this->call("GET", "/api/users/" . $receiver1->users[0]->hash . "/buddies/requests",
+            array('method' => 'received')));
+        $this->assertResponseStatus(404);
+
+        $this->toJson($this->call("GET", "/api/users/" . $receiver2->users[0]->hash . "/buddies/requests",
+            array('method' => 'received')));
+        $this->assertResponseStatus(404);
+
+        //////// Get Buddies ////////
+        $getModels = $this->toJson($this->call('GET', '/api/users/' . $sender->users[0]->hash . '/buddies'));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(1, count($getModels->users));
+        $this->assertEquals('anotherHello@lonelygiraffes.com', $getModels->users[0]->email);
+
+        $getModels = $this->toJson($this->call('GET', '/api/users/' . $receiver1->users[0]->hash . '/buddies'));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(1, count($getModels->users));
+        $this->assertEquals('hello@lonelygiraffes.com', $getModels->users[0]->email);
+
+        //////// Remove a buddy ////////
+        $this->call('DELETE', '/api/users/' . $receiver1->users[0]->hash . '/buddies',
+            array('target' => $sender->users[0]->hash));
+        $this->assertResponseStatus(200);
+
+        //////// Fail to find buddies....again ////////
+        $this->call('GET', '/api/users/' . $sender->users[0]->hash . '/buddies');
+        $this->assertResponseStatus(404);
+        $this->call('GET', '/api/users/' . $receiver1->users[0]->hash . '/buddies');
+        $this->assertResponseStatus(404);
+        $this->call('GET', '/api/users/' . $receiver2->users[0]->hash . '/buddies');
+        $this->assertResponseStatus(404);
     }
-
-    ///public function it_can_find_accept_buddy_requests()
-    // PUT users/{resource}/buddies/requests/{request}
-
-    ///public function it_can_find_deny_buddy_requests()
-    // DELETE users/{resource}/buddies/requests/{request}
-
-    ///public function it_can_remove_buddies()
-    // DELETE users/{resource}/buddies
 }

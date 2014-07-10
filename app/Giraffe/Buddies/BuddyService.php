@@ -37,13 +37,13 @@ class BuddyService extends Service
         return $this->buddyRepository->getByUser($user);
     }
 
-    public function unbuddy($userHash, $buddy)
+    public function unbuddy($userHash, $buddyHash)
     {
-        $this->gatekeeper->mayI('destroy', 'buddies')->please();
+        //$this->gatekeeper->mayI('destroy', 'buddies')->please();
         $user = $this->userRepository->getByHash($userHash);
-        // TODO
-        // ???
-        // PROFIT
+        $buddy = $this->userRepository->getByHash($buddyHash);
+
+        $this->buddyRepository->deleteByPair($user, $buddy);
     }
 
     /**

@@ -24,7 +24,10 @@ class BuddyController extends Controller
 
     public function destroy($user_hash)
     {
-
+        if(!Input::get('target'))
+            throw new BadRequestHttpException();
+        $this->buddyService->unbuddy($user_hash, Input::get('target'));
+        return [];
     }
 
     public function returnUserModels(Collection $models)

@@ -54,19 +54,29 @@ class BuddyRepository extends EloquentRepository
      * Gets a Buddy relationship of two users.
      *
      * @param \Eloquent|int $user
-     * @param \Eloquent|int $friend
+     * @param \Eloquent|int $buddy
      * @return BuddyModel|null
      * @throws NotFoundModelException
      */
-    public function getFromPair($user, $friend){
+    public function getByPair($user, $buddy){
 
         $model = $this->model
-            ->where('user1_id', '=', $user->id)->where('user2_id', '=', $friend->id)
-            ->orWhere('user1_id', '=', $friend->id)->where('user2_id', '=', $user->id)
+            ->where('user1_id', '=', $user->id)->where('user2_id', '=', $buddy->id)
+            ->orWhere('user1_id', '=', $buddy->id)->where('user2_id', '=', $user->id)
             ->first();
         if(!$model)
             throw new NotFoundModelException();
 
         return $model;
+    }
+
+    /**
+     * @param \Eloquent|int $user
+     * @param \Eloquent|int $buddy
+     * @return void
+     * @throws NotFoundModelException
+     */
+    public function deleteByPair($user, $buddy) {
+        $this->getByPair($user, $buddy)->delete();
     }
 } 

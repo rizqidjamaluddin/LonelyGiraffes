@@ -61,6 +61,7 @@ class BuddyRequestService extends Service
 
     public function getBuddyRequests($userHash, $sentOrReceived)
     {
+        //$this->gatekeeper->mayI('get', 'buddy_request')->please();
         $user = $this->userRepository->getByHash($userHash);
 
         if($sentOrReceived=="sent")
@@ -78,22 +79,16 @@ class BuddyRequestService extends Service
         $user = $this->userRepository->getByHash($userHash);
         $sender = $this->userRepository->getByHash($targetHash);
 
-        echo "\n[BR Service] Destroying request\n";
         $request = $this->buddyRequestRepository->destroyByPair($sender, $user);
-        echo json_encode($request);
-
-        echo "\n[BR Service] Creating Buddy\n";
         return $this->buddyService->createBuddy($request);
     }
 
-    public function denyBuddyRequest($request_id)
+    public function denyBuddyRequest($userHash, $targetHash)
     {
-        $this->gatekeeper->mayI('destroy', 'buddy_request')->please();
+        //$this->gatekeeper->mayI('destroy', 'buddy_request')->please();
+        $user = $this->userRepository->getByHash($userHash);
+        $sender = $this->userRepository->getByHash($targetHash);
 
-    }
-
-    public function removeBuddy($user)
-    {
-        $this->gatekeeper->mayI('destroy', 'buddy')->please();
+        $this->buddyRequestRepository->destroyByPair($sender, $user);
     }
 } 

@@ -8,6 +8,7 @@ use Giraffe\BuddyRequests\BuddyRequestService;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserTransformer;
 use Illuminate\Database\Eloquent\Collection;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class BuddyRequestController extends Controller
 {
@@ -22,12 +23,16 @@ class BuddyRequestController extends Controller
 
     public function index($userHash)
     {
+        if(!Input::get('method'))
+            throw new BadRequestHttpException();
         $models = $this->buddyRequestService->getBuddyRequests($userHash, Input::get('method'));
         return $this->returnBuddyRequestModels($models);
     }
 
     public function create($userHash)
     {
+        if(!Input::get('target'))
+            throw new BadRequestHttpException();
         $buddyRequest = $this->buddyRequestService->createBuddyRequest($userHash, Input::get("target"));
         return $this->returnBuddyRequestModel($buddyRequest);
     }
@@ -35,13 +40,14 @@ class BuddyRequestController extends Controller
     public function accept($userHash, $targetHash)
     {
         $buddy = $this->buddyRequestService->acceptBuddyRequest($userHash, $targetHash);
-        $users = $buddy->users()->get();;
+        $users = $buddy->users()->get();
         return $this->returnUserModels($users);
     }
 
-    public function destroy($user_hash, $request)
+    public function destroy($userHash, $targetHash)
     {
-
+        $this->buddyRequestService->denyBuddyRequest($userHash, $targetHash);
+        return [];
     }
 
     public function returnBuddyRequestModel(BuddyRequestModel $models)
