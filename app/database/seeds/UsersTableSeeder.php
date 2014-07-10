@@ -3,6 +3,7 @@
 // Composer: "fzaninotto/faker": "v1.3.0"
 use Carbon\Carbon;
 use Faker\Factory as Faker;
+use Giraffe\BuddyRequests\BuddyRequestModel;
 use Giraffe\Users\UserModel;
 use Giraffe\Buddies\BuddyModel;
 
@@ -38,11 +39,19 @@ class UsersTableSeeder extends Seeder {
                 'gender' => $gender
 			]);
 
-            //Create some buddies
-            if(count($fake_users) >= 2) {
-                $rand_users = array_rand($fake_users, 2);
+            //Create some buddies & buddy requests
+            if(count($fake_users) >= 4) {
+                $rand_users = array_rand($fake_users, 4);
+
+                $rand_users_request = [array_pop($rand_users), array_pop($rand_users)];
+                foreach ($rand_users_request as $rand) {
+                    BuddyRequestModel::create([
+                        'from_user_id' => $user->id,
+                        'to_user_id' => $fake_users[$rand]->id
+                    ]);
+                }
+
                 foreach ($rand_users as $rand) {
-                    echo $fake_users[$rand] . "\n";
                     BuddyModel::create([
                         'user1_id' => $fake_users[$rand]->id,
                         'user2_id' => $user->id
