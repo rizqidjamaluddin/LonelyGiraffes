@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Buddies;
 
+use Giraffe\BuddyRequests\BuddyRequestModel;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
 
@@ -43,5 +44,20 @@ class BuddyService extends Service
         // TODO
         // ???
         // PROFIT
+    }
+
+    /**
+     * @param BuddyRequestModel $buddyRequest
+     */
+    public function createBuddy($buddyRequest)
+    {
+        $data = [];
+        $data['user1_id'] = min($buddyRequest->from_user_id, $buddyRequest->to_user_id);
+        $data['user2_id'] = max($buddyRequest->from_user_id, $buddyRequest->to_user_id);
+
+        $this->creationValidator->validate($data);
+        $buddy = $this->buddyRepository->create($data);
+
+        return $buddy;
     }
 } 

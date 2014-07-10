@@ -56,4 +56,25 @@ class BuddyRequestRepository extends EloquentRepository
         }
         return $buddyRequests;
     }
+
+    /**
+     * Destroys a Request based on the two users
+     *
+     * @param UserModel $sender
+     * @param UserModel $recipient
+     *
+     * @throws \Giraffe\Common\NotFoundModelException
+     * @return BuddyRequestModel
+     */
+    public function destroyByPair($sender, $recipient) {
+        $buddyRequest = $this->model->where('from_user_id', '=', $sender->id)->where('to_user_id', '=', $recipient->id)->first();
+
+        if(!$buddyRequest)  {
+            throw new NotFoundModelException();
+        }
+
+        $buddyRequest->delete();
+
+        return $buddyRequest;
+    }
 } 

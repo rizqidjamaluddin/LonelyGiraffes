@@ -1,6 +1,8 @@
 <?php  namespace Giraffe\BuddyRequests;
 
 
+use Giraffe\Buddies\BuddyRepository;
+use Giraffe\Buddies\BuddyService;
 use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
@@ -12,9 +14,13 @@ class BuddyRequestService extends Service
      */
     private $userRepository;
     /**
-     * @var \Giraffe\BuddyRequests\BuddyRequestRepository
+     * @var \Giraffe\Buddies\BuddyRepository
      */
-    private $buddyRequestRepository;
+    private $buddyRepository;
+    /**
+     * @var \Giraffe\BuddyRequests\BuddyRequestService
+     */
+    private $buddyRequestSerivce;
     /**
      * @var \Giraffe\BuddyRequests\BuddyRequestCreationValidator
      */
@@ -22,11 +28,13 @@ class BuddyRequestService extends Service
 
     public function __construct(
         UserRepository $userRepository,
+        BuddyService $buddyService,
         BuddyRequestRepository $buddyRequestRepository,
         BuddyRequestCreationValidator $creationValidator
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
+        $this->buddyService = $buddyService;
         $this->buddyRequestRepository = $buddyRequestRepository;
         $this->creationValidator = $creationValidator;
     }
@@ -63,11 +71,19 @@ class BuddyRequestService extends Service
             throw new NotImplementedException();
     }
 
-    public function acceptBuddyRequest($request_id)
+    public function acceptBuddyRequest($userHash, $targetHash)
     {
-        $this->gatekeeper->mayI('destroy', 'buddy_request')->please();
-        $this->gatekeeper->mayI('create', 'buddy')->please();
+        //$this->gatekeeper->mayI('destroy', 'buddy_request')->please();
+        //$this->gatekeeper->mayI('create', 'buddy')->please();
+        $user = $this->userRepository->getByHash($userHash);
+        $sender = $this->userRepository->getByHash($targetHash);
 
+        echo "\n[BR Service] Destroying request\n";
+        $request = $this->buddyRequestRepository->destroyByPair($sender, $user);
+        echo json_encode($request);
+
+        echo "\n[BR Service] Creating Buddy\n";
+        return $this->buddyService->createBuddy($request);
     }
 
     public function denyBuddyRequest($request_id)
