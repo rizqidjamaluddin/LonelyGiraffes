@@ -164,6 +164,28 @@ class UserAccountCase extends AcceptanceCase
         $this->assertResponseStatus(404);
     }
 
+    /**
+     * @test
+     * @depends it_can_create_a_new_user
+     */
+    public function it_can_find_a_user_only_by_hash() {
+        $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
+
+        $raw_user = $this->service->getUser($model->users[0]->hash);
+
+        // ID
+        $this->toJson($this->call("GET", "/api/users/" . $raw_user->id));
+        $this->assertResponseStatus(404);
+
+        // Name
+        $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->name));
+        $this->assertResponseStatus(404);
+
+        // Hash
+        $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->hash));
+        $this->assertResponseStatus(200);
+    }
+
 
     /**
      * @test

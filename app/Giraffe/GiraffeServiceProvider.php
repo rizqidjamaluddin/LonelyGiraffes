@@ -1,6 +1,6 @@
 <?php namespace Giraffe;
 use Giraffe\Geolocation\LocationService;
-use Giraffe\Geolocation\NearbySearchStrategies\FiveDegreeCellStrategy\FiveDegreeCellSearchStrategy;
+use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchStrategy;
 use Giraffe\Geolocation\Providers\GeonameLocationProvider;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,7 +33,7 @@ class GiraffeServiceProvider extends ServiceProvider {
         $locationService->pushProvider($geonameLocationProvider);
         $locationService->setCanonicalProvider($geonameLocationProvider);
 
-        $fiveDegreeCellStrat = new FiveDegreeCellSearchStrategy();
+        $fiveDegreeCellStrat = new TwoDegreeCellSearchStrategy();
         $locationService->setDefaultNearbySearchStrategy($fiveDegreeCellStrat);
     }
 

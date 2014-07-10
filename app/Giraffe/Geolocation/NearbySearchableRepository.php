@@ -1,6 +1,8 @@
 <?php  namespace Giraffe\Geolocation;
 
-interface NearbySearchableRepository
+use Giraffe\Common\Repository;
+
+interface NearbySearchableRepository extends Repository
 {
 
 } 

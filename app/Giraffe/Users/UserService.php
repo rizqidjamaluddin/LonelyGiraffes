@@ -5,6 +5,7 @@ use Giraffe\Common\DuplicateUpdateException;
 use Giraffe\Common\Service;
 use Giraffe\Common\ValidationException;
 use Giraffe\Geolocation\Location;
+use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\NotFoundLocationException;
 use Hash;
 use Str;
@@ -24,16 +25,22 @@ class UserService extends Service
      * @var UserUpdateValidator
      */
     private $updateValidator;
+    /**
+     * @var LocationService
+     */
+    private $locationService;
 
     public function __construct(
         UserRepository $userRepository,
         UserCreationValidator $creationValidator,
-        UserUpdateValidator $updateValidator
+        UserUpdateValidator $updateValidator,
+        LocationService $locationService
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
         $this->creationValidator = $creationValidator;
         $this->updateValidator = $updateValidator;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -67,7 +74,7 @@ class UserService extends Service
 
         $attributes = array_only($attributes, ['name', 'email', 'gender', 'password', 'city', 'state', 'country']);
 
-        $user = $this->userRepository->get($user_id);
+        $user = $this->userRepository->getByHash($user_id);
         $this->gatekeeper->mayI('update', $user)->please();
 
         $this->updateValidator->validate($attributes);
@@ -94,6 +101,10 @@ class UserService extends Service
             } catch (NotFoundLocationException $e) {
                 throw new ValidationException('User location invalid', []);
             }
+
+            // set cache data if possible
+            $cacheString = $this->locationService->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
+            $attributes['cell'] = $cacheString;
         }
 
         try {
@@ -112,7 +123,7 @@ class UserService extends Service
      */
     public function deleteUser($id)
     {
-        $user = $this->userRepository->get($id);
+        $user = $this->userRepository->getByHash($id);
         $this->gatekeeper->mayI('delete', $user)->please();
         $user->delete();
         return $user;
@@ -125,7 +136,7 @@ class UserService extends Service
      */
     public function getUser($id)
     {
-        return $this->userRepository->get($id);
+        return $this->userRepository->getByHash($id);
     }
 
     /**
@@ -188,6 +199,13 @@ class UserService extends Service
     public function setUserNicknameSetting($user, $useNickname)
     {
         return (bool)$this->userRepository->setUserNicknameSettingById($user, $useNickname);
+    }
+
+    public function getNearbyUsers($user)
+    {
+        /** @var UserModel $user */
+        $user = $this->userRepository->getByHash($user);
+        return $this->locationService->getNearbyFromRepository($user, $this->userRepository, ['exclude' => $user->id]);
     }
 
     /**

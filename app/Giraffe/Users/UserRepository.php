@@ -2,12 +2,13 @@
 
 use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchableRepository;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserSettingModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRepository extends EloquentRepository
+class UserRepository extends EloquentRepository implements TwoDegreeCellSearchableRepository
 {
 
     /**
@@ -40,7 +41,7 @@ class UserRepository extends EloquentRepository
         }
 
         try {
-            $model = $this->getByPublicId($identifier);
+            $model = $this->getByHash($identifier);
         } catch (NotFoundModelException $e) {
             return parent::get($identifier);
         }
@@ -48,14 +49,36 @@ class UserRepository extends EloquentRepository
     }
 
     /**
-     * @param string $nickname
+     * @param string $hash
      *
      * @throws \Giraffe\Common\NotFoundModelException
      * @return UserModel
      */
-    public function getByPublicId($nickname)
+    public function getByHash($hash)
     {
-        if (!$model = $this->model->where('name', '=', $nickname)->first()) {
+        if ($hash instanceof UserModel) {
+            return $hash;
+        }
+
+        if (!$model = $this->model->where('hash', '=', $hash)->first()) {
+            throw new NotFoundModelException();
+        }
+        return $model;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @throws \Giraffe\Common\NotFoundModelException
+     * @return UserModel
+     */
+    public function getByPublicId($name)
+    {
+        if ($name instanceof UserModel) {
+            return $name;
+        }
+
+        if (!$model = $this->model->where('name', '=', $name)->first()) {
             throw new NotFoundModelException();
         }
         return $model;
@@ -135,4 +158,13 @@ class UserRepository extends EloquentRepository
         return $this->userSettingModel->where('user_id', '=', $id)->update(['use_nickname' => (bool) $new_show_nickname_setting]);
     }
 
-} 
+    public function TwoDegreeCellSearch($cell, $limit, $options = [])
+    {
+        if (array_key_exists('exclude', $options)) {
+            $excludes = is_array($options['exclude']) ? $options['exclude'] : [$options['exclude']];
+            return $this->model->where('cell', $cell)->whereNotIn('id', $excludes)->take($limit)->get();
+        } else {
+            return $this->model->where('cell', $cell)->take($limit)->get();
+        }
+    }
+}
