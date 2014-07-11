@@ -28,7 +28,8 @@ class EventGeolocationTest extends GeolocationCase
      */
     public function events_can_have_a_location()
     {
-        $response = $this->toJson($this->call('POST', '/api/events', []));
+        $this->registerAndLoginAsMario();
+        $response = $this->toJson($this->call('POST', '/api/events', $this->genericEvent));
         $this->assertResponseOk();
         $this->assertEquals(count($response->events), 1);
     }
@@ -38,9 +39,6 @@ class EventGeolocationTest extends GeolocationCase
      */
     public function users_can_find_events_near_them_and_be_ordered_by_time_to_event()
     {
-
-
-
         $response = $this->toJson($this->call('GET', '/api/events?nearby'));
         $this->assertResponseOk();
         $this->assertEquals(count($response->events), 1);
