@@ -8,11 +8,10 @@ interface NearbySearchStrategy
     /**
      * @param Location   $location
      * @param Repository $repository
-     * @param int        $limit
      * @param array      $options
      * @return array
      */
-    public function searchRepository(Location $location, Repository $repository, $limit = 10, $options = []);
+    public function searchRepository(Location $location, Repository $repository, $options = []);
 
     /**
      * Search strategies are allowed to set cache metadata for better performance. The strategy should return this

@@ -115,14 +115,14 @@ class LocationService extends Service
                 array_key_exists('state', $attributes) &&
                 array_key_exists('country', $attributes))
             ) {
-                throw new ValidationException('User location invalid; city, state and country required', []);
+                throw new ValidationException('Given location invalid; city, state and country required', []);
             }
 
             // build location object, then load it back into the attributes; this will 404 if location is missing
             try {
                 $location = Location::buildFromCity($attributes['city'], $attributes['state'], $attributes['country']);
             } catch (NotFoundLocationException $e) {
-                throw new ValidationException('User location invalid', []);
+                throw new ValidationException('Given location invalid', []);
             }
 
             // set cache data if possible

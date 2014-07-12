@@ -11,12 +11,11 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
     /**
      * @param Location $location
      * @param Repository $repository
-     * @param int $limit
      * @param array $options
      * @throws \Giraffe\Common\ConfigurationException
      * @return array
      */
-    public function searchRepository(Location $location, Repository $repository, $limit = 10, $options = [])
+    public function searchRepository(Location $location, Repository $repository, $options = [])
     {
         $cacheMetadata = $location->cacheMetadata;
 
@@ -27,7 +26,7 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
             if (!$lat || !$long) {
                 // if no coordinates are given, make a new location object and re-call this method with it
                 $location = Location::buildFromCity($location->city, $location->state, $location->country);
-                return $this->searchRepository($location, $repository, $cacheMetadata, $limit);
+                return $this->searchRepository($location, $repository, $options);
             }
             $cacheMetadata = $this->getCacheMetadata($location);
         }
@@ -52,7 +51,7 @@ class TwoDegreeCellSearchStrategy implements NearbySearchStrategy
         $cacheList[] = '2DC ' . ((int)$fragmentLat + 2) . ',' . ((int)$fragmentLong + 0);
         $cacheList[] = '2DC ' . ((int)$fragmentLat + 2) . ',' . ((int)$fragmentLong + 2);
 
-        return $repository->twoDegreeCellSearch($cacheList, $limit, $options);
+        return $repository->twoDegreeCellSearch($cacheList, $options);
     }
 
     /**
