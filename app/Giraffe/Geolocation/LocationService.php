@@ -2,6 +2,7 @@
 
 use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\Service;
+use Giraffe\Common\ValidationException;
 use Giraffe\Geolocation\NearbySearchableRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -97,8 +98,38 @@ class LocationService extends Service
         $options = [],
         NearbySearchStrategy $strategy = null
     ) {
-        if (!$strategy) $strategy = $this->getDefaultNearbySearchStrategy();
-        return $strategy->searchRepository($locatable->getLocation(), $repository, 10, $options);
+        if (!$strategy) {
+            $strategy = $this->getDefaultNearbySearchStrategy();
+        }
+        return $strategy->searchRepository($locatable->getLocation(), $repository, $options);
+    }
+
+    public function getCacheStringFromAttributesArray($attributes)
+    {
+        if (array_key_exists('city', $attributes) ||
+            array_key_exists('state', $attributes) ||
+            array_key_exists('country', $attributes)
+        ) {
+            // if one exists, they all have to
+            if (!(array_key_exists('city', $attributes) &&
+                array_key_exists('state', $attributes) &&
+                array_key_exists('country', $attributes))
+            ) {
+                throw new ValidationException('User location invalid; city, state and country required', []);
+            }
+
+            // build location object, then load it back into the attributes; this will 404 if location is missing
+            try {
+                $location = Location::buildFromCity($attributes['city'], $attributes['state'], $attributes['country']);
+            } catch (NotFoundLocationException $e) {
+                throw new ValidationException('User location invalid', []);
+            }
+
+            // set cache data if possible
+            $cacheString = $this->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
+            return $cacheString;
+        }
+        return false;
     }
 
 } 
