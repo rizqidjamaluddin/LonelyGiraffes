@@ -22,7 +22,7 @@ class Location
     public $population;
 
     /**
-     * @var Array
+     * @var string
      */
     public $cacheMetadata = '';
 

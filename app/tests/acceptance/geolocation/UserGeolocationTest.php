@@ -73,7 +73,8 @@ class UserGeolocationTest extends GeolocationCase
     {
         $mario = $this->registerNYCMario();
         $luigi = $this->registerManhattanLuigi();
-        $yoshi = $this->registerSeattleYoshi();
+        $yoshi = $this->registerLondonYoshi();
+        $this->assertResponseOk();
         // register peach with no location
         $peach = $this->registerPeach();
 
@@ -90,26 +91,5 @@ class UserGeolocationTest extends GeolocationCase
         $results = $this->toJson($this->call('GET', '/api/users?nearby'));
         $this->assertResponseStatus(428);
 
-    }
-
-    protected function registerNYCMario()
-    {
-        $mario = $this->registerAndLoginAsMario();
-        $this->call('PUT', '/api/users/' . $mario->hash, $this->cities['nyc']);
-        return $mario;
-    }
-
-    protected function registerManhattanLuigi()
-    {
-        $luigi = $this->registerAndLoginAsLuigi();
-        $this->call('PUT', '/api/users/' . $luigi->hash, $this->cities['manhattan']);
-        return $luigi;
-    }
-
-    protected function registerSeattleYoshi()
-    {
-        $yoshi = $this->registerAndLoginAsYoshi();
-        $this->call('PUT', '/api/users/' . $yoshi->hash, $this->cities['seattle']);
-        return $yoshi;
     }
 }

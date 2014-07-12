@@ -26,11 +26,37 @@ abstract class GeolocationCase extends AcceptanceCase
             'state' => 'New York',
             'country' => 'United States'
         ],
-        'seattle' => [
-            'city' => 'Seattle',
-            'state' => 'Washington',
-            'country' => 'United States'
+        'london' => [
+            'city' => 'London',
+            'state' => 'England',
+            'country' => 'United Kingdom'
         ]
     ];
+
+
+
+    protected function registerNYCMario()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $this->call('PUT', '/api/users/' . $mario->hash, $this->cities['nyc']);
+        $this->asUser($mario->hash);
+        return $mario;
+    }
+
+    protected function registerManhattanLuigi()
+    {
+        $luigi = $this->registerAndLoginAsLuigi();
+        $this->call('PUT', '/api/users/' . $luigi->hash, $this->cities['manhattan']);
+        $this->asUser($luigi->hash);
+        return $luigi;
+    }
+
+    protected function registerLondonYoshi()
+    {
+        $yoshi = $this->registerAndLoginAsYoshi();
+        $this->call('PUT', '/api/users/' . $yoshi->hash, $this->cities['london']);
+        $this->asUser($yoshi->hash);
+        return $yoshi;
+    }
 
 } 
