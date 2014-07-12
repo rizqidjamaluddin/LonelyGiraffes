@@ -71,9 +71,6 @@ class FeedTest extends AcceptanceCase
             'html_body' => 'Details of my awesome event',
             'url'       => 'http://www.google.com',
             'location'  => 'My Awesome Location',
-            'city'      => 'Athens',
-            'state'     => 'Georgia',
-            'country'   => 'US',
             'cell'      => '',
             'timestamp' => '0000-00-00 00:00:00'
         ];
