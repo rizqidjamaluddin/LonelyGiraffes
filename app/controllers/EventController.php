@@ -3,6 +3,7 @@
 use Giraffe\Common\Controller;
 use Giraffe\Events\EventService;
 use Giraffe\Events\EventTransformer;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class EventController extends Controller
 {
@@ -16,6 +17,16 @@ class EventController extends Controller
     {
         $this->eventService = $eventService;
         parent::__construct();
+    }
+
+    public function index()
+    {
+        if (Input::exists('nearby')) {
+            $nearby = $this->eventService->findNearbyUser($this->gatekeeper->me());
+            return $this->withCollection($nearby, new EventTransformer(), 'events');
+        }
+
+        throw new BadRequestHttpException;
     }
 
     public function store() {
