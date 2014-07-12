@@ -33,4 +33,30 @@ abstract class GeolocationCase extends AcceptanceCase
         ]
     ];
 
+
+
+    protected function registerNYCMario()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $this->call('PUT', '/api/users/' . $mario->hash, $this->cities['nyc']);
+        $this->asUser($mario->hash);
+        return $mario;
+    }
+
+    protected function registerManhattanLuigi()
+    {
+        $luigi = $this->registerAndLoginAsLuigi();
+        $this->call('PUT', '/api/users/' . $luigi->hash, $this->cities['manhattan']);
+        $this->asUser($luigi->hash);
+        return $luigi;
+    }
+
+    protected function registerLondonYoshi()
+    {
+        $yoshi = $this->registerAndLoginAsYoshi();
+        $this->call('PUT', '/api/users/' . $yoshi->hash, $this->cities['london']);
+        $this->asUser($yoshi->hash);
+        return $yoshi;
+    }
+
 } 
