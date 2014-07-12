@@ -92,25 +92,4 @@ class UserGeolocationTest extends GeolocationCase
         $this->assertResponseStatus(428);
 
     }
-
-    protected function registerNYCMario()
-    {
-        $mario = $this->registerAndLoginAsMario();
-        $this->call('PUT', '/api/users/' . $mario->hash, $this->cities['nyc']);
-        return $mario;
-    }
-
-    protected function registerManhattanLuigi()
-    {
-        $luigi = $this->registerAndLoginAsLuigi();
-        $this->call('PUT', '/api/users/' . $luigi->hash, $this->cities['manhattan']);
-        return $luigi;
-    }
-
-    protected function registerLondonYoshi()
-    {
-        $yoshi = $this->registerAndLoginAsYoshi();
-        $this->call('PUT', '/api/users/' . $yoshi->hash, $this->cities['london']);
-        return $yoshi;
-    }
 }
