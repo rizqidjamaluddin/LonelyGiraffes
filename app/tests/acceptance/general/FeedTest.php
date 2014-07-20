@@ -48,15 +48,42 @@ class FeedTest extends AcceptanceCase
         $this->assertEquals($firstChunk->posts[9]->body->body, $this->otherGenericShoutBody);
         $cursor = end($firstChunk->posts)->hash;
 
+        // test before
         $nextChunk = $this->toJson($this->call('GET', '/api/posts', ['before' => $cursor]));
         $this->assertResponseOk();
         $this->assertEquals($nextChunk->posts[0]->body->body, $this->genericShoutBody);
         $this->assertEquals($nextChunk->posts[9]->body->body, $this->genericShoutBody);
         $cursor = end($nextChunk->posts)->hash;
-
         $lastChunk = $this->toJson($this->call('GET', '/api/posts', ['before' => $cursor]));
         $this->assertResponseOk();
         $this->assertEquals(count($lastChunk->posts), 0);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_find_posts_by_the_cursor_off_the_top_post()
+    {
+        $this->registerAndLoginAsMario();
+
+        // initial stuff
+        for ($i = 0; $i < 10; $i++) {
+            $this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+        }
+
+        $stuff = $this->toJson($this->call('GET', '/api/posts'))->posts;
+        $this->assertResponseOk();
+        $this->assertEquals(count($stuff), 10);
+        $topCursor = $stuff[0]->hash;
+
+        // new post
+        $new = $this->call('POST', '/api/shouts', ['body' => $this->otherGenericShoutBody]);
+
+        $fetch = $this->toJson($this->call('GET', '/api/posts', ['after' => $topCursor]));
+        $this->assertEquals(count($fetch->posts), 1);
+        $this->assertResponseOk();
+        $this->assertEquals($fetch->posts[0]->body->body, $this->otherGenericShoutBody);
+
     }
 
     /**
