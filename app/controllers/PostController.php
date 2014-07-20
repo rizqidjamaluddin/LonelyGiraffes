@@ -21,6 +21,11 @@ class PostController extends Controller
 
     public function index()
     {
+        if (Input::exists('after')) {
+            $results = $this->feedService->getGlobalFeedAfter(Input::get('after'));
+            return $this->withCollection($results, new PostTransformer, 'posts');
+        }
+
         $results = $this->feedService->getGlobalFeed(Input::get('before'));
         return $this->withCollection($results, new PostTransformer, 'posts');
     }
