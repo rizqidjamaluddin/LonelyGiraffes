@@ -77,12 +77,16 @@ class FeedTest extends AcceptanceCase
         $topCursor = $stuff[0]->hash;
 
         // new post
-        $new = $this->call('POST', '/api/shouts', ['body' => $this->otherGenericShoutBody]);
+        $new = $this->call('POST', '/api/shouts', ['body' => 'Here be a shout, #1!']);
+        $new = $this->call('POST', '/api/shouts', ['body' => 'Here be a shout, #2!']);
+        $new = $this->call('POST', '/api/shouts', ['body' => 'Here be a shout, #3!']);
 
         $fetch = $this->toJson($this->call('GET', '/api/posts', ['after' => $topCursor]));
-        $this->assertEquals(count($fetch->posts), 1);
+        $this->assertEquals(count($fetch->posts), 3);
         $this->assertResponseOk();
-        $this->assertEquals($fetch->posts[0]->body->body, $this->otherGenericShoutBody);
+        $this->assertEquals($fetch->posts[0]->body->body, 'Here be a shout, #3!');
+        $this->assertEquals($fetch->posts[1]->body->body, 'Here be a shout, #2!');
+        $this->assertEquals($fetch->posts[2]->body->body, 'Here be a shout, #1!');
 
     }
 
