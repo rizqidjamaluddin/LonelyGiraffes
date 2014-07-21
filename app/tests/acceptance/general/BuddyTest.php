@@ -116,15 +116,22 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         //////// Get Buddies ////////
+        $this->asUser($mario->hash);
         $marioBuddies = $this->toJson($this->call('GET', '/api/users/' . $mario->hash . '/buddies'));
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($marioBuddies->buddies));
         $this->assertEquals($this->luigi['email'], $marioBuddies->buddies[0]->email);
 
+        $this->asUser($luigi->hash);
         $luigiBuddies = $this->toJson($this->call('GET', '/api/users/' . $luigi->hash . '/buddies'));
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($luigiBuddies->buddies));
         $this->assertEquals($this->mario['email'], $luigiBuddies->buddies[0]->email);
+
+        $this->asUser($yoshi->hash);
+        $luigiBuddies = $this->toJson($this->call('GET', '/api/users/' . $yoshi->hash . '/buddies'));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(0, count($luigiBuddies->buddies));
 
         //////// Remove a buddy ////////
         $this->call('DELETE', '/api/users/' . $luigi->hash . '/buddies',
