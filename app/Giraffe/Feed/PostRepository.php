@@ -26,6 +26,16 @@ class PostRepository extends EloquentRepository
             ->get();
     }
 
+    public function getGlobalAfterId($cursor)
+    {
+        return $this->model
+            ->with('author', 'postable', 'postable.author')
+            ->take(10)
+            ->where('id', '>', $cursor)
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
     public function getGlobalBeforeId($cursor)
     {
         return $this->model

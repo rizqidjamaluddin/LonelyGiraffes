@@ -8,12 +8,12 @@ class ShoutCreationValidator
 {
     public function validate(array $data)
     {
-        $validator = V::key('body', V::string()->notEmpty()->length(10));
+        $validator = V::key('body', V::string()->notEmpty()->length(10, 1000));
 
         try {
             $validator->assert($data);
         } catch (AbstractNestedException $e) {
-            $errors = $e->findMessages(['string', 'length']);
+            $errors = $e->findMessages(['string', 'length', 'key']);
             throw new ValidationException('Could not create shout.', $errors);
         }
 

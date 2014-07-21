@@ -85,25 +85,7 @@ class UserService extends Service
         }
 
         // intercept location change
-        if (array_key_exists('city', $attributes) ||
-            array_key_exists('state', $attributes) ||
-            array_key_exists('country', $attributes)) {
-            // if one exists, they all have to
-            if (!(array_key_exists('city', $attributes) &&
-                array_key_exists('state', $attributes) &&
-                array_key_exists('country', $attributes))) {
-                throw new ValidationException('User location invalid; city, state and country required', []);
-            }
-
-            // build location object, then load it back into the attributes; this will 404 if location is missing
-            try {
-                $location = Location::buildFromCity($attributes['city'], $attributes['state'], $attributes['country']);
-            } catch (NotFoundLocationException $e) {
-                throw new ValidationException('User location invalid', []);
-            }
-
-            // set cache data if possible
-            $cacheString = $this->locationService->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
+        if ($cacheString = $this->locationService->getCacheStringFromAttributesArray($attributes)) {
             $attributes['cell'] = $cacheString;
         }
 

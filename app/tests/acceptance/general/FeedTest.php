@@ -29,6 +29,26 @@ class FeedTest extends AcceptanceCase
     /**
      * @test
      */
+    public function it_can_fetch_a_single_post()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $insert = $this->toJson($this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]));
+        $this->assertResponseOk();
+
+        // get the feed, because the post data itself isn't in $insert, which was a shout resource
+        $feed = $this->toJson($this->call('GET', '/api/posts'));
+        $hash = $feed->posts[0]->hash;
+
+        $fetch = $this->toJson($this->call('GET', '/api/posts/' . $hash));
+        $this->assertResponseOk();
+        $this->assertEquals($this->genericShoutBody, $fetch->posts[0]->body->body);
+        $this->assertEquals($mario->hash, $fetch->posts[0]->links->author->hash);
+
+    }
+
+    /**
+     * @test
+     */
     public function it_can_fetch_posts_by_the_cursor_of_the_bottom_most_post()
     {
         $this->registerAndLoginAsMario();
@@ -48,15 +68,46 @@ class FeedTest extends AcceptanceCase
         $this->assertEquals($firstChunk->posts[9]->body->body, $this->otherGenericShoutBody);
         $cursor = end($firstChunk->posts)->hash;
 
+        // test before
         $nextChunk = $this->toJson($this->call('GET', '/api/posts', ['before' => $cursor]));
         $this->assertResponseOk();
         $this->assertEquals($nextChunk->posts[0]->body->body, $this->genericShoutBody);
         $this->assertEquals($nextChunk->posts[9]->body->body, $this->genericShoutBody);
         $cursor = end($nextChunk->posts)->hash;
-
         $lastChunk = $this->toJson($this->call('GET', '/api/posts', ['before' => $cursor]));
         $this->assertResponseOk();
         $this->assertEquals(count($lastChunk->posts), 0);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_find_posts_by_the_cursor_off_the_top_post()
+    {
+        $this->registerAndLoginAsMario();
+
+        // initial stuff
+        for ($i = 0; $i < 10; $i++) {
+            $this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+        }
+
+        $stuff = $this->toJson($this->call('GET', '/api/posts'))->posts;
+        $this->assertResponseOk();
+        $this->assertEquals(count($stuff), 10);
+        $topCursor = $stuff[0]->hash;
+
+        // new post
+        $new = $this->call('POST', '/api/shouts', ['body' => 'Here be a shout, #1!']);
+        $new = $this->call('POST', '/api/shouts', ['body' => 'Here be a shout, #2!']);
+        $new = $this->call('POST', '/api/shouts', ['body' => 'Here be a shout, #3!']);
+
+        $fetch = $this->toJson($this->call('GET', '/api/posts', ['after' => $topCursor]));
+        $this->assertEquals(count($fetch->posts), 3);
+        $this->assertResponseOk();
+        $this->assertEquals($fetch->posts[0]->body->body, 'Here be a shout, #3!');
+        $this->assertEquals($fetch->posts[1]->body->body, 'Here be a shout, #2!');
+        $this->assertEquals($fetch->posts[2]->body->body, 'Here be a shout, #1!');
+
     }
 
     /**
@@ -71,9 +122,6 @@ class FeedTest extends AcceptanceCase
             'html_body' => 'Details of my awesome event',
             'url'       => 'http://www.google.com',
             'location'  => 'My Awesome Location',
-            'city'      => 'Athens',
-            'state'     => 'Georgia',
-            'country'   => 'US',
             'cell'      => '',
             'timestamp' => '0000-00-00 00:00:00'
         ];

@@ -2,6 +2,7 @@
 
 use Giraffe\Common\Service;
 use Giraffe\Feed\PostGeneratorHelper;
+use Giraffe\Geolocation\LocationService;
 use Giraffe\Parser\Parser;
 use Giraffe\Users\UserRepository;
 use Giraffe\Users\UserService;
@@ -38,6 +39,10 @@ class EventService extends Service
      * @var PostGeneratorHelper
      */
     private $postGeneratorHelper;
+    /**
+     * @var LocationService
+     */
+    private $locationService;
 
     public function __construct(
         EventRepository $eventRepository,
@@ -46,7 +51,8 @@ class EventService extends Service
         EventRequestRepository $requestRepository,
         UserRepository $userRepository,
         Parser $parser,
-        PostGeneratorHelper $postGeneratorHelper
+        PostGeneratorHelper $postGeneratorHelper,
+        LocationService $locationService
     ) {
         parent::__construct();
 
@@ -57,6 +63,7 @@ class EventService extends Service
         $this->userRepository = $userRepository;
         $this->parser = $parser;
         $this->postGeneratorHelper = $postGeneratorHelper;
+        $this->locationService = $locationService;
     }
 
     public function createEvent($user, $data)
@@ -68,6 +75,10 @@ class EventService extends Service
         $data['html_body'] = $this->parser->parseComment($data['body']);
         $user = $this->userRepository->getByHash($user);
         $data['user_id'] = $user->id;
+
+        if ($cacheString = $this->locationService->getCacheStringFromAttributesArray($data)) {
+            $data['cell'] = $cacheString;
+        }
 
         $event = $this->eventRepository->create($data);
         $this->postGeneratorHelper->generate($event);
@@ -103,6 +114,14 @@ class EventService extends Service
     {
         $this->gatekeeper->mayI('create', 'event_request')->forThis($event)->please();
         $this->requestRepository->create([]);
+
+    }
+
+    public function findNearbyUser($user)
+    {
+        $this->gatekeeper->mayI('find_nearby', 'event')->please();
+        $user = $this->userRepository->getByHash($user);
+        return $this->locationService->getNearbyFromRepository($user, $this->eventRepository);
 
     }
 } 

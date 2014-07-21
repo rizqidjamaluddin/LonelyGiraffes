@@ -15,24 +15,24 @@ class TwoDegreeCellSearchStrategyTest extends TestCase
 
         $location = $this->makeLocation();
         $location->provideCoordinates(1,1);
-        $this->assertEquals('2DC 1,1', $s->getCacheMetadata($location));
+        $this->assertEquals('2DC 0,0', $s->getCacheMetadata($location));
 
         $location->provideCoordinates(-1,1);
-        $this->assertEquals('2DC -1,1', $s->getCacheMetadata($location));
+        $this->assertEquals('2DC -2,0', $s->getCacheMetadata($location));
         $location->provideCoordinates(1,-1);
-        $this->assertEquals('2DC 1,-1', $s->getCacheMetadata($location));
+        $this->assertEquals('2DC 0,-2', $s->getCacheMetadata($location));
         $location->provideCoordinates(-1,-1);
-        $this->assertEquals('2DC -1,-1', $s->getCacheMetadata($location));
+        $this->assertEquals('2DC -2,-2', $s->getCacheMetadata($location));
 
-        // these coordinates should all be in the same cell, latitude between 89-91 (cell 90)
-        $location->provideCoordinates(-89,1);
-        $this->assertEquals('2DC -45,1', $s->getCacheMetadata($location));
-        $location->provideCoordinates(-89.8,1);
-        $this->assertEquals('2DC -45,1', $s->getCacheMetadata($location));
-        $location->provideCoordinates(-89.2,1);
-        $this->assertEquals('2DC -45,1', $s->getCacheMetadata($location));
-        $location->provideCoordinates(-90.7,1);
-        $this->assertEquals('2DC -45,1', $s->getCacheMetadata($location));
+        // these coordinates should all be in the same cell, latitude between 50-52 degrees south (cell -52)
+        $location->provideCoordinates(-50.1,1);
+        $this->assertEquals('2DC -52,0', $s->getCacheMetadata($location));
+        $location->provideCoordinates(-50.8,1);
+        $this->assertEquals('2DC -52,0', $s->getCacheMetadata($location));
+        $location->provideCoordinates(-51.2,1);
+        $this->assertEquals('2DC -52,0', $s->getCacheMetadata($location));
+        $location->provideCoordinates(-52.0,1);
+        $this->assertEquals('2DC -52,0', $s->getCacheMetadata($location));
     }
 
     /**
