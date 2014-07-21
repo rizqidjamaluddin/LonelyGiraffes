@@ -29,9 +29,6 @@ class BuddyRequestRepository extends EloquentRepository
 
         $buddyRequests = $this->model->with('sender')->with('recipient')->where('from_user_id', '=', $user->id)->get();
 
-        if ($buddyRequests->isEmpty()) {
-            throw new NotFoundModelException();
-        }
         return $buddyRequests;
     }
 
@@ -51,9 +48,6 @@ class BuddyRequestRepository extends EloquentRepository
 
         $buddyRequests = $this->model->with('sender')->with('recipient')->where('to_user_id', '=', $user->id)->get();
 
-        if ($buddyRequests->isEmpty()) {
-            throw new NotFoundModelException();
-        }
         return $buddyRequests;
     }
 

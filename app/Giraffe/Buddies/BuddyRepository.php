@@ -12,11 +12,15 @@ class BuddyRepository extends EloquentRepository
      * @var \Giraffe\Users\UserRepository
      */
     private $userRepository;
+    /**
+     * @var UserModel
+     */
+    private $userModel;
+
     public function __construct(BuddyModel $buddyModel,
                                 UserRepository $userRepository)
     {
         parent::__construct($buddyModel);
-
     }
 
     /**
@@ -43,10 +47,6 @@ class BuddyRepository extends EloquentRepository
         });
         $models = UserModel::whereIn('id', $users->toArray())->get();
 
-
-        if ($models->isEmpty()) {
-            throw new NotFoundModelException();
-        }
         return $models;
     }
 

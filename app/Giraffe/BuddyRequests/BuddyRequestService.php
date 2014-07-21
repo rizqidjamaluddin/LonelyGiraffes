@@ -59,17 +59,17 @@ class BuddyRequestService extends Service
         return $buddyRequest->load(array('sender', 'recipient'));
     }
 
-    public function getBuddyRequests($userHash, $sentOrReceived)
+    public function getBuddyRequests($userHash)
     {
         //$this->gatekeeper->mayI('get', 'buddy_request')->please();
         $user = $this->userRepository->getByHash($userHash);
+        return $this->buddyRequestRepository->getReceivedByUser($user);
+    }
 
-        if($sentOrReceived=="sent")
-            return $this->buddyRequestRepository->getSentByUser($user);
-        elseif($sentOrReceived=="received")
-            return $this->buddyRequestRepository->getReceivedByUser($user);
-        else
-            throw new NotImplementedException();
+    public function getOutgoingBuddyRequests($userHash)
+    {
+        $user = $this->userRepository->getByHash($userHash);
+        return $this->buddyRequestRepository->getSentByUser($user);
     }
 
     public function acceptBuddyRequest($userHash, $targetHash)

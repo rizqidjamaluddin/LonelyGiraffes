@@ -74,11 +74,12 @@ Route::api(
              Route::get('users/{resource}/buddies', ['uses' => 'BuddyController@index']);
              Route::delete('users/{resource}/buddies', ['uses' => 'BuddyController@destroy']);
 
-             Route::get('users/{resource}/buddies/requests', ['uses' => 'BuddyRequestController@index']);
-             Route::post('users/{resource}/buddies/requests', ['uses' => 'BuddyRequestController@create']);
-             Route::put('users/{resource}/buddies/requests/{request}', ['uses' => 'BuddyRequestController@accept']);
-             Route::delete('users/{resource}/buddies/requests/{request}', ['uses' => 'BuddyRequestController@destroy']);
+             Route::get('users/{resource}/buddy-requests', ['uses' => 'BuddyRequestController@requestIndex']);
+             Route::post('users/{resource}/buddy-requests', ['uses' => 'BuddyRequestController@create']);
+             Route::put('users/{resource}/buddy-requests/{request}', ['uses' => 'BuddyRequestController@accept']);
+             Route::delete('users/{resource}/buddy-requests/{request}', ['uses' => 'BuddyRequestController@destroy']);
 
+             Route::get('users/{resource}/outgoing-buddy-requests', ['uses' => 'BuddyRequestController@outgoingIndex']);
 
              Route::get('conversations', ['uses' => 'ConversationController@index']);
              Route::post('conversations', ['uses' => 'ConversationController@create']);

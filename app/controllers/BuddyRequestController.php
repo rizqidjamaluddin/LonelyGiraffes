@@ -21,33 +21,34 @@ class BuddyRequestController extends Controller
         parent::__construct();
     }
 
-    public function index($userHash)
+    public function requestIndex($userHash)
     {
-        if(!Input::get('method'))
-            throw new BadRequestHttpException();
-        $models = $this->buddyRequestService->getBuddyRequests($userHash, Input::get('method'));
+        $models = $this->buddyRequestService->getBuddyRequests($userHash);
+        return $this->returnBuddyRequestModels($models);
+    }
+
+    public function outgoingIndex($userHash)
+    {
+        $models = $this->buddyRequestService->getOutgoingBuddyRequests($userHash);
         return $this->returnBuddyRequestModels($models);
     }
 
     public function create($userHash)
     {
-        if(!Input::get('target'))
-            throw new BadRequestHttpException();
-        $buddyRequest = $this->buddyRequestService->createBuddyRequest($userHash, Input::get("target"));
+        $buddyRequest = $this->buddyRequestService->createBuddyRequest($this->gatekeeper->me(), $userHash);
         return $this->returnBuddyRequestModel($buddyRequest);
     }
 
     public function accept($userHash, $targetHash)
     {
         $buddy = $this->buddyRequestService->acceptBuddyRequest($userHash, $targetHash);
-        $users = $buddy->users()->get();
-        return $this->returnUserModels($users);
+        return ['message' => 'Request accepted'];
     }
 
     public function destroy($userHash, $targetHash)
     {
         $this->buddyRequestService->denyBuddyRequest($userHash, $targetHash);
-        return [];
+        return ['message' => 'Request denied'];
     }
 
     public function returnBuddyRequestModel(BuddyRequestModel $models)
@@ -67,6 +68,6 @@ class BuddyRequestController extends Controller
      */
     public function returnUserModels(Collection $models)
     {
-        return $this->withCollection($models, new UserTransformer(), 'users');
+        return $this->withCollection($models, new UserTransformer(), 'buddies');
     }
 }

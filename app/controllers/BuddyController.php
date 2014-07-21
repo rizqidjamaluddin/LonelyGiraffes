@@ -32,6 +32,6 @@ class BuddyController extends Controller
 
     public function returnUserModels(Collection $models)
     {
-        return $this->withCollection($models, new UserTransformer(), 'users');
+        return $this->withCollection($models, new UserTransformer(), 'buddies');
     }
 }
