@@ -136,5 +136,33 @@ class FeedTest extends AcceptanceCase
         $this->assertEquals($fetch[0]->body->body, 'Details of my awesome event');
     }
 
+    /**
+     * @test
+     */
+    public function it_can_show_posts_from_one_user()
+    {
+        $luigi = $this->registerAndLoginAsLuigi();
+
+        // this is a noise post; it's not supposed to show up in the later test
+        $this->call('POST', '/api/shouts', ['body' => $this->otherGenericShoutBody]);
+
+        $mario = $this->registerAndLoginAsMario();
+
+        // check for no posts
+        $fetch = $this->toJson($this->call('GET', '/api/posts', ['user' => $mario->hash]));
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($fetch->posts));
+
+        // add post
+        $this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+        $this->assertResponseOk();
+
+        // proper check
+        $fetch = $this->toJson($this->call('GET', '/api/posts', ['user' => $mario->hash]));
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetch->posts));
+        $this->assertEquals($this->genericShoutBody, $fetch->posts[0]->body->body);
+        $this->assertEquals($mario->hash, $fetch->posts[0]->links->author->hash);
+    }
 
 } 

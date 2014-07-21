@@ -62,5 +62,13 @@ class FeedService extends Service
         return $post;
     }
 
+    public function getUserPosts($user)
+    {
+        $user = $this->userRepository->getByHash($user);
+        // no specific gatekeeper check here; adjust PostRepository call if policy changes
+        $this->gatekeeper->mayI('read', 'posts')->please();
+        return $this->postRepository->getForUser($user->id);
+    }
+
 
 } 
