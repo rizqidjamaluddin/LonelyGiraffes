@@ -6,6 +6,7 @@ use Giraffe\Buddies\BuddyService;
 use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
+use Str;
 
 class BuddyRequestService extends Service
 {
@@ -42,7 +43,7 @@ class BuddyRequestService extends Service
 
     public function createBuddyRequest($userHash, $targetHash)
     {
-        //$this->gatekeeper->mayI('create', 'buddy_request')->please();
+        $this->gatekeeper->mayI('create', 'buddy_request')->please();
 
         $user = $this->userRepository->getByHash($userHash);
         $target = $this->userRepository->getByHash($targetHash);
@@ -50,7 +51,7 @@ class BuddyRequestService extends Service
         $data = [];
         $data['from_user_id'] = $user->id;
         $data['to_user_id'] = $target->id;
-        $data['sent_time'] = time();
+        $data['hash'] = Str::random(32);
 
         $this->creationValidator->validate($data);
 

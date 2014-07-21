@@ -13,8 +13,7 @@ class BuddyRequestCreationValidator
         try {
             $validator->assert($data);
         } catch (AbstractNestedException $e) {
-            $errors = $e->findMessages(['email', 'length', 'in']); //TODO: I have absolutely no idea what to put here.
-            throw new ValidationException('Could not create buddy request.', $errors);
+            throw new ValidationException('Could not create buddy request.', []);
         }
 
         return true;

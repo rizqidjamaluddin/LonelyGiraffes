@@ -7,22 +7,6 @@ use Json\Validator as JsonValidator;
 
 class BuddyTest extends AcceptanceCase
 {
-    /**
-     * @var BuddyService
-     */
-    protected $service;
-
-    /**
-     * @var BuddyRepository
-     */
-    protected $repository;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->service = App::make('Giraffe\Buddies\BuddyService');
-        $this->repository = App::make('Giraffe\Buddies\BuddyRepository');
-    }
 
     /**
      * @test
@@ -62,10 +46,10 @@ class BuddyTest extends AcceptanceCase
         $luigiRequests = $this->callJson("GET", "/api/users/" . $mario->hash . "/outgoing-buddy-requests");
         $this->assertResponseStatus(200);
         $this->assertEquals(2, count($luigiRequests->buddy_requests));
-        $this->assertEquals($buddyRequest1->sent_time, $luigiRequests->buddy_requests[0]->sent_time);
+        $this->assertEquals($buddyRequest1->sent_timestamp, $luigiRequests->buddy_requests[0]->sent_timestamp);
         $this->assertEquals($this->mario['email'], $luigiRequests->buddy_requests[0]->sender->email);
         $this->assertEquals($this->luigi['email'], $luigiRequests->buddy_requests[0]->recipient->email);
-        $this->assertEquals($buddyRequest2->sent_time, $luigiRequests->buddy_requests[1]->sent_time);
+        $this->assertEquals($buddyRequest2->sent_timestamp, $luigiRequests->buddy_requests[1]->sent_timestamp);
         $this->assertEquals($this->mario['email'], $luigiRequests->buddy_requests[1]->sender->email);
         $this->assertEquals($this->yoshi['email'], $luigiRequests->buddy_requests[1]->recipient->email);
 
@@ -76,7 +60,7 @@ class BuddyTest extends AcceptanceCase
         $luigiRequests = $this->toJson($this->call("GET", "/api/users/" . $luigi->hash . "/buddy-requests"));
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($luigiRequests->buddy_requests));
-        $this->assertEquals($buddyRequest1->sent_time, $luigiRequests->buddy_requests[0]->sent_time);
+        $this->assertEquals($buddyRequest1->sent_timestamp, $luigiRequests->buddy_requests[0]->sent_timestamp);
         $this->assertEquals($this->mario['email'], $luigiRequests->buddy_requests[0]->sender->email);
         $this->assertEquals($this->luigi['email'], $luigiRequests->buddy_requests[0]->recipient->email);
 
@@ -85,7 +69,7 @@ class BuddyTest extends AcceptanceCase
         $yoshiRequests = $this->toJson($this->call("GET", "/api/users/" . $yoshi->hash . "/buddy-requests"));
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($yoshiRequests->buddy_requests));
-        $this->assertEquals($buddyRequest2->sent_time, $yoshiRequests->buddy_requests[0]->sent_time);
+        $this->assertEquals($buddyRequest2->sent_timestamp, $yoshiRequests->buddy_requests[0]->sent_timestamp);
         $this->assertEquals($this->mario['email'], $yoshiRequests->buddy_requests[0]->sender->email);
         $this->assertEquals($this->yoshi['email'], $yoshiRequests->buddy_requests[0]->recipient->email);
 
@@ -155,12 +139,22 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(200);
     }
 
+    public function a_guest_cannot_create_a_buddy_request()
+    {
+
+    }
+
     public function a_user_cannot_create_a_request_on_behalf_of_another_user()
     {
 
     }
 
     public function a_user_cannot_see_other_users_requests()
+    {
+
+    }
+
+    public function a_user_cannot_see_other_users_buddies()
     {
 
     }
