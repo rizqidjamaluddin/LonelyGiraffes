@@ -32,8 +32,8 @@ class BuddyService extends Service
 
     public function getBuddies($userHash)
     {
-        //$this->gatekeeper->mayI('get', 'buddies')->please();
         $user = $this->userRepository->getByHash($userHash);
+        $this->gatekeeper->mayI('read_buddies', $user)->please();
         return $this->buddyRepository->getByUser($user);
     }
 

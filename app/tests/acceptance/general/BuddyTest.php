@@ -141,6 +141,20 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(200);
     }
 
+    /**
+     * @test
+     */
+    public function a_user_cannot_see_another_users_buddies()
+    {
+        $mario = $this->registerMario();
+        $buddies = $this->callJson('GET', '/api/users/' . $mario->hash . '/buddies');
+        $this->assertResponseStatus(401);
+
+        $luigi = $this->registerAndLoginAsLuigi();
+        $buddies = $this->callJson('GET', '/api/users/' . $mario->hash . '/buddies');
+        $this->assertResponseStatus(403);
+    }
+
     public function a_guest_cannot_create_a_buddy_request()
     {
 
