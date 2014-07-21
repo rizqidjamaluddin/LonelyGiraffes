@@ -26,6 +26,11 @@ class PostController extends Controller
             return $this->withCollection($results, new PostTransformer, 'posts');
         }
 
+        if (Input::exists('user')) {
+            $results = $this->feedService->getUserPosts(Input::get('user'));
+            return $this->withCollection($results, new PostTransformer(), 'posts');
+        }
+
         $results = $this->feedService->getGlobalFeed(Input::get('before'));
         return $this->withCollection($results, new PostTransformer, 'posts');
     }

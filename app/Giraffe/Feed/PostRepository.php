@@ -17,6 +17,15 @@ class PostRepository extends EloquentRepository
         return $this->model->with('postable', 'postable.author')->where('hash', $hash)->first();
     }
 
+    public function getForUser($userId)
+    {
+        return $this->model->with('author', 'postable', 'postable.author')
+            ->take(10)
+            ->where('user_id', $userId)
+            ->orderBy('id', 'desc')
+            ->get();
+    }
+
     public function getGlobal()
     {
         return $this->model
