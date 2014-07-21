@@ -76,13 +76,15 @@ class BuddyTest extends AcceptanceCase
         //////// Accept a request ////////
 
         $this->asUser($luigi->hash);
-        $accept = $this->toJson($this->call("POST", "/api/users/" . $luigi->hash . "/buddy-requests/" . $mario->hash . '/accept'));
+        $accept = $this->toJson($this->call("POST", "/api/users/" . $luigi->hash . "/buddy-requests/"
+                . $luigiRequests->buddy_requests[0]->hash . '/accept'));
         $this->assertResponseStatus(200);
 
         //////// Deny a request ////////
 
         $this->asUser($yoshi->hash);
-        $this->toJson($this->call("DELETE", "/api/users/" . $yoshi->hash . "/buddy-requests/" . $mario->hash));
+        $this->toJson($this->call("DELETE", "/api/users/" . $yoshi->hash . "/buddy-requests/"
+            . $yoshiRequests->buddy_requests[0]->hash));
         $this->assertResponseStatus(200);
 
         //////// Check that they both gone, for all parties ////////
@@ -159,7 +161,7 @@ class BuddyTest extends AcceptanceCase
 
     }
 
-    public function a_user_cannot_accept_a_request_not_for_them()
+    public function a_user_cannot_accept_or_deny_a_request_not_for_them()
     {
 
     }

@@ -1,9 +1,11 @@
 <?php  namespace Giraffe\BuddyRequests;
 
 use Eloquent;
+use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Users\UserModel;
 
-class BuddyRequestModel extends Eloquent {
+class BuddyRequestModel extends Eloquent implements ProtectedResource {
     use HasEloquentHash;
 
     protected $table = 'buddy_requests';
@@ -22,5 +24,15 @@ class BuddyRequestModel extends Eloquent {
     public function sender()
     {
         return $this->belongsTo('Giraffe\Users\UserModel', 'from_user_id');
+    }
+
+    /**
+     * @param \Giraffe\Users\UserModel $user
+     *
+     * @return bool
+     */
+    public function checkOwnership(UserModel $user)
+    {
+        return $user->id === $this->sender->id || $user->id === $this->recipient->id;
     }
 }

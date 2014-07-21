@@ -39,15 +39,15 @@ class BuddyRequestController extends Controller
         return $this->returnBuddyRequestModel($buddyRequest);
     }
 
-    public function accept($userHash, $targetHash)
+    public function accept($userHash, $requestHash)
     {
-        $buddy = $this->buddyRequestService->acceptBuddyRequest($userHash, $targetHash);
+        $buddy = $this->buddyRequestService->acceptBuddyRequest($this->gatekeeper->me(), $requestHash);
         return ['message' => 'Request accepted'];
     }
 
     public function destroy($userHash, $targetHash)
     {
-        $this->buddyRequestService->denyBuddyRequest($userHash, $targetHash);
+        $this->buddyRequestService->denyBuddyRequest($targetHash);
         return ['message' => 'Request denied'];
     }
 

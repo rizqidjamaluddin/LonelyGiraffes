@@ -13,6 +13,7 @@ class BuddyRequestTransformer extends TransformerAbstract
         $senderUser = $userTransformer->transform($buddyRequestModel->sender);
 
         return [
+            'hash' => $buddyRequestModel->hash,
             'recipient' => $recipientUser,
             'sender' => $senderUser,
             'sent_timestamp' => (string) $buddyRequestModel->created_at

@@ -73,23 +73,22 @@ class BuddyRequestService extends Service
         return $this->buddyRequestRepository->getSentByUser($user);
     }
 
-    public function acceptBuddyRequest($userHash, $targetHash)
+    public function acceptBuddyRequest($me, $targetHash)
     {
-        //$this->gatekeeper->mayI('destroy', 'buddy_request')->please();
-        //$this->gatekeeper->mayI('create', 'buddy')->please();
-        $user = $this->userRepository->getByHash($userHash);
-        $sender = $this->userRepository->getByHash($targetHash);
+        $request = $this->buddyRequestRepository->getByHash($targetHash);
+        $user = $this->userRepository->get($me);
+        $this->gatekeeper->mayI('accept', $request)->please();
+        $this->gatekeeper->mayI('add_buddy', $user)->please();
 
-        $request = $this->buddyRequestRepository->destroyByPair($sender, $user);
+        $this->buddyRequestRepository->delete($request);
         return $this->buddyService->createBuddy($request);
     }
 
-    public function denyBuddyRequest($userHash, $targetHash)
+    public function denyBuddyRequest($targetHash)
     {
-        //$this->gatekeeper->mayI('destroy', 'buddy_request')->please();
-        $user = $this->userRepository->getByHash($userHash);
-        $sender = $this->userRepository->getByHash($targetHash);
+        $request = $this->buddyRequestRepository->getByHash($targetHash);
+        $this->gatekeeper->mayI('delete', $request)->please();
 
-        $this->buddyRequestRepository->destroyByPair($sender, $user);
+        $this->buddyRequestRepository->delete($request);
     }
 } 
