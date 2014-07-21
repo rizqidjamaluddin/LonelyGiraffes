@@ -32,7 +32,8 @@ class PostController extends Controller
 
     public function show($post)
     {
-
+        $fetch = $this->feedService->getPost($post);
+        return $this->withItem($fetch, new PostTransformer, 'posts');
     }
 
     public function addComment($post)
