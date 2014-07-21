@@ -3,6 +3,7 @@
 
 use Giraffe\Buddies\BuddyRepository;
 use Giraffe\Buddies\BuddyService;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
@@ -47,6 +48,14 @@ class BuddyRequestService extends Service
 
         $user = $this->userRepository->getByHash($userHash);
         $target = $this->userRepository->getByHash($targetHash);
+
+        // make sure there's already a request
+        try {
+            $this->buddyRequestRepository->getByPair($user, $target);
+            throw new ExistingBuddyRequestException;
+        } catch (NotFoundModelException $e) {
+            // continue
+        }
 
         // make sure the users aren't already buddies
         if ($this->buddyService->checkBuddies($user, $target)) {

@@ -174,6 +174,38 @@ class BuddyTest extends AcceptanceCase
     /**
      * @test
      */
+    public function a_user_cannot_double_submit_a_buddy_request()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $luigi = $this->registerAndLoginAsLuigi();
+        $request = $this->callJson("POST", "/api/users/" . $mario->hash . "/buddy-requests");
+        $this->assertResponseOk();
+        $request = $this->callJson("POST", "/api/users/" . $mario->hash . "/buddy-requests");
+        $this->assertResponseStatus(409);
+
+        // check
+        $this->asUser($mario->hash);
+        $request = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertEquals(1, count($request->buddy_requests));
+
+        // the opposite direction shouldn't work either
+        $request = $this->callJson("POST", "/api/users/" . $luigi->hash . "/buddy-requests");
+        $this->assertResponseStatus(409);
+
+        // check
+        $this->asUser($mario->hash);
+        $request = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertEquals(1, count($request->buddy_requests));
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests");
+        $this->assertEquals(1, count($request->buddy_requests));
+
+
+    }
+
+    /**
+     * @test
+     */
     public function a_user_cannot_submit_a_buddy_request_for_an_existing_buddy()
     {
         $mario = $this->registerAndLoginAsMario();

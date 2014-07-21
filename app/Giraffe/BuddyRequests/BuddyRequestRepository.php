@@ -13,6 +13,21 @@ class BuddyRequestRepository extends EloquentRepository
         parent::__construct($buddyRequestModel);
     }
 
+    public function getByPair(UserModel $user1, UserModel $user2)
+    {
+        $buddyRequest = $this->model->where('from_user_id', '=', $user1->id)->where('to_user_id', '=', $user2->id)->first();
+
+        if (!$buddyRequest) {
+            $buddyRequest = $this->model->where('from_user_id', '=', $user2->id)->where('to_user_id', '=', $user1->id)->first();
+
+            if (!$buddyRequest) {
+                throw new NotFoundModelException();
+            }
+        }
+
+        return $buddyRequest;
+    }
+
     /**
      * Gets Buddy requests (with their intended recipients) sent by a user
      *
