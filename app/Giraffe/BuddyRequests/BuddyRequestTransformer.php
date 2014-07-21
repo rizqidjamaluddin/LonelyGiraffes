@@ -15,8 +15,7 @@ class BuddyRequestTransformer extends TransformerAbstract
         return [
             'recipient' => $recipientUser,
             'sender' => $senderUser,
-            'sent_time' => $buddyRequestModel->sent_time,
-            'seen_time' => $buddyRequestModel->seen_time
+            'sent_timestamp' => (string) $buddyRequestModel->created_at
         ];
     }
 }

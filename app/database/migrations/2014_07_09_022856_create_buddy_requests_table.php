@@ -18,8 +18,6 @@ class CreateBuddyRequestsTable extends Migration {
 
             $table->integer('from_user_id')->unsigned();
             $table->integer('to_user_id')->unsigned();
-            $table->timestamp('sent_time');
-            $table->timestamp('seen_time')->nullable();
 
 			$table->timestamps();
 		});
