@@ -55,5 +55,12 @@ class FeedService extends Service
         return $this->postRepository->getGlobalAfterId($topPost->id);
     }
 
+    public function getPost($post)
+    {
+        $post = $this->postRepository->getByHash($post);
+        $this->gatekeeper->mayI('read', $post)->please();
+        return $post;
+    }
+
 
 } 
