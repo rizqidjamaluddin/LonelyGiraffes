@@ -76,7 +76,7 @@ Route::api(
 
              Route::get('users/{resource}/buddy-requests', ['uses' => 'BuddyRequestController@requestIndex']);
              Route::post('users/{resource}/buddy-requests', ['uses' => 'BuddyRequestController@create']);
-             Route::put('users/{resource}/buddy-requests/{request}', ['uses' => 'BuddyRequestController@accept']);
+             Route::post('users/{resource}/buddy-requests/{request}/accept', ['uses' => 'BuddyRequestController@accept']);
              Route::delete('users/{resource}/buddy-requests/{request}', ['uses' => 'BuddyRequestController@destroy']);
 
              Route::get('users/{resource}/outgoing-buddy-requests', ['uses' => 'BuddyRequestController@outgoingIndex']);

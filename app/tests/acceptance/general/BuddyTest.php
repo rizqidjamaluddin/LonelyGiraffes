@@ -92,7 +92,7 @@ class BuddyTest extends AcceptanceCase
         //////// Accept a request ////////
 
         $this->asUser($luigi->hash);
-        $accept = $this->toJson($this->call("PUT", "/api/users/" . $luigi->hash . "/buddy-requests/" . $mario->hash));
+        $accept = $this->toJson($this->call("POST", "/api/users/" . $luigi->hash . "/buddy-requests/" . $mario->hash . '/accept'));
         $this->assertResponseStatus(200);
 
         //////// Deny a request ////////
