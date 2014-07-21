@@ -29,6 +29,26 @@ class FeedTest extends AcceptanceCase
     /**
      * @test
      */
+    public function it_can_fetch_a_single_post()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $insert = $this->toJson($this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]));
+        $this->assertResponseOk();
+
+        // get the feed, because the post data itself isn't in $insert, which was a shout resource
+        $feed = $this->toJson($this->call('GET', '/api/posts'));
+        $hash = $feed->posts[0]->hash;
+
+        $fetch = $this->toJson($this->call('GET', '/api/posts/' . $hash));
+        $this->assertResponseOk();
+        $this->assertEquals($this->genericShoutBody, $fetch->posts[0]->body->body);
+        $this->assertEquals($mario->hash, $fetch->posts[0]->links->author->hash);
+
+    }
+
+    /**
+     * @test
+     */
     public function it_can_fetch_posts_by_the_cursor_of_the_bottom_most_post()
     {
         $this->registerAndLoginAsMario();
