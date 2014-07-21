@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Buddies;
 
 use Giraffe\BuddyRequests\BuddyRequestModel;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
 
@@ -35,6 +36,18 @@ class BuddyService extends Service
         $user = $this->userRepository->getByHash($userHash);
         $this->gatekeeper->mayI('read_buddies', $user)->please();
         return $this->buddyRepository->getByUser($user);
+    }
+
+    public function checkBuddies($user1, $user2)
+    {
+        $user1 = $this->userRepository->get($user1);
+        $user2 = $this->userRepository->get($user2);
+        try {
+            $check = $this->buddyRepository->getByPair($user1, $user2);
+        } catch (NotFoundModelException $e) {
+            return false;
+        }
+        return true;
     }
 
     public function unbuddy($userHash, $buddyHash)

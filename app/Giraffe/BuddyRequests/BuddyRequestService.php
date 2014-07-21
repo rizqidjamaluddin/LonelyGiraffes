@@ -48,6 +48,11 @@ class BuddyRequestService extends Service
         $user = $this->userRepository->getByHash($userHash);
         $target = $this->userRepository->getByHash($targetHash);
 
+        // make sure the users aren't already buddies
+        if ($this->buddyService->checkBuddies($user, $target)) {
+            throw new AlreadyBuddiesException("You're already buddies!");
+        }
+
         $data = [];
         $data['from_user_id'] = $user->id;
         $data['to_user_id'] = $target->id;

@@ -155,9 +155,43 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(403);
     }
 
+    /**
+     * @test
+     */
     public function a_guest_cannot_create_a_buddy_request()
     {
+        $mario = $this->registerMario();
+        $buddyRequest1 = $this->callJson("POST", "/api/users/" . $mario->hash . "/buddy-requests");
+        $this->assertResponseStatus(401);
 
+        // make sure it wasn't actually added
+        $this->asUser($mario->hash);
+        $requests = $this->callJson('GET', '/api/users/' . $mario->hash . '/buddy-requests');
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($requests->buddy_requests));
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_submit_a_buddy_request_for_an_existing_buddy()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $luigi = $this->registerAndLoginAsLuigi();
+        $request = $this->callJson("POST", "/api/users/" . $mario->hash . "/buddy-requests");
+        $this->asUser($mario->hash);
+        $accept = $this->callJson("POST", '/api/users/' . $mario->hash . '/buddy-requests/' . $request->buddy_requests[0]->hash . '/accept');
+        $this->assertResponseOk();
+
+        // try adding a duplicate request
+        $this->asUser($luigi->hash);
+        $this->callJson("POST", "/api/users/" . $mario->hash . "/buddy-requests");
+        $this->assertResponseStatus(409);
+
+        // check that the request didn't go through
+        $this->asUser($mario->hash);
+        $request = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertEquals(0, count($request->buddy_requests));
     }
 
     public function a_user_cannot_create_a_request_on_behalf_of_another_user()
