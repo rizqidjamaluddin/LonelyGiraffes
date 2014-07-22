@@ -19,15 +19,15 @@ class ImageController extends Controller {
 
     public function create()
     {
-        if (!Input::hasFile('image') || !Input::has('user') || !input::has('type')) {
+        if (!Input::hasFile('image') || !input::has('type')) {
             throw new BadRequestHttpException();
         }
 
-        $image_type = Input::get('type');
-        $user_hash = Input::get('user');
+        $image_type = $this->imageRepository->getImageTypeByName(Input::get('type'));
+        $user = $this->gatekeeper->me();
         $file = Input::file('image');
 
-        $model = $this->imageService->createImage($user_hash, $file, $image_type);
+        $model = $this->imageService->createImage($user, $file, $image_type);
         $model = $this->returnImageModel($model);
         return $model;
     }

@@ -3,6 +3,7 @@
 use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
+use Giraffe\Users\UserModel;
 use Giraffe\Users\UserService;
 use Hash;
 use Illuminate\Support\Facades\File;
@@ -37,19 +38,16 @@ class ImageService extends Service
     }
 
     /**
-     * @param string $user_hash
+     * @param UserModel $user
      * @param UploadedFile $file
-     * @param string $image_type
+     * @param ImageTypeModel $image_type
      *
      * @throws InvalidCreationException
      * @return ImageModel
      */
-    public function createImage($user_hash, $file, $image_type)
+    public function createImage($user, $file, $image_type)
     {
         $this->gatekeeper->mayI('create', 'image')->please();
-
-        $image_type = $this->imageRepository->getImageTypeByName($image_type);
-        $user = $this->userService->getUser($user_hash);
 
         $ext = $file->guessClientExtension();
         $size = $file->getClientSize();
@@ -68,7 +66,6 @@ class ImageService extends Service
 
 
         $data = [];
-        $data['user_id'] = $user->id;
         $data['hash'] = Str::random(18);
         $data['extension'] = $file->guessClientExtension();
         $data['image_type_id'] = $image_type->id;
