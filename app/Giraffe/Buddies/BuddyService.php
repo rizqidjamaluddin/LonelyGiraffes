@@ -34,7 +34,7 @@ class BuddyService extends Service
     public function getBuddies($userHash)
     {
         $user = $this->userRepository->getByHash($userHash);
-        $this->gatekeeper->mayI('read_buddies', $user)->please();
+        $this->gatekeeper->mayI('read_buddy', $user)->please();
         return $this->buddyRepository->getByUser($user);
     }
 
@@ -52,9 +52,9 @@ class BuddyService extends Service
 
     public function unbuddy($userHash, $buddyHash)
     {
-        //$this->gatekeeper->mayI('destroy', 'buddies')->please();
         $user = $this->userRepository->getByHash($userHash);
         $buddy = $this->userRepository->getByHash($buddyHash);
+        $this->gatekeeper->mayI('delete_buddy', $user)->please();
 
         $this->buddyRepository->deleteByPair($user, $buddy);
     }

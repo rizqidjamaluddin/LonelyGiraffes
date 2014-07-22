@@ -77,7 +77,7 @@ class BuddyRequestService extends Service
     public function getBuddyRequests($userHash)
     {
         $user = $this->userRepository->getByHash($userHash);
-        $this->gatekeeper->mayI('read_buddy_requests', $user)->please();
+        $this->gatekeeper->mayI('read_buddy_request', $user)->please();
         return $this->buddyRequestRepository->getReceivedByUser($user);
     }
 

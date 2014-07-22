@@ -120,8 +120,8 @@ class BuddyTest extends AcceptanceCase
         $this->assertEquals(0, count($luigiBuddies->buddies));
 
         //////// Remove a buddy ////////
-        $this->call('DELETE', '/api/users/' . $luigi->hash . '/buddies',
-            array('target' => $mario->hash));
+        $this->asUser($luigi->hash);
+        $this->callJson('DELETE', '/api/users/' . $luigi->hash . '/buddies/' . $mario->hash);
         $this->assertResponseStatus(200);
 
         //////// Fail to find buddies....again ////////
@@ -315,5 +315,30 @@ class BuddyTest extends AcceptanceCase
         $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests/");
         $this->assertResponseStatus(401);
 
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_delete_another_users_buddy()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerAndLoginAsLuigi();
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+
+        $this->registerAndLoginAsBowser();
+        $this->callJson('DELETE', "/api/users/{$mario->hash}/buddies/{$luigi->hash}");
+        $this->assertResponseStatus(403);
+
+        $this->asGuest();
+        $this->callJson('DELETE', "/api/users/{$mario->hash}/buddies/{$luigi->hash}");
+        $this->assertResponseStatus(401);
+
+        // make sure it was never deleted
+        $this->asUser($mario->hash);
+        $buddies = $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertEquals(1, count($buddies->buddies));
     }
 }
