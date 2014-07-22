@@ -262,13 +262,58 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(401);
     }
 
+    /**
+     * @test
+     */
     public function a_user_cannot_see_other_users_buddies()
     {
+        $mario = $this->registerMario();
+        $luigi = $this->registerAndLoginAsLuigi();
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
 
+        $buddies = $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertEquals(1, count($buddies->buddies));
+
+        $this->asUser($luigi->hash);
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertResponseStatus(403);
+
+        $this->registerAndLoginAsYoshi();
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertResponseStatus(403);
+
+        $this->asGuest();
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertResponseStatus(401);
     }
 
+    /**
+     * @test
+     */
     public function a_user_cannot_accept_or_deny_a_request_not_for_them()
     {
+        $mario = $this->registerMario();
+        $luigi = $this->registerAndLoginAsLuigi();
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+
+        $bowser = $this->registerAndLoginAsBowser();
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+        $this->assertResponseStatus(403);
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests/");
+        $this->assertResponseStatus(403);
+
+        // check
+        $this->asUser($mario->hash);
+        $buddies = $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($buddies->buddies));
+
+        // try as guest
+        $this->asGuest();
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests/");
+        $this->assertResponseStatus(401);
 
     }
 }
