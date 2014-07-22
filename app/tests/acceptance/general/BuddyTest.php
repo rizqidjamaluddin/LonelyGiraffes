@@ -226,14 +226,40 @@ class BuddyTest extends AcceptanceCase
         $this->assertEquals(0, count($request->buddy_requests));
     }
 
-    public function a_user_cannot_create_a_request_on_behalf_of_another_user()
+    /**
+     * @test
+     */
+    public function a_user_cannot_create_a_request_to_themself()
     {
+        $mario = $this->registerAndLoginAsMario();
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertResponseStatus(422);
 
+        $request = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertEquals(0, count($request->buddy_requests));
     }
 
+    /**
+     * @test
+     */
     public function a_user_cannot_see_other_users_requests()
     {
+        $mario = $this->registerMario();
+        $luigi = $this->registerAndLoginAsLuigi();
 
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertResponseOk();
+
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertResponseStatus(403);
+
+        $yoshi = $this->registerAndLoginAsYoshi();
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertResponseStatus(403);
+
+        $this->asGuest();
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests");
+        $this->assertResponseStatus(401);
     }
 
     public function a_user_cannot_see_other_users_buddies()
