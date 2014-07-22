@@ -55,6 +55,12 @@ abstract class AcceptanceCase extends TestCase
         return json_decode($model->getContent());
     }
 
+    public function callJson()
+    {
+        $call = call_user_func_array([$this, 'call'], func_get_args());
+        return $this->toJson($call);
+    }
+
     /*
      * -- Fake user data --
      */

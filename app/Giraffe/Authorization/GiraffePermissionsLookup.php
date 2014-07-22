@@ -15,7 +15,7 @@ class GiraffePermissionsLookup
                 'feed' => ['read'],
             ],
             'global' => [
-                'post' => ['read'],
+                'post'  => ['read'],
                 'event' => ['read'],
             ]
         ];
@@ -23,11 +23,14 @@ class GiraffePermissionsLookup
             $guest,
             [
                 'self'   => [
-                    'event' => ['create', 'edit', 'update', 'delete'],
+                    'buddy'                  => ['delete'],
+                    'buddy_request'          => ['create', 'accept', 'delete'],
+                    'event'                  => ['create', 'edit', 'update', 'delete'],
                     'notification_container' => ['read', 'delete', 'dismiss_all'],
                     'post'                   => ['delete'],
                     'shout'                  => ['create', 'delete'],
-                    'user'                   => ['update', 'deactivate'],
+                    'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddies',
+                                                'read_buddy_requests'],
                     'test'                   => ['test'],
 
                 ],
