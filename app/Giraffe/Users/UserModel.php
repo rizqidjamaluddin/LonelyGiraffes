@@ -176,4 +176,9 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
     {
         return $this->hasMany('Giraffe\BuddyRequests\BuddyRequestModel', 'from_user_id');
     }
+
+    public function images()
+    {
+        return $this->hasMany('Giraffe\Images\ImageModel', 'user_id');
+    }
 }
