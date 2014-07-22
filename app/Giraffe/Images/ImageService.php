@@ -46,7 +46,7 @@ class ImageService extends Service
      */
     public function createImage($user_hash, $file, $image_type)
     {
-        //$this->gatekeeper->mayI('create', 'image')->please();
+        $this->gatekeeper->mayI('create', 'image')->please();
 
         $image_type = $this->imageRepository->getImageTypeByName($image_type);
         $user = $this->userService->getUser($user_hash);
@@ -101,7 +101,7 @@ class ImageService extends Service
     public function deleteImage($hash)
     {
         $image = $this->imageRepository->getByHash($hash);
-        //$this->gatekeeper->mayI('delete', $image)->please();
+        $this->gatekeeper->mayI('delete', $image)->please();
         $img_dir = public_path()."/images/".$image->user()->first()->hash;
         $this->imageRepository->deleteByHash($hash);
         File::delete($this->image_path($img_dir, $image));

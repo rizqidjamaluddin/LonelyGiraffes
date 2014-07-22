@@ -26,6 +26,7 @@ class GiraffePermissionsLookup
                     'buddy'                  => ['delete'],
                     'buddy_request'          => ['create', 'accept', 'delete'],
                     'event'                  => ['create', 'edit', 'update', 'delete'],
+                    'image'                  => ['create', 'delete'],
                     'notification_container' => ['read', 'delete', 'dismiss_all'],
                     'post'                   => ['delete'],
                     'shout'                  => ['create', 'delete'],
