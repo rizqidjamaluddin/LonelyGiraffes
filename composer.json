@@ -6,13 +6,14 @@
 	"require": {
 		"laravel/framework": "4.2.*",
         "doctrine/dbal": "~2.3",
-        "league/fractal": "dev-master",
+        "league/fractal": "0.8.*",
         "dingo/api": "dev-master",
         "mews/purifier": "dev-master",
         "erusev/parsedown": "dev-master",
         "respect/validation": "dev-master",
 		"barryvdh/laravel-cors": "0.2.*",
-		"lucadegasperi/oauth2-server-laravel": "1.*"
+		"lucadegasperi/oauth2-server-laravel": "1.*",
+        "intervention/image": "2.*"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
