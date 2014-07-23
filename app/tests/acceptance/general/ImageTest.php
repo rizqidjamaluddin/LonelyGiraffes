@@ -25,7 +25,8 @@ class ImageTest extends AcceptanceCase
         $file = new UploadedFile (
             $img,
             "image.jpg",
-            "image/jpeg"
+            "image/jpeg",
+            File::size($img)
         );
 
         $response = $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
@@ -51,6 +52,34 @@ class ImageTest extends AcceptanceCase
      */
     public function it_cannot_create_forbidden_images()
     {
+        // Setup
+        $this->create_profile_pic();
+        $mario = $this->registerMario();
+        $this->asUser($mario->hash);
+
+        /////// Test for non-image ///////
+        $dumb_file = FakerImage::image('/tmp', '/tmp');
+        $file = new UploadedFile (
+            $dumb_file,
+            "fakefile.txt",
+            "audio/mpeg3",
+            File::size($dumb_file)
+        );
+        $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $this->assertResponseStatus(422);
+
+
+        /////// Test for too large ///////
+        $img = FakerImage::image('/tmp', 1920, 1080);
+        $file = new UploadedFile (
+            $img,
+            "image.jpg",
+            "image/jpeg",
+            File::size($img)
+        );
+        $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $this->assertResponseStatus(422);
+
     }
 
     /**

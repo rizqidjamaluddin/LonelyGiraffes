@@ -25,7 +25,7 @@ class ImageService extends Service
     private $userService;
 
     private $valid_exts = array('jpeg', 'jpg', 'png', 'gif');
-    private $max_size = 10240000; // max file size (1000kb)
+    private $max_size = 200000; // max file size (200kb)
     private $max_res = 400, $thumb_res = 100;
 
     public function __construct(
@@ -57,7 +57,7 @@ class ImageService extends Service
 
         if (!in_array($ext, $this->valid_exts))
             throw new InvalidCreationException('File format unacceptable: ' . $ext);
-        if ($size > $this->max_size)
+        if (!$size || $size > $this->max_size)
             throw new InvalidCreationException('File is too large: ' . strval($size));
 
         // Delete previous unique image if need be
