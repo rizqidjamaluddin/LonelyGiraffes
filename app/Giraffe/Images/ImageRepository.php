@@ -15,9 +15,9 @@ class ImageRepository extends EloquentRepository
      */
     private $imageTypeModel;
 
-    public function __construct(ImageModel $userModel, ImageTypeModel $imageTypeModel)
+    public function __construct(ImageModel $imageModel, ImageTypeModel $imageTypeModel)
     {
-        parent::__construct($userModel);
+        parent::__construct($imageModel);
         $this->imageTypeModel = $imageTypeModel;
     }
 
