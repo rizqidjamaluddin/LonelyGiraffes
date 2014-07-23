@@ -3,7 +3,7 @@
 use Eloquent;
 use Giraffe\Common\HasEloquentHash;
 
-class ConversationModel extends Eloquent {
+class ChatroomModel extends Eloquent {
     use HasEloquentHash;
 
     protected $table = 'conversations';

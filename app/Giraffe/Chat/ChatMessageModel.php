@@ -2,7 +2,7 @@
 
 use Eloquent;
 
-class ConversationMessageModel extends Eloquent {
+class ChatMessageModel extends Eloquent {
     protected $table = 'conversation_messages';
 	protected $fillable = ['user_id', 'body', 'html_body'];
 }
