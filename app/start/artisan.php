@@ -11,4 +11,15 @@
 |
 */
 
+// lgdb
 Artisan::add(new GenerateGeonames());
+
+// lgutil
+Artisan::add(new Promote());
+Artisan::add(new GeonameFilter());
+
+// lgsetup
+Artisan::add(new SeedOAuth());
+
+// lgdev
+Artisan::add(new RunTests());

@@ -5,6 +5,8 @@
  * @method assertFalse($a)
  * @method assertEquals($a, $b)
  * @method setExpectedException($exception)
+ * @method markTestIncomplete($message = "")
+ * @method markTestSkipped($message = "")
  */
 abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
@@ -15,10 +17,9 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	 */
 	public function createApplication()
 	{
-		$unitTesting = true;
-
+        ini_set('memory_limit', '512M');
+        $unitTesting = true;
 		$testEnvironment = 'testing';
-
 		return require __DIR__.'/../../bootstrap/start.php';
 	}
 
@@ -29,12 +30,6 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	    parent::be($model);
 	}
 
-	/**
-	 * [as description]
-	 * @param  [type] $model  [description]
-	 * @param  [type] $driver [description]
-	 * @return [type]         [description]
-	 */
     public function asUser($model, $driver = null)
     {
 	    $g = App::make('Giraffe\Authorization\Gatekeeper');
@@ -46,6 +41,15 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 
 	    $g->iAm($model);
 	    parent::be($model);
+    }
+
+    public function asGuest()
+    {
+        $g = App::make('Giraffe\Authorization\Gatekeeper');
+        $g->iAmAGuest();
+        /** @var \Illuminate\Auth\Guard $guard */
+        $guard = $this->app['auth']->driver();
+        $guard->logout();
     }
 
     public function disarm()

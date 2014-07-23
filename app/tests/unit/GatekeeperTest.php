@@ -8,17 +8,23 @@ class GatekeeperTest extends TestCase
     const TEST = 'Giraffe\Authorization\Gatekeeper';
     const PROVIDER = 'Giraffe\Authorization\GatekeeperProvider';
     const GATEKEEPER_EXCEPTION = 'Giraffe\Authorization\GatekeeperException';
+    protected $log;
+
+    public function setUp()
+    {
+        $this->refreshApplication();
+        $this->log = App::make("Giraffe\Logging\Log");
+    }
 
     /**
      * @test
      */
     public function it_can_recognize_users()
     {
-        $this->refreshApplication();
         $provider = Mockery::mock(self::PROVIDER);
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
 
         $gatekeeper->iAm('1');
         $this->assertEquals($gatekeeper->fetchMyModel()->id, 1);
@@ -34,27 +40,10 @@ class GatekeeperTest extends TestCase
         $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'edit', 'message')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
 
         $this->assertTrue($gatekeeper->iAm(1)->mayI('edit', 'message')->canI());
         $this->assertTrue($gatekeeper->iAm(1)->andMayI('edit', 'message')->canI());
-    }
-
-    /**
-     * @test
-     */
-    public function it_should_be_a_singleton()
-    {
-        $this->refreshApplication();
-        $provider = Mockery::mock(self::PROVIDER);
-        $provider->shouldReceive('getUserModel')->with(1)->andReturn(json_decode('{"id": 1}'));
-        App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
-
-        $gatekeeper->iAm('1');
-
-        $second_gatekeeper = App::make(self::TEST);
-        $this->assertEquals($second_gatekeeper->fetchMyModel()->id, 1);
     }
 
     /**
@@ -70,17 +59,21 @@ class GatekeeperTest extends TestCase
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(false);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'create', 'user')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
 
         $gatekeeper->iAm(1);
         $this->assertTrue($gatekeeper->mayI('edit', 'message')->canI());
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
+        $gatekeeper->iAm(1);
         $this->assertTrue($gatekeeper->mayI('edit', 'message')->canI());
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
+        $gatekeeper->iAm(1);
         $this->assertFalse($gatekeeper->mayI('delete', 'message')->canI());
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
+        $gatekeeper->iAm(1);
         $this->assertFalse($gatekeeper->mayI('delete', 'user')->canI());
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
+        $gatekeeper->iAm(1);
         $this->assertTrue($gatekeeper->mayI('create', 'user')->canI());
 
     }
@@ -96,7 +89,7 @@ class GatekeeperTest extends TestCase
         $provider->shouldReceive('getUserModel')->with(1)->andThrow('Exception');
         $provider->shouldReceive('checkIfUserMay')->withAnyArgs()->andReturn(false);
         App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
 
 
         $gatekeeper->disarm();
@@ -123,7 +116,7 @@ class GatekeeperTest extends TestCase
         $provider->shouldReceive('checkIfUserMay')->with(null, 'delete', 'user')->andThrow('Exception');
         $provider->shouldReceive('checkIfGuestMay')->with('delete', 'user')->andReturn(false);
         App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
 
         $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->canI());
     }
@@ -141,7 +134,7 @@ class GatekeeperTest extends TestCase
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user')->andReturn(true);
         $provider->shouldReceive('checkIfUserMay')->with(Mockery::any(), 'delete', 'user_note')->andReturn(true);
         App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
 
         $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'users')->canI());
         $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->canI());
@@ -170,7 +163,7 @@ class GatekeeperTest extends TestCase
                  ->with(Mockery::any(), 'delete', 'user', $user_we_cant_delete)
                  ->andReturn(false);
         App::instance(self::PROVIDER, $provider);
-        $gatekeeper = App::make(self::TEST);
+        $gatekeeper = new \Giraffe\Authorization\Gatekeeper($provider, $this->log);
 
         $this->assertTrue($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_to_delete)->canI());
         $this->assertFalse($gatekeeper->iAm(1)->mayI('delete', 'user')->forThis($user_we_cant_delete)->canI());

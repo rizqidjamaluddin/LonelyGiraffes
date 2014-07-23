@@ -10,12 +10,18 @@ use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
 
 /**
- * @method bool debug($stream, $context)
- * @method bool info($stream, $context)
+ * @method bool debug($stream, $context, $meta = '')
+ * @method bool info($stream, $context, $meta = '')
+ * @method bool notice($stream, $context, $meta = '')
+ * @method bool warning($stream, $context, $meta = '')
+ * @method bool error($stream, $context, $meta = '')
+ * @method bool critical($stream, $context, $meta = '')
+ * @method bool alert($stream, $context, $meta = '')
+ * @method bool emergency($stream, $context, $meta = '')
  */
 class Log
 {
-    protected $logInTests = true;
+    protected $logInTests = false;
 
     protected $path = '/app-logs';
 
@@ -129,6 +135,12 @@ class Log
 
         if (!in_array($stream, $this->channels)) {
             $this->registerNewStream($stream);
+        }
+
+        // attach Gatekeeper current user if possible
+        $currentUser = \App::make('Giraffe\Authorization\Gatekeeper')->me();
+        if ($currentUser) {
+            $message = '[' . $currentUser->email . ']' . $message;
         }
 
         $compositeMethod = 'add' . ucfirst($level);

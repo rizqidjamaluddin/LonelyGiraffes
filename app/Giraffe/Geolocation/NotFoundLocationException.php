@@ -1,6 +1,8 @@
 <?php  namespace Giraffe\Geolocation;
 
-class NotFoundLocationException extends \Exception
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+class NotFoundLocationException extends NotFoundHttpException
 {
     /**
      * @var array
@@ -10,6 +12,7 @@ class NotFoundLocationException extends \Exception
     public function __construct(array $hints = [])
     {
         $this->hints = $hints;
+        parent::__construct();
     }
 
     public function getHints()

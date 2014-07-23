@@ -43,8 +43,7 @@ class UserAccountCase extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         $this->assertEquals('hello@lonelygiraffes.com', $response->users[0]->email);
-        $this->assertEquals('Lonely', $response->users[0]->firstname);
-        $this->assertEquals('Giraffe', $response->users[0]->lastname);
+        $this->assertEquals('Lonely Giraffe', $response->users[0]->name);
         $this->assertEquals('M', $response->users[0]->gender);
     }
 
@@ -54,16 +53,41 @@ class UserAccountCase extends AcceptanceCase
      */
     public function it_fails_to_create_a_user_with_a_bad_email()
     {
-        $response = $this->call("POST", "/api/users/", [
-                'email'     => '@lonelygiraffes.x',
-                'password'  => 'password',
-                'firstname' => 'Lonely',
-                'lastname'  => 'Giraffe',
-                'gender'    => 'M'        
+        $response = $this->call(
+            "POST",
+            "/api/users/",
+            [
+                'email'    => '@lonelygiraffes.x',
+                'password' => 'password',
+                'name'     => 'Lonely',
+                'gender'   => 'M'
             ]
         );
 
         $this->assertResponseStatus(422);
+    }
+
+    /**
+     * @test
+     */
+    public function it_requires_name_email_and_password_in_registration()
+    {
+        // missing name
+        $this->call('POST', '/api/users', ['email' => 'valid@example.com', 'password' => '12345']);
+        $this->assertResponseStatus(422);
+
+        // missing password
+        $this->call('POST', '/api/users', ['email' => 'valid@example.com', 'name' => 'John']);
+        $this->assertResponseStatus(422);
+
+        // missing password and name
+        $this->call('POST', '/api/users', ['email' => 'valid@example.com']);
+        $this->assertResponseStatus(422);
+
+        // check to make sure it's not registered
+        $check = $this->call('GET', '/api/users', ['email' => 'valid@example.com']);
+        $this->assertResponseOk();
+        $this->assertEquals(count($this->toJson($check)->users), 0);
     }
 
     /**
@@ -77,10 +101,91 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
-        $this->assertEquals('Lonely', $getModel->users[0]->firstname);
-        $this->assertEquals('Giraffe', $getModel->users[0]->lastname);
+        $this->assertEquals('Lonely Giraffe', $getModel->users[0]->name);
         $this->assertEquals('M', $getModel->users[0]->gender);
     }
+
+    /**
+     * @test
+     * @depends         it_can_find_a_user
+     * @outputBuffering enabled
+     */
+    public function it_can_find_a_user_by_email()
+    {
+        $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
+        $getModel = $this->toJson($this->call("GET", "/api/users", array('email' => $model->users[0]->email)));
+
+        $this->assertResponseStatus(200);
+        $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
+        $this->assertEquals('Lonely Giraffe', $getModel->users[0]->name);
+        $this->assertEquals('M', $getModel->users[0]->gender);
+
+        //It should fail when it needs to fail
+        $fail =$this->call("GET", "/api/users", array('email' => '@lonelygiraffes.x'));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(count($this->toJson($fail)->users), 0);
+    }
+
+    /**
+     * @test
+     * @depends it_can_find_a_user
+     * @outputBuffering enabled
+     */
+    public function it_can_find_a_user_by_name()
+    {
+        $model1 = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
+        $model2 = $this->toJson($this->call("POST", "/api/users/", $this->anotherGenericUser));
+        $model3 = $this->toJson($this->call("POST", "/api/users/", $this->similarGenericUser));
+
+
+        // Retrieve 1 user
+        $getModels = $this->toJson($this->call("GET", "/api/users", array('name' => $model1->users[0]->name)));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(1, count($getModels->users));
+        $this->assertEquals('hello@lonelygiraffes.com', $getModels->users[0]->email);
+        $this->assertEquals('Lonely Giraffe', $getModels->users[0]->name);
+        $this->assertEquals('M', $getModels->users[0]->gender);
+
+
+        // Retrieve n users
+        $getModels = $this->toJson($this->call("GET", "/api/users", array('name' => $model2->users[0]->name)));
+        $this->assertResponseStatus(200);
+        $this->assertEquals(2, count($getModels->users));
+        $this->assertEquals('anotherHello@lonelygiraffes.com', $getModels->users[0]->email);
+        $this->assertEquals('Lonesome Penguin', $getModels->users[0]->name);
+        $this->assertEquals('F', $getModels->users[0]->gender);
+        $this->assertEquals('similarHello@lonelygiraffes.com', $getModels->users[1]->email);
+        $this->assertEquals('Lonesome Penguin', $getModels->users[1]->name);
+        $this->assertEquals('M', $getModels->users[1]->gender);
+
+
+        //It should fail when it needs to fail
+        $this->call("GET", "/api/users", array('name' => 'Benadryl Cabbagepatch'));
+        $this->assertResponseStatus(404);
+    }
+
+    /**
+     * @test
+     * @depends it_can_create_a_new_user
+     */
+    public function it_can_find_a_user_only_by_hash() {
+        $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
+
+        $raw_user = $this->service->getUser($model->users[0]->hash);
+
+        // ID
+        $this->toJson($this->call("GET", "/api/users/" . $raw_user->id));
+        $this->assertResponseStatus(404);
+
+        // Name
+        $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->name));
+        $this->assertResponseStatus(404);
+
+        // Hash
+        $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->hash));
+        $this->assertResponseStatus(200);
+    }
+
 
     /**
      * @test
@@ -91,20 +196,22 @@ class UserAccountCase extends AcceptanceCase
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
         $this->asUser($model->users[0]->hash);
 
-        $response = $this->toJson($this->call("PUT", "/api/users/" . $model->users[0]->hash,
-            [
-                'email'     => 'hello@notlonelygiraffes.com',
-                'password'  => 'anotherpassword',
-                'firstname' => 'Lonesome',
-                'lastname'  => 'Penguin',
-                'gender'    => 'F'
-            ]
-        ));
+        $response = $this->toJson(
+            $this->call(
+                "PUT",
+                "/api/users/" . $model->users[0]->hash,
+                [
+                    'email'    => 'hello@notlonelygiraffes.com',
+                    'password' => 'anotherpassword',
+                    'name'     => 'Lonesome Penguin',
+                    'gender'   => 'F'
+                ]
+            )
+        );
 
         $this->assertResponseStatus(200);
         $this->assertEquals('hello@notlonelygiraffes.com', $response->users[0]->email);
-        $this->assertEquals('Lonesome', $response->users[0]->firstname);
-        $this->assertEquals('Penguin', $response->users[0]->lastname);
+        $this->assertEquals('Lonesome Penguin', $response->users[0]->name);
         $this->assertEquals('F', $response->users[0]->gender);
     }
 
@@ -192,7 +299,7 @@ class UserAccountCase extends AcceptanceCase
     {
         $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
         $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
+        Artisan::call('lgutil:promote', ['email' => $this->anotherGenericUser['email'], '--force' => true]);
         $this->asUser($anotherModel->users[0]->hash);
 
         $response = $this->call(
@@ -242,16 +349,15 @@ class UserAccountCase extends AcceptanceCase
      */
     public function an_administrator_account_can_delete_a_user()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->service->setUserRole($anotherModel->users[0]->hash, 'admin');
-        $this->asUser($anotherModel->users[0]->hash);
 
-        $response = $this->call("DELETE", "/api/users/" . $model->users[0]->hash);
+        $mario = $this->registerMario();
+        $peach = $this->registerAndLoginAsPeach();
+
+        $response = $this->call("DELETE", "/api/users/" . $mario->hash);
         $this->assertResponseStatus(200);
 
         $this->setExpectedException('Giraffe\Common\NotFoundModelException');
-        $this->repository->get($model->users[0]->hash);
+        $this->repository->get($mario->hash);
     }
 
     /**
@@ -268,5 +374,23 @@ class UserAccountCase extends AcceptanceCase
 
         $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
         $this->assertEquals($getModel->users[0]->hash, $model->users[0]->hash);
+    }
+
+    /**
+     * @test
+     * @see Issue #2
+     */
+    public function user_genders_are_optional()
+    {
+        $data = array_only($this->genericUser, ['name', 'password', 'email']);
+        $insert = $this->toJson($this->call('POST', '/api/users', $data))->users[0];
+        $this->assertResponseOk();
+        $this->assertEquals($insert->name, $this->genericUser['name']);
+        $this->assertEquals($insert->email, $this->genericUser['email']);
+
+        $check = $this->toJson($this->call('GET', '/api/users/' . $insert->hash))->users[0];
+        $this->assertResponseOk();
+        $this->assertEquals($check->name, $this->genericUser['name']);
+        $this->assertEquals($check->email, $this->genericUser['email']);
     }
 }

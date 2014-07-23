@@ -1,14 +1,13 @@
 <?php  namespace Giraffe\Users;
 
-use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Common\DuplicateCreationException;
 use Giraffe\Common\DuplicateUpdateException;
-use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\Service;
+use Giraffe\Common\ValidationException;
+use Giraffe\Geolocation\Location;
+use Giraffe\Geolocation\LocationService;
+use Giraffe\Geolocation\NotFoundLocationException;
 use Hash;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
-use stdClass;
 use Str;
 
 class UserService extends Service
@@ -26,16 +25,22 @@ class UserService extends Service
      * @var UserUpdateValidator
      */
     private $updateValidator;
+    /**
+     * @var LocationService
+     */
+    private $locationService;
 
     public function __construct(
         UserRepository $userRepository,
         UserCreationValidator $creationValidator,
-        UserUpdateValidator $updateValidator
+        UserUpdateValidator $updateValidator,
+        LocationService $locationService
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
         $this->creationValidator = $creationValidator;
         $this->updateValidator = $updateValidator;
+        $this->locationService = $locationService;
     }
 
     /**
@@ -45,7 +50,7 @@ class UserService extends Service
      */
     public function createUser($data)
     {
-        $data = array_only($data, ['firstname', 'lastname', 'password', 'email', 'gender']);
+        $data = array_only($data, ['name', 'password', 'email', 'gender']);
         $this->creationValidator->validate($data);
 
         $data['password'] = Hash::make($data['password']);
@@ -61,22 +66,29 @@ class UserService extends Service
      * @param  int   $user_id
      * @param  array $attributes
      *
+     * @throws \Giraffe\Common\DuplicateCreationException
      * @return UserModel|null $userModel
      */
     public function updateUser($user_id, $attributes)
     {
 
-        $acceptableAttributes = ['firstname', 'lastname', 'email', 'gender', 'password'];
-        $attributes = array_only($attributes, $acceptableAttributes);
+        $attributes = array_only($attributes, ['name', 'email', 'gender', 'password', 'city', 'state', 'country']);
 
-        $user = $this->userRepository->get($user_id);
+        $user = $this->userRepository->getByHash($user_id);
         $this->gatekeeper->mayI('update', $user)->please();
 
         $this->updateValidator->validate($attributes);
 
+        // intercept password change
         if (array_key_exists('password', $attributes)) {
-            $user->password = Hash::make($attributes['password']);
+            $attributes['password'] = Hash::make($attributes['password']);
         }
+
+        // intercept location change
+        if ($cacheString = $this->locationService->getCacheStringFromAttributesArray($attributes)) {
+            $attributes['cell'] = $cacheString;
+        }
+
         try {
             $this->userRepository->update($user, $attributes);
         } catch (DuplicateUpdateException $e) {
@@ -93,7 +105,7 @@ class UserService extends Service
      */
     public function deleteUser($id)
     {
-        $user = $this->userRepository->get($id);
+        $user = $this->userRepository->getByHash($id);
         $this->gatekeeper->mayI('delete', $user)->please();
         $user->delete();
         return $user;
@@ -106,7 +118,27 @@ class UserService extends Service
      */
     public function getUser($id)
     {
-        return $this->userRepository->get($id);
+        return $this->userRepository->getByHash($id);
+    }
+
+    /**
+     * @param $email
+     *
+     * @return UserModel
+     */
+    public function getUserByEmail($email)
+    {
+        return $this->userRepository->getByEmail($email);
+    }
+
+    /**
+     * @param $name
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getUsersByName($name)
+    {
+        return $this->userRepository->getByName($name);
     }
 
     /**
@@ -151,9 +183,15 @@ class UserService extends Service
         return (bool)$this->userRepository->setUserNicknameSettingById($user, $useNickname);
     }
 
+    public function getNearbyUsers($user)
+    {
+        /** @var UserModel $user */
+        $user = $this->userRepository->getByHash($user);
+        return $this->locationService->getNearbyFromRepository($user, $this->userRepository, ['exclude' => $user->id]);
+    }
+
     /**
-     * @param int  $user
-     *
+     * @param string $user
      * @return bool
      */
     public function promoteToAdmin($user)
@@ -161,16 +199,27 @@ class UserService extends Service
         $model = $this->userRepository->getByHash($user);
         $this->gatekeeper->mayI("promote", $model)->please();
         $this->setUserRole($model, 'admin');
+        $this->log->notice($this, "User {$model->email} promoted to administrator.");
         return true;
     }
 
-    public function setUserRole($user_hash, $role) 
+    /**
+     * @param string $user
+     * @return bool
+     */
+    public function demoteToMember($user)
     {
-        $this->userRepository->update($user_hash, [
-                'role' => $role
-            ]
-        );
-        
+        $model = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI("promote", $model)->please();
+        $this->setUserRole($model, 'member');
+        $this->log->notice($this, "User {$model->email} demoted to member.");
         return true;
     }
-} 
+
+    protected function setUserRole($user_hash, $role)
+    {
+        $this->userRepository->update($user_hash, ['role' => $role]);
+        return true;
+    }
+
+}

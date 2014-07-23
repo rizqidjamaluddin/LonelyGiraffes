@@ -5,11 +5,14 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.2.*",
+        "doctrine/dbal": "~2.3",
         "league/fractal": "dev-master",
         "dingo/api": "dev-master",
         "mews/purifier": "dev-master",
         "erusev/parsedown": "dev-master",
-        "respect/validation": "dev-master"
+        "respect/validation": "dev-master",
+		"barryvdh/laravel-cors": "0.2.*",
+		"lucadegasperi/oauth2-server-laravel": "1.*"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
@@ -26,8 +29,7 @@
 			"app/controllers",
 			"app/database/migrations",
 			"app/database/seeds",
-			"app/tests/TestCase.php",
-            "app/tests/acceptance/AcceptanceCase.php"
+			"app/tests"
 		],
         "psr-4": {
             "Giraffe\\": "app/Giraffe"

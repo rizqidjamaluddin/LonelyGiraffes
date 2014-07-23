@@ -5,6 +5,9 @@ use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Geolocation\Locatable;
+use Giraffe\Geolocation\Location;
+use Giraffe\Geolocation\UnlocatableModelException;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
 
@@ -13,15 +16,17 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  *
  * @property int $id
  * @property string $hash
- * @property string $firstname
- * @property string $lastname
- * @property string $nickname
+ * @property string $name
  * @property string $password
  * @property string $email
  * @property Carbon $date_of_birth
  * @property string $gender
+ * @property string $city
+ * @property string $state
+ * @property string $country
  */
-class UserModel extends Eloquent implements UserInterface, RemindableInterface, ProtectedResource, TransformableInterface {
+class UserModel extends Eloquent implements UserInterface, Locatable,
+    RemindableInterface, ProtectedResource, TransformableInterface {
 
     use HasEloquentHash;
 
@@ -41,7 +46,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
 	 */
 	protected $hidden = ['id', 'password', 'created_at'];
 
-    protected $fillable = ['hash', 'nickname', 'firstname', 'lastname', 'email', 'password', 'token', 'cell',
+    protected $fillable = ['hash', 'name', 'email', 'password', 'token', 'cell',
         'country', 'state', 'city', 'lat', 'long',
         'date_of_birth', 'gender', 'role'];
 
@@ -113,7 +118,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
      */
     public function getRememberToken()
     {
-        // TODO: Implement getRememberToken() method.
+        return null;
     }
 
     /**
@@ -125,7 +130,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
      */
     public function setRememberToken($value)
     {
-        // TODO: Implement setRememberToken() method.
+        return;
     }
 
     /**
@@ -135,7 +140,7 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
      */
     public function getRememberTokenName()
     {
-        // TODO: Implement getRememberTokenName() method.
+        return 'unused_token';
     }
 
     /**
@@ -146,5 +151,29 @@ class UserModel extends Eloquent implements UserInterface, RemindableInterface, 
     public function getTransformer()
     {
         return new UserTransformer();
+    }
+
+    /**
+     * @return Location
+     */
+    public function getLocation()
+    {
+        if (!$this->city || !$this->state || !$this->country) {
+            throw new UnlocatableModelException('No user location given');
+        }
+
+        $location = new Location();
+        $location->provideCity($this->city, $this->state, $this->country);
+        if ($this->cell) $location->provideCacheMetadata($this->cell);
+        return $location;
+    }
+    public function receivedBuddyRequests()
+    {
+        return $this->belongsTo('Giraffe\BuddyRequests\BuddyRequestModel', 'to_user_id');
+    }
+
+    public function sentBuddyRequests()
+    {
+        return $this->hasMany('Giraffe\BuddyRequests\BuddyRequestModel', 'from_user_id');
     }
 }

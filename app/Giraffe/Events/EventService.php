@@ -1,6 +1,11 @@
 <?php  namespace Giraffe\Events;
 
 use Giraffe\Common\Service;
+use Giraffe\Feed\PostGeneratorHelper;
+use Giraffe\Geolocation\LocationService;
+use Giraffe\Parser\Parser;
+use Giraffe\Users\UserRepository;
+use Giraffe\Users\UserService;
 use Str;
 
 class EventService extends Service
@@ -22,22 +27,62 @@ class EventService extends Service
      */
     private $requestRepository;
 
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+    /**
+     * @var Parser
+     */
+    private $parser;
+    /**
+     * @var PostGeneratorHelper
+     */
+    private $postGeneratorHelper;
+    /**
+     * @var LocationService
+     */
+    private $locationService;
+
     public function __construct(
         EventRepository $eventRepository,
         EventAttendeeRepository $attendeeRepository,
         EventInvitationRepository $invitationRepository,
-        EventRequestRepository $requestRepository
+        EventRequestRepository $requestRepository,
+        UserRepository $userRepository,
+        Parser $parser,
+        PostGeneratorHelper $postGeneratorHelper,
+        LocationService $locationService
     ) {
+        parent::__construct();
+
         $this->eventRepository = $eventRepository;
         $this->attendeeRepository = $attendeeRepository;
         $this->invitationRepository = $invitationRepository;
         $this->requestRepository = $requestRepository;
+        $this->userRepository = $userRepository;
+        $this->parser = $parser;
+        $this->postGeneratorHelper = $postGeneratorHelper;
+        $this->locationService = $locationService;
     }
 
-    public function createEvent($data)
+    public function createEvent($user, $data)
     {
+        $this->gatekeeper->mayI('create', 'event')->please();
+
+        $data = array_only($data, ['name', 'body', 'url', 'location', 'city', 'state', 'country', 'timestamp']);
         $data['hash'] = Str::random(32);
-        return $this->eventRepository->create($data);
+        $data['html_body'] = $this->parser->parseComment($data['body']);
+        $user = $this->userRepository->getByHash($user);
+        $data['user_id'] = $user->id;
+
+        if ($cacheString = $this->locationService->getCacheStringFromAttributesArray($data)) {
+            $data['cell'] = $cacheString;
+        }
+
+        $event = $this->eventRepository->create($data);
+        $this->postGeneratorHelper->generate($event);
+        return $event;
     }
 
     public function getEvent($hash)
@@ -48,19 +93,35 @@ class EventService extends Service
     public function deleteEvent($hash)
     {
         $event = $this->eventRepository->getByHash($hash);
+        $this->gatekeeper->mayI('delete', $event)->please();
         $this->eventRepository->deleteByHash($hash);
         return $event;
     }
 
-    public function updateEvent($hash, $attributes)
+    public function updateEvent($hash, $data)
     {
-        return $this->eventRepository->update($hash, $attributes);
+        $event = $this->eventRepository->getByHash($hash);
+        $this->gatekeeper->mayI('update', $event)->please();
+
+        $data = array_only($data, ['name', 'body', 'url', 'location', 'city', 'state', 'country', 'timestamp']);
+        if (array_key_exists('body', $data)) {
+            $data['html_body'] = $this->parser->parseComment($data['body']);
+        }
+        return $this->eventRepository->update($hash, $data);
     }
 
     public function createRequest($event, $requestingUser)
     {
         $this->gatekeeper->mayI('create', 'event_request')->forThis($event)->please();
         $this->requestRepository->create([]);
+
+    }
+
+    public function findNearbyUser($user)
+    {
+        $this->gatekeeper->mayI('find_nearby', 'event')->please();
+        $user = $this->userRepository->getByHash($user);
+        return $this->locationService->getNearbyFromRepository($user, $this->eventRepository);
 
     }
 } 

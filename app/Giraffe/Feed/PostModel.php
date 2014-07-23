@@ -1,5 +1,6 @@
 <?php namespace Giraffe\Feed;
 
+use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
@@ -10,7 +11,7 @@ use Giraffe\Users\UserModel;
  * @property $postable mixed
  * @property $hash string
  */
-class PostModel extends Eloquent implements ProtectedResource {
+class PostModel extends Eloquent implements ProtectedResource, TransformableInterface {
     use HasEloquentHash;
 
     protected $table = 'posts';
@@ -21,7 +22,7 @@ class PostModel extends Eloquent implements ProtectedResource {
         return $this->morphTo();
     }
 
-    public function user()
+    public function author()
     {
         return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
     }
@@ -34,5 +35,15 @@ class PostModel extends Eloquent implements ProtectedResource {
     public function checkOwnership(UserModel $userModel)
     {
         return $this->user->id == $userModel->id;
+    }
+
+    /**
+     * Get the transformer instance.
+     *
+     * @return mixed
+     */
+    public function getTransformer()
+    {
+        return new PostTransformer;
     }
 }

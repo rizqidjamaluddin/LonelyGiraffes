@@ -1,5 +1,6 @@
 <?php namespace Giraffe\Shouts;
 
+use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
@@ -13,7 +14,7 @@ use Giraffe\Authorization\ProtectedResource;
  * @property $body string
  * @property $html_body string
  */
-class ShoutModel extends Eloquent implements Postable, ProtectedResource {
+class ShoutModel extends Eloquent implements Postable, ProtectedResource, TransformableInterface {
     
     use HasEloquentHash;
 
@@ -47,5 +48,15 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource {
     public function checkOwnership(UserModel $userModel)
     {
         return $this->id == $userModel->id;
+    }
+
+    /**
+     * Get the transformer instance.
+     *
+     * @return mixed
+     */
+    public function getTransformer()
+    {
+        return new ShoutTransformer;
     }
 }

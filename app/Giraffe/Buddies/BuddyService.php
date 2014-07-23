@@ -1,43 +1,76 @@
 <?php  namespace Giraffe\Buddies;
 
-use Giraffe\Users\UserModel;
+use Giraffe\BuddyRequests\BuddyRequestModel;
+use Giraffe\Common\NotFoundModelException;
+use Giraffe\Common\Service;
+use Giraffe\Users\UserRepository;
 
-class BuddyService
+class BuddyService extends Service
 {
     /**
-     * @var \Giraffe\Users\UserModel
+     * @var \Giraffe\Users\UserRepository
      */
-    private $userModel;
+    private $userRepository;
+    /**
+     * @var \Giraffe\Buddies\BuddyRepository
+     */
+    private $buddyRepository;
+    /**
+     * @var BuddyCreationValidator
+     */
+    private $creationValidator;
 
-    public function __construct(UserModel $userModel)
-    {
-        $this->userModel = $userModel;
+    public function __construct(
+        UserRepository $userRepository,
+        BuddyRepository $buddyRepository,
+        BuddyCreationValidator $creationValidator
+    ) {
+        parent::__construct();
+        $this->userRepository = $userRepository;
+        $this->buddyRepository = $buddyRepository;
+        $this->creationValidator = $creationValidator;
     }
 
-    public function acceptBuddyRequest($user, $request)
+    public function getBuddies($userHash)
     {
-        /** @var $user UserModel */
-        $this->userModel->instantiate($user);
-
+        $user = $this->userRepository->getByHash($userHash);
+        $this->gatekeeper->mayI('read_buddies', $user)->please();
+        return $this->buddyRepository->getByUser($user);
     }
 
-    public function createBuddyRequest($user, $destination)
+    public function checkBuddies($user1, $user2)
     {
-
+        $user1 = $this->userRepository->get($user1);
+        $user2 = $this->userRepository->get($user2);
+        try {
+            $check = $this->buddyRepository->getByPair($user1, $user2);
+        } catch (NotFoundModelException $e) {
+            return false;
+        }
+        return true;
     }
 
-    public function denyBuddyRequest($request)
+    public function unbuddy($userHash, $buddyHash)
     {
+        //$this->gatekeeper->mayI('destroy', 'buddies')->please();
+        $user = $this->userRepository->getByHash($userHash);
+        $buddy = $this->userRepository->getByHash($buddyHash);
 
+        $this->buddyRepository->deleteByPair($user, $buddy);
     }
 
-    public function getUserBuddies($user)
+    /**
+     * @param BuddyRequestModel $buddyRequest
+     */
+    public function createBuddy($buddyRequest)
     {
+        $data = [];
+        $data['user1_id'] = min($buddyRequest->from_user_id, $buddyRequest->to_user_id);
+        $data['user2_id'] = max($buddyRequest->from_user_id, $buddyRequest->to_user_id);
 
-    }
+        $this->creationValidator->validate($data);
+        $buddy = $this->buddyRepository->create($data);
 
-    public function unbuddy($user, $buddy)
-    {
-
+        return $buddy;
     }
 } 
