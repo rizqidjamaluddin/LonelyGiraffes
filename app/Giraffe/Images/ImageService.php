@@ -49,12 +49,16 @@ class ImageService extends Service
     {
         $this->gatekeeper->mayI('create', 'image')->please();
 
+        // Check that image is valid
         $ext = $file->guessClientExtension();
+        if($ext == "jpeg")
+            $ext = "jpg";
         $size = $file->getClientSize();
 
-        if (!in_array($ext, $this->valid_exts) OR $size > $this->max_size) {
-            throw new InvalidCreationException('File format unacceptable or size is too large.');
-        }
+        if (!in_array($ext, $this->valid_exts))
+            throw new InvalidCreationException('File format unacceptable: ' . $ext);
+        if ($size > $this->max_size)
+            throw new InvalidCreationException('File is too large: ' . strval($size));
 
         // Delete previous unique image if need be
         if ($image_type->unique_per_user) {
@@ -64,17 +68,19 @@ class ImageService extends Service
             } catch(NotFoundModelException $e) {}
         }
 
-
+        // Create data for object
         $data = [];
+        $data['user_id'] = $user->id;
         $data['hash'] = Str::random(18);
-        $data['extension'] = $file->guessClientExtension();
+        $data['extension'] = $ext;
         $data['image_type_id'] = $image_type->id;
 
-
+        // Create the object
         $image = $this->imageRepository->create($data);
         $this->log->info($this, 'New image created', $image->toArray());
 
-        // Create the path for the image
+
+        // Create the path for the image file
         $img_dir = public_path()."/images/".$user->hash;
         if (!File::exists($img_dir))
             File::makeDirectory($img_dir, 0775);
@@ -85,7 +91,7 @@ class ImageService extends Service
             $img->fit($this->max_res, $this->max_res);
         $img->save($this->image_path($img_dir, $image));
 
-        // Create the thumbnail
+        // Create the thumbnail image
         Image::make($file)->fit($this->thumb_res, $this->thumb_res)->save($this->thumb_path($img_dir, $image));
         return $image;
     }
@@ -93,7 +99,7 @@ class ImageService extends Service
     /**
      * @param string $hash
      *
-     * @return \Giraffe\Images\ImageModel|null $imageModel
+     * @return \Giraffe\Images\ImageModel
      */
     public function deleteImage($hash)
     {
@@ -106,6 +112,14 @@ class ImageService extends Service
         return $image;
     }
 
+    /**
+     * @param string $name
+     *
+     * @return \Giraffe\Images\ImageTypeModel
+     */
+    public function getImageType($name) {
+        return $this->imageRepository->getImageTypeByName($name);
+    }
 
     /**
      * @param string $img_dir

@@ -9,7 +9,12 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class ImageController extends Controller {
 
     /**
-     * @param Giraffe\Images\ImageService $imageService
+     * @var \Giraffe\Images\ImageService
+     */
+    private $imageService;
+
+    /**
+     * @param \Giraffe\Images\ImageService $imageService
      */
     public function __construct(ImageService $imageService)
     {
@@ -19,11 +24,12 @@ class ImageController extends Controller {
 
     public function create()
     {
-        if (!Input::hasFile('image') || !input::has('type')) {
+        if (!Input::hasFile('image') || !Input::has('type')) {
             throw new BadRequestHttpException();
         }
 
-        $image_type = $this->imageRepository->getImageTypeByName(Input::get('type'));
+        $image_type = $this->imageService->getImageType(Input::get('type'));
+
         $user = $this->gatekeeper->me();
         $file = Input::file('image');
 
