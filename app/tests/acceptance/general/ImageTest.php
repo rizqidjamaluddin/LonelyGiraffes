@@ -47,7 +47,7 @@ class ImageTest extends AcceptanceCase
 
 
         // Delete folder, which should now be empty
-        File::rmdir(public_path()."/images/".$mario->hash);
+        File::delete(public_path()."/images/".$mario->hash);
     }
 
     /**
@@ -152,7 +152,7 @@ class ImageTest extends AcceptanceCase
 
 
         // Delete folder, which should now be empty
-        File::rmdir(public_path()."/images/".$mario->hash);
+        File::delete(public_path()."/images/".$mario->hash);
     }
 
     /**
@@ -191,10 +191,10 @@ class ImageTest extends AcceptanceCase
         $this->asUser($bowser->hash);
         $response = $this->callJson('DELETE', '/api/images/' . $image->hash);
         $this->assertResponseStatus(403);
-        $this->assertFalse(File::exists(public_path()."/".$image_location));
+        $this->assertTrue(File::exists(public_path()."/".$image_location));
 
         // Delete folder, which should now be empty
-        File::rmdir(public_path()."/images/".$mario->hash);
+        File::delete(public_path()."/images/".$mario->hash);
     }
 
     private function create_profile_pic() {
