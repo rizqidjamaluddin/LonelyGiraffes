@@ -1,13 +1,24 @@
 <?php  namespace Giraffe\Users;
 use League\Fractal\TransformerAbstract;
+use Giraffe\Images\ImageTransformer;
 
 class UserTransformer extends TransformerAbstract
 {
 
     public function transform($userModel)
     {
+        $optionals = [];
 
-        $gender = $userModel->gender ? ['gender' => $userModel->gender] : [];
+        if ($userModel->gender)
+            $optionals['gender'] = $userModel->gender;
+
+        $pic = $userModel->profilePic();
+        if ($pic) {
+            $transformer = new ImageTransformer();
+            $pic = $transformer->transform($pic);
+            // This is a hackish way of converting an array to an object
+            $optionals['pic'] = json_decode (json_encode ($pic), FALSE);;
+        }
 
         return array_merge([
             'hash' => $userModel->hash,
@@ -17,7 +28,7 @@ class UserTransformer extends TransformerAbstract
             'state' => $userModel->state,
             'country' => $userModel->country,
             'href' => $this->buildUrl($userModel->hash)
-        ], $gender);
+        ], $optionals);
     }
 
     protected function buildUrl($hash)

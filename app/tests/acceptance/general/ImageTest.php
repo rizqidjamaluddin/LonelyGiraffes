@@ -4,6 +4,7 @@ use Giraffe\Authorization\Gatekeeper;
 use Faker\Factory as Faker;
 use Faker\Provider\Image as FakerImage;
 use Giraffe\Images\ImageTypeModel;
+use Giraffe\Users\UserModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ImageTest extends AcceptanceCase
@@ -29,6 +30,7 @@ class ImageTest extends AcceptanceCase
             File::size($img)
         );
 
+        // Create the image & check that the response is correct
         $response = $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
         $this->assertResponseStatus(200);
         $image = $response->images[0];
@@ -37,7 +39,17 @@ class ImageTest extends AcceptanceCase
         $thumb_location = 'images/'.$mario->hash."/".$image->hash."_thumb.".$image->extension;
         $this->assertEquals(url($thumb_location), $image->href_thumb);
 
+
+        // Check that the image physically exists on disk
         $this->assertTrue(File::exists(public_path()."/".$image_location));
+
+        // Check that it is correctly associated with the user (Mario)
+        $getUser = $this->toJson($this->call("GET", "/api/users/" . $mario->hash));
+        $this->assertResponseStatus(200);
+        $this->assertEquals('mario@test.lonelygiraffes.com', $getUser->users[0]->email);
+        $this->assertEquals('Mario', $getUser->users[0]->name);
+        $this->assertEquals('M', $getUser->users[0]->gender);
+        $this->assertEquals(url($image_location), $getUser->users[0]->pic->href);
 
 
         /////// Delete ///////

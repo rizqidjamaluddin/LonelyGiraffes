@@ -181,4 +181,9 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
     {
         return $this->hasMany('Giraffe\Images\ImageModel', 'user_id');
     }
+
+    public function profilePic()
+    {
+        return $this->images()->where('image_type_id', '=', '1')->first();
+    }
 }
