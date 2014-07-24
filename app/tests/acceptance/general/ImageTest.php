@@ -58,8 +58,7 @@ class ImageTest extends AcceptanceCase
         $this->assertFalse(File::exists(public_path()."/".$image_location));
 
 
-        // Delete folder, which should now be empty
-        File::delete(public_path()."/images/".$mario->hash);
+        $this->cleanup($mario->hash);
     }
 
     /**
@@ -97,7 +96,6 @@ class ImageTest extends AcceptanceCase
         );
         $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
         $this->assertResponseStatus(422);
-
     }
 
     /**
@@ -163,8 +161,7 @@ class ImageTest extends AcceptanceCase
         $this->assertFalse(File::exists(public_path()."/".$image2_location));
 
 
-        // Delete folder, which should now be empty
-        File::delete(public_path()."/images/".$mario->hash);
+        $this->cleanup($mario->hash);
     }
 
     /**
@@ -205,8 +202,7 @@ class ImageTest extends AcceptanceCase
         $this->assertResponseStatus(403);
         $this->assertTrue(File::exists(public_path()."/".$image_location));
 
-        // Delete folder, which should now be empty
-        File::delete(public_path()."/images/".$mario->hash);
+        $this->cleanup($mario->hash);
     }
 
     private function create_profile_pic() {
@@ -214,5 +210,9 @@ class ImageTest extends AcceptanceCase
             'name' => 'profile pic',
             'unique_per_user' => true
         ));
+    }
+
+    private function cleanup($hash) {
+        File::deleteDirectory(public_path()."/images/".$hash);
     }
 }
