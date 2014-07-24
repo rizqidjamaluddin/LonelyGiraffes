@@ -64,8 +64,10 @@ class ImageService extends Service
         if ($image_type->unique_per_user) {
             try {
                 $previous_image = $this->imageRepository->getByUserWithType($user, $image_type)->first();
-                $this->imageRepository->deleteByHash($previous_image->hash);
-            } catch(NotFoundModelException $e) {}
+                $this->deleteImage($previous_image->hash);
+            } catch(NotFoundModelException $e) {
+                //To be expected if there is no previous
+            }
         }
 
         // Create data for object

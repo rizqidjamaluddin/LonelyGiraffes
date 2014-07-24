@@ -44,6 +44,10 @@ class ImageTest extends AcceptanceCase
         $response = $this->callJson('DELETE', '/api/images/' . $image->hash);
         $this->assertResponseStatus(200);
         $this->assertFalse(File::exists(public_path()."/".$image_location));
+
+
+        // Delete folder, which should now be empty
+        File::rmdir(public_path()."/images/".$mario->hash);
     }
 
     /**
@@ -70,7 +74,9 @@ class ImageTest extends AcceptanceCase
 
 
         /////// Test for too large ///////
-        $img = FakerImage::image('/tmp', 1920, 1080);
+        do {
+            $img = FakerImage::image('/tmp', 1920, 1080);
+        } while(File::size($img) <= 200000);
         $file = new UploadedFile (
             $img,
             "image.jpg",
@@ -143,6 +149,10 @@ class ImageTest extends AcceptanceCase
         $response = $this->callJson('DELETE', '/api/images/' . $image2->hash);
         $this->assertResponseStatus(200);
         $this->assertFalse(File::exists(public_path()."/".$image2_location));
+
+
+        // Delete folder, which should now be empty
+        File::rmdir(public_path()."/images/".$mario->hash);
     }
 
     /**
@@ -180,15 +190,17 @@ class ImageTest extends AcceptanceCase
         $bowser = $this->registerBowser();
         $this->asUser($bowser->hash);
         $response = $this->callJson('DELETE', '/api/images/' . $image->hash);
-        $this->assertResponseStatus(200);
+        $this->assertResponseStatus(403);
         $this->assertFalse(File::exists(public_path()."/".$image_location));
-        $this->assertResponseStatus(401);
+
+        // Delete folder, which should now be empty
+        File::rmdir(public_path()."/images/".$mario->hash);
     }
 
     private function create_profile_pic() {
         ImageTypeModel::create(array(
             'name' => 'profile pic',
-            'unique_per_user' => false
+            'unique_per_user' => true
         ));
     }
 }
