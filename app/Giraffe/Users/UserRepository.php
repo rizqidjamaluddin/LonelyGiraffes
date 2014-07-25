@@ -23,32 +23,6 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
     }
 
     /**
-     * Extend the base get() method to accept a user's public_id
-     *
-     * @param \Eloquent|int|string $identifier
-     * @return UserModel|null
-     */
-    public function get($identifier){
-
-        // skip specific search if identifier is null; delegate to parent to decide what to do
-        if (is_null($identifier)) {
-            return parent::get($identifier);
-        }
-
-        // immediately return if already a UserModel
-        if ($identifier instanceof UserModel) {
-            return $identifier;
-        }
-
-        try {
-            $model = $this->getByHash($identifier);
-        } catch (NotFoundModelException $e) {
-            return parent::get($identifier);
-        }
-        return $model;
-    }
-
-    /**
      * @param string $hash
      *
      * @throws \Giraffe\Common\NotFoundModelException
