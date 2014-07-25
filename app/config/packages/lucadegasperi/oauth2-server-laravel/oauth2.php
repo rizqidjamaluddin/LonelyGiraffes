@@ -62,7 +62,7 @@ return array(
 
         'password' => array(
             'class'            => 'League\OAuth2\Server\Grant\Password',
-            'access_token_ttl' => 604800,
+            'access_token_ttl' => 604800000,
             'callback'         => function ($username, $password) {
                 $credentials = array(
                     'email' => $username,
@@ -81,7 +81,7 @@ return array(
 
         'refresh_token' => array(
             'class'                 => 'League\OAuth2\Server\Grant\RefreshToken',
-            'access_token_ttl'      => 3600,
+            'access_token_ttl'      => 604800000,
             'refresh_token_ttl'     => 604800000,
             'rotate_refresh_tokens' => false,
         ),
