@@ -38,6 +38,14 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
         return parent::delete($identifier);
     }
 
+    public function getById($id)
+    {
+        if (!$model = $this->model->where('id', $id)->remember(100)->cacheTags(['user:'.$id])->first()) {
+            throw new NotFoundModelException();
+        }
+        return $model;
+    }
+
 
     /**
      * @param string $hash
@@ -170,6 +178,7 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
     {
         $identifier = $this->get($identifier);
         $this->getCache()->tags(['user:' . $identifier->hash])->flush();
+        $this->getCache()->tags(['user:' . $identifier->id])->flush();
         return $identifier;
     }
 }

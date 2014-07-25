@@ -29,7 +29,7 @@ class PostRepository extends EloquentRepository
     public function getGlobal()
     {
         return $this->model
-            ->with('author', 'postable', 'postable.author')
+            ->with('postable', 'postable.author')
             ->take(10)
             ->orderBy('id', 'desc')
             ->get();
