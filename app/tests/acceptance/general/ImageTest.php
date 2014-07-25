@@ -16,7 +16,6 @@ class ImageTest extends AcceptanceCase
     public function it_can_create_and_delete_images()
     {
         // Setup
-        $this->create_profile_pic();
         $mario = $this->registerMario();
         $this->asUser($mario->hash);
 
@@ -68,7 +67,6 @@ class ImageTest extends AcceptanceCase
     public function it_cannot_create_forbidden_images()
     {
         // Setup
-        $this->create_profile_pic();
         $mario = $this->registerMario();
         $this->asUser($mario->hash);
 
@@ -105,7 +103,6 @@ class ImageTest extends AcceptanceCase
     public function it_can_overwrite_profile_images()
     {
         // Setup
-        $this->create_profile_pic();
         $mario = $this->registerMario();
         $this->asUser($mario->hash);
 
@@ -169,9 +166,6 @@ class ImageTest extends AcceptanceCase
      */
     public function it_cannot_alter_images_of_another_user()
     {
-        // Setup
-        $this->create_profile_pic();
-
         /////// Create ///////
         $mario = $this->registerMario();
         $this->asUser($mario->hash);
@@ -203,13 +197,6 @@ class ImageTest extends AcceptanceCase
         $this->assertTrue(File::exists(public_path()."/".$image_location));
 
         $this->cleanup($mario->hash);
-    }
-
-    private function create_profile_pic() {
-        ImageTypeModel::create(array(
-            'name' => 'profile pic',
-            'unique_per_user' => true
-        ));
     }
 
     private function cleanup($hash) {
