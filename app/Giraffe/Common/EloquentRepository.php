@@ -156,4 +156,13 @@ abstract class EloquentRepository implements Repository
     {
         return $this->model->destroy($ids);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCache()
+    {
+        $cache = $this->model->getConnection()->getCacheManager()->driver();
+        return $cache;
+    }
 }
