@@ -6,6 +6,7 @@ use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Users\UserModel;
 use Giraffe\Authorization\ProtectedResource;
+use Giraffe\Users\UserRepository;
 
 /**
  * @property $id int
@@ -24,6 +25,14 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
     public function getOwnerId()
     {
         return $this->user_id;
+    }
+
+    public function fetchAuthor($userRepository = null)
+    {
+        if (!$this->user_id) return null;
+        /** @var UserRepository $userRepository */
+        $userRepository = $userRepository ?: \App::make('Giraffe\Users\UserRepository');
+        return $userRepository->getById($this->user_id);
     }
 
     public function author()

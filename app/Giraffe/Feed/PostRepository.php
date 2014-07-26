@@ -3,6 +3,7 @@
 use Giraffe\Common\EloquentRepository;
 use Giraffe\Feed\Postable;
 use Giraffe\Feed\PostModel;
+use Illuminate\Database\Eloquent\Collection;
 
 class PostRepository extends EloquentRepository
 {
@@ -26,10 +27,13 @@ class PostRepository extends EloquentRepository
             ->get();
     }
 
+    /**
+     * @return Collection
+     */
     public function getGlobal()
     {
         return $this->model
-            ->with('author', 'postable', 'postable.author')
+            ->with('postable', 'postable.author')
             ->take(10)
             ->orderBy('id', 'desc')
             ->get();

@@ -107,7 +107,7 @@ class UserService extends Service
     {
         $user = $this->userRepository->getByHash($id);
         $this->gatekeeper->mayI('delete', $user)->please();
-        $user->delete();
+        $this->userRepository->delete($user);
         return $user;
     }
 

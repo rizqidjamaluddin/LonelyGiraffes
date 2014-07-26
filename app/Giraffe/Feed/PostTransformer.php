@@ -7,7 +7,7 @@ class PostTransformer extends TransformerAbstract
 {
     public function transform(PostModel $post)
     {
-        $author = $post->author;
+        $author = $post->fetchAuthor();
 
         if ($author instanceof TransformableInterface) {
             $transformer = $author->getTransformer();
