@@ -196,8 +196,9 @@ class FeedTest extends AcceptanceCase
         $this->callJson('POST', '/api/shouts', ['body' => "I am post number 1."]);
         $this->callJson('POST', '/api/shouts', ['body' => "I am post number 2."]);
         $this->callJson('POST', '/api/shouts', ['body' => "I am post number 3."]);
+        $this->callJson('POST', '/api/shouts', ['body' => "I am post number 4."]);
 
-        list($first, $second, $third) = $this->callJson('GET', '/api/posts')->posts;
+        list($fourth, $third, $second, $first) = $this->callJson('GET', '/api/posts')->posts;
 
         $fetch = $this->callJson('GET', '/api/posts', ['take' => 2]);
         $this->assertResponseOk();
@@ -216,6 +217,19 @@ class FeedTest extends AcceptanceCase
         $this->assertResponseOk();
         $this->assertEquals(1, count($fetchAfter->posts));
         $this->assertEquals("I am post number 2.", $fetchAfter->posts[0]->body->body);
+
+        // try in-between
+
+        $fetchBetween = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'after' => $first->hash, 'before' => $fourth->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(2, count($fetchBetween->posts));
+        $this->assertEquals("I am post number 3.", $fetchAfter->posts[0]->body->body);
+        $this->assertEquals("I am post number 2.", $fetchAfter->posts[1]->body->body);
+
+        $fetchBetween = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'after' => $first->hash, 'before' => $fourth->hash, 'take' => 1]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetchBetween->posts));
+        $this->assertEquals("I am post number 3.", $fetchAfter->posts[0]->body->body);
     }
 
 } 
