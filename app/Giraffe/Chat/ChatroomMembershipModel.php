@@ -2,7 +2,7 @@
 
 use \Eloquent;
 
-class ChatroomMemberModel extends Eloquent {
-    protected $table = 'conversation_members';
+class ChatroomMembershipModel extends Eloquent {
+    protected $table = 'chatroom_memberships';
 	protected $fillable = ['user_id', 'conversation_id'];
 }
