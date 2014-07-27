@@ -2,10 +2,11 @@
 
 use Eloquent;
 use Giraffe\Common\HasEloquentHash;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 class ChatroomModel extends Eloquent {
-    use HasEloquentHash;
+    use HasEloquentHash, SoftDeletingTrait;
 
-    protected $table = 'conversations';
-	protected $fillable = ['name'];
+    protected $table = 'chatrooms';
+	protected $fillable = ['name', 'hash'];
 }
