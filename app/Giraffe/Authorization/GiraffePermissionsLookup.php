@@ -29,8 +29,8 @@ class GiraffePermissionsLookup
                     'notification_container' => ['read', 'delete', 'dismiss_all'],
                     'post'                   => ['delete'],
                     'shout'                  => ['create', 'delete'],
-                    'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddies',
-                                                'read_buddy_requests'],
+                    'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddy', 'delete_buddy',
+                                                'read_buddy_request'],
                     'test'                   => ['test'],
 
                 ],

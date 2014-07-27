@@ -72,7 +72,7 @@ Route::api(
 
 
              Route::get('users/{resource}/buddies', ['uses' => 'BuddyController@index']);
-             Route::delete('users/{resource}/buddies', ['uses' => 'BuddyController@destroy']);
+             Route::delete('users/{resource}/buddies/{buddy}', ['uses' => 'BuddyController@destroy']);
 
              Route::get('users/{resource}/buddy-requests', ['uses' => 'BuddyRequestController@requestIndex']);
              Route::post('users/{resource}/buddy-requests', ['uses' => 'BuddyRequestController@create']);
