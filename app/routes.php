@@ -81,15 +81,8 @@ Route::api(
 
              Route::get('users/{resource}/outgoing-buddy-requests', ['uses' => 'BuddyRequestController@outgoingIndex']);
 
-             Route::get('conversations', ['uses' => 'ConversationController@index']);
-             Route::post('conversations', ['uses' => 'ConversationController@create']);
-             Route::delete('conversations/{conversation}', ['uses' => 'ConversationController@leave']);
-             Route::post('conversations/{conversation}/messages', ['uses' => 'ConversationController@createMessage']);
-             Route::delete(
-                  'conversations/{conversation}/messages/{message}',
-                  ['uses' => 'ConversationController@deleteMessage']
-             );
-             Route::post('conversations/{conversation}/invite', ['uses' => 'ConversationController@invite']);
+             Route::post('chatrooms', ['uses' => 'ChatroomController@create']);
+             Route::get('chatrooms/{resource}', ['uses' => 'ChatroomController@show']);
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);

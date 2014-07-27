@@ -68,8 +68,14 @@ class ChatTest extends ChatCase
 
     }
 
+    public function users_can_see_the_rooms_they_are_in()
+    {
+
+    }
+
     public function users_can_add_people_to_a_chatroom()
     {
+
     }
 
     public function users_can_receive_messages_in_a_chatroom()

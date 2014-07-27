@@ -7,17 +7,33 @@ use Giraffe\Users\UserRepository;
 class ChatService 
 {
 
+    /**
+     * @var ChatroomRepository
+     */
+    private $chatroomRepository;
+
+    public function __construct(ChatroomRepository $chatroomRepository)
+    {
+        $this->chatroomRepository = $chatroomRepository;
+    }
+
+    public function createChatroom($owner)
+    {
+
+        $create = $this->chatroomRepository->create([]);
+    }
+
+    public function showChatroom($conversation)
+    {
+
+    }
+
     public function acceptConversationInvite($user, $conversation)
     {
 
     }
 
     public function denyConversationInvite($user, $conversation)
-    {
-
-    }
-
-    public function getConversation($conversation)
     {
 
     }
