@@ -232,4 +232,16 @@ class FeedTest extends AcceptanceCase
         $this->assertEquals("I am post number 3.", $fetchBetween->posts[0]->body->body);
     }
 
+    public function a_request_cannot_fetch_more_than_20_posts_with_take()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        for ($i = 0; $i < 50; $i++) {
+            $this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+        }
+
+        $fetch = $this->callJson('GET', '/api/posts', ['take' => 40]);
+        $this->assertResponseOk();
+        $this->assertEquals(20, count($fetch->posts));
+    }
+
 } 

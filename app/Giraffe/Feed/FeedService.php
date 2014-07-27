@@ -51,6 +51,7 @@ class FeedService extends Service
         $this->gatekeeper->mayI('read', 'feed')->please();
         $options = array_only($options, ['before', 'after', 'take']);
 
+        $options = $this->truncateTakeOption($options);
         $options = $this->translateHashOptionsToIDs($options);
 
         if (count($options) > 0) {
@@ -96,6 +97,7 @@ class FeedService extends Service
         $options = $this->translateHashOptionsToIDs($options);
         // no specific gatekeeper check here; adjust PostRepository call if policy changes
         $this->gatekeeper->mayI('read', 'posts')->please();
+        $options = $this->truncateTakeOption($options);
         return $this->postRepository->getForUser($user->id, $options);
     }
 
@@ -110,6 +112,19 @@ class FeedService extends Service
         }
         if ($after = array_get($options, 'after')) {
             $options['after'] = $this->postRepository->getByHash($after)->id;
+            return $options;
+        }
+        return $options;
+    }
+
+    /**
+     * @param $options
+     * @return mixed
+     */
+    protected function truncateTakeOption($options)
+    {
+        if (array_get($options, 'take') > 20) {
+            $options['take'] = 20;
             return $options;
         }
         return $options;
