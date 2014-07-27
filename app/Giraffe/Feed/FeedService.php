@@ -46,18 +46,21 @@ class FeedService extends Service
         $this->cache = $cache;
     }
 
-    public function getGlobalFeed($cursor = null)
+    public function getGlobalFeed($options)
     {
         $this->gatekeeper->mayI('read', 'feed')->please();
-        if ($cursor) {
-                $bottomPost = $this->postRepository->getByHash($cursor);
-                return $this->postRepository->getGlobalBeforeId($bottomPost->id);
+        $options = array_only($options, ['before', 'after', 'take']);
 
-        } else {
-            $fetch = $this->postRepository->getGlobal();
-            $this->setTopPostCache($fetch->first());
-            return $fetch;
+        $options = $this->translateHashOptionsToIDs($options);
+
+        if (count($options) > 0) {
+            return $this->postRepository->getGlobal($options);
         }
+
+        // only update the top post cache if it was called without options
+        $fetch = $this->postRepository->getGlobal();
+        $this->setTopPostCache($fetch->first());
+        return $fetch;
     }
 
     /**
@@ -80,22 +83,6 @@ class FeedService extends Service
         $this->cache->getStore()->forget('feed.top');
     }
 
-
-
-    public function getGlobalFeedAfter($after)
-    {
-        $this->gatekeeper->mayI('read', 'feed')->please();
-
-        $top = $this->cache->get('feed.top', null);
-        if ($top == $after) {
-            // use cache bypass
-            return new Collection;
-        }
-
-        $topPost = $this->postRepository->getByHash($after);
-        return $this->postRepository->getGlobalAfterId($topPost->id);
-    }
-
     public function getPost($post)
     {
         $post = $this->postRepository->getByHash($post);
@@ -103,12 +90,29 @@ class FeedService extends Service
         return $post;
     }
 
-    public function getUserPosts($user)
+    public function getUserPosts($user, $options)
     {
         $user = $this->userRepository->getByHash($user);
+        $options = $this->translateHashOptionsToIDs($options);
         // no specific gatekeeper check here; adjust PostRepository call if policy changes
         $this->gatekeeper->mayI('read', 'posts')->please();
-        return $this->postRepository->getForUser($user->id);
+        return $this->postRepository->getForUser($user->id, $options);
+    }
+
+    /**
+     * @param $options
+     * @return mixed
+     */
+    protected function translateHashOptionsToIDs($options)
+    {
+        if ($before = array_get($options, 'before')) {
+            $options['before'] = $this->postRepository->getByHash($before)->id;
+        }
+        if ($after = array_get($options, 'after')) {
+            $options['after'] = $this->postRepository->getByHash($after)->id;
+            return $options;
+        }
+        return $options;
     }
 
 
