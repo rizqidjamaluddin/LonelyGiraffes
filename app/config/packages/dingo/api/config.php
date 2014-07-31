@@ -98,12 +98,12 @@ return [
     'rate_limiting' => [
 
         'authenticated' => [
-            'limit' => 0,
+            'limit' => 240,
             'reset' => 60
         ],
 
         'unauthenticated' => [
-            'limit' => 0,
+            'limit' => 240,
             'reset' => 60
         ],
 
