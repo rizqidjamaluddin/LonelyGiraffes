@@ -98,7 +98,7 @@ return [
     'rate_limiting' => [
 
         'authenticated' => [
-            'limit' => 720,
+            'limit' => 1440,
             'reset' => 60
         ],
 
