@@ -6,6 +6,7 @@ use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Repository;
 use Giraffe\Logging\Log;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 use stdClass;
 
@@ -113,6 +114,11 @@ abstract class EloquentRepository implements Repository
             throw new InvalidUpdateException;
         }
         return $model;
+    }
+
+    public function save(Model $model)
+    {
+        return $model->save();
     }
 
     public function delete($identifier)

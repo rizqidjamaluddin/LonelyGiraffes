@@ -42,7 +42,7 @@ class UserProfileTest extends AcceptanceCase
         $mario = $this->registerAndLoginAsMario();
         $this->setSimpleBio($mario);
 
-        $invalid = $this->callJson('POST', "/api/users/{$mario->hash}/profile", ['bio' => str_repeat('x', 200)]);
+        $invalid = $this->callJson('PUT', "/api/users/{$mario->hash}/profile", ['bio' => str_repeat('x', 200)]);
         $this->assertResponseStatus(422);
 
         $this->validateSimpleBio($mario);
@@ -58,8 +58,10 @@ class UserProfileTest extends AcceptanceCase
         $simple = $this->setSimpleBio($mario);
 
         $bowser = $this->registerAndLoginAsBowser();
-        $invalid =  $this->callJson('POST', "/api/users/{$mario->hash}/profile", ['bio' => 'Evil bio!']);
-        $this->assertResponseStatus(401);
+        $invalid =  $this->callJson('PUT', "/api/users/{$mario->hash}/profile", ['bio' => 'Evil bio!']);
+        $this->assertResponseStatus(403);
+
+        // last check
         $this->validateSimpleBio($mario);
     }
 
@@ -79,7 +81,7 @@ class UserProfileTest extends AcceptanceCase
      */
     protected function setSimpleBio($mario)
     {
-        return $this->callJson('POST', "/api/users/{$mario->hash}/profile", ['bio' => $this->simpleBio]);
+        return $this->callJson('PUT', "/api/users/{$mario->hash}/profile", ['bio' => $this->simpleBio]);
     }
 
 } 

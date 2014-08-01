@@ -70,6 +70,9 @@ Route::api(
              Route::post('users/{resource}/promote', ['uses' => 'UserController@promote']);
              Route::get('users', ['uses' => 'UserController@index']);
 
+             Route::get('users/{resource}/profile', ['uses' => 'UserProfileController@show']);
+             Route::put('users/{resource}/profile', ['uses' => 'UserProfileController@update']);
+
 
              Route::get('users/{resource}/buddies', ['uses' => 'BuddyController@index']);
              Route::delete('users/{resource}/buddies/{buddy}', ['uses' => 'BuddyController@destroy']);
