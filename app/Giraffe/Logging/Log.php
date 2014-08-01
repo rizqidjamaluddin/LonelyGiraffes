@@ -190,47 +190,9 @@ class Log
     {
         $raw_level = strtolower($raw_level);
 
-        switch ($raw_level) {
-            case ('debug') :
-            {
-                return "DEBUG";
-            }
-            case ('info') :
-            {
-                return "INFO";
-            }
-            case ('notice') :
-            {
-                return "NOTICE";
-            }
-            case ('warn') :
-            {
-                return "WARNING";
-            }
-            case ('warning') :
-            {
-                return "WARNING";
-            }
-            case ('error') :
-            {
-                return "ERROR";
-            }
-            case ('critical') :
-            {
-                return "CRITICAL";
-            }
-            case ('alert') :
-            {
-                return "ALERT";
-            }
-            case ('emergency') :
-            {
-                return "EMERGENCY";
-            }
-            default :
-                {
-                throw new ConfigurationException("Invalid logging level ($raw_level) issued.");
-                }
+        if (in_array($raw_level, $this->levels)) {
+            return strtoupper($raw_level);
         }
+        throw new ConfigurationException("Invalid log level used ($raw_level).");
     }
 } 
