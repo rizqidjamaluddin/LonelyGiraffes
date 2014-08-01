@@ -66,8 +66,10 @@ class ProfileService extends Service
         // gatekeeper check
         $this->gatekeeper->mayI('update', $profile)->please();
 
-        $profile->bio = $attributes['bio'];
-        $profile->html_bio = $this->parser->parseLinks($attributes['bio']);
+        if (array_key_exists('bio', $attributes)) {
+            $profile->bio = $attributes['bio'];
+            $profile->html_bio = $this->parser->parseLinks($attributes['bio']);
+        }
         $this->profileRepository->save($profile);
 
         return $this->getUserProfile($user);
