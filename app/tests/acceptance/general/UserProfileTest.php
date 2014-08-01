@@ -66,6 +66,22 @@ class UserProfileTest extends AcceptanceCase
     }
 
     /**
+     * @test
+     */
+    public function users_can_post_links_in_their_profile()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $set = $this->callJson('PUT', "/api/users/{$mario->hash}/profile", ['bio' => "A URL: http://www.google.com"]);
+
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/profile");
+        $this->assertEquals("A URL: http://www.google.com", $fetch->profiles[0]->bio);
+        $this->assertEquals(
+            '<p>A URL: <a href="http://www.google.com">http://www.google.com</a></p>',
+            $fetch->profiles[0]->html_bio
+        );
+    }
+
+    /**
      * @param $mario
      */
     protected function validateSimpleBio($mario)

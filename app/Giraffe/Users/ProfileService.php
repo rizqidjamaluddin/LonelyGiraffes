@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Users;
 
 use Giraffe\Common\Service;
+use Giraffe\Parser\Parser;
 
 class ProfileService extends Service
 {
@@ -20,16 +21,22 @@ class ProfileService extends Service
      * @var UserRepository
      */
     private $userRepository;
+    /**
+     * @var Parser
+     */
+    private $parser;
 
     public function __construct(
         UserRepository $userRepository,
         UserProfileRepository $profileRepository,
-        UserProfileValidator $profileValidator
+        UserProfileValidator $profileValidator,
+        Parser $parser
     ) {
         $this->profileRepository = $profileRepository;
         $this->profileValidator = $profileValidator;
         $this->userRepository = $userRepository;
         parent::__construct();
+        $this->parser = $parser;
     }
 
     public function getUserProfile($user)
@@ -60,7 +67,7 @@ class ProfileService extends Service
         $this->gatekeeper->mayI('update', $profile)->please();
 
         $profile->bio = $attributes['bio'];
-        $profile->html_bio = $attributes['bio'];
+        $profile->html_bio = $this->parser->parseLinks($attributes['bio']);
         $this->profileRepository->save($profile);
 
         return $this->getUserProfile($user);
