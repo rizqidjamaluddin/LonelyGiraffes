@@ -7,6 +7,13 @@ class UserProfileModel extends Eloquent implements ProtectedResource
     protected $table = 'user_profiles';
     protected $fillable = ['bio', 'html_bio'];
 
+    public static function createForUser(UserModel $user)
+    {
+        $instance = new static;
+        $instance->user_id = $user->id;
+        return $instance;
+    }
+
     /**
      * Lowercase name of this resource.
      *

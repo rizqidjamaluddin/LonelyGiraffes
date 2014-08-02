@@ -35,8 +35,8 @@ class ProfileService extends Service
         $this->profileRepository = $profileRepository;
         $this->profileValidator = $profileValidator;
         $this->userRepository = $userRepository;
-        parent::__construct();
         $this->parser = $parser;
+        parent::__construct();
     }
 
     public function getUserProfile($user)
@@ -45,7 +45,7 @@ class ProfileService extends Service
         $profile = $this->profileRepository->getForUserId($user->id);
         // we'll give a blank model back if the user has no profile settings
         if (!$profile) {
-            $profile = new UserProfileModel();
+            $profile = UserProfileModel::createForUser($user);
         }
         return $profile;
     }
@@ -59,8 +59,7 @@ class ProfileService extends Service
 
         $profile = $this->profileRepository->getForUserId($user->id);
         if (!$profile) {
-            $profile = new UserProfileModel();
-            $profile->user_id = $user->id;
+            $profile = UserProfileModel::createForUser($user);
         }
 
         // gatekeeper check
@@ -70,6 +69,7 @@ class ProfileService extends Service
             $profile->bio = $attributes['bio'];
             $profile->html_bio = $this->parser->parseLinks($attributes['bio']);
         }
+
         $this->profileRepository->save($profile);
 
         return $this->getUserProfile($user);
