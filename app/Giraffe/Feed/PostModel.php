@@ -5,6 +5,7 @@ use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Users\UserModel;
+use Giraffe\Users\UserRepository;
 
 /**
  * @property $user UserModel
@@ -20,6 +21,14 @@ class PostModel extends Eloquent implements ProtectedResource, TransformableInte
     public function postable()
     {
         return $this->morphTo();
+    }
+
+    public function fetchAuthor($userRepository = null)
+    {
+        if (!$this->user_id) return null;
+        /** @var UserRepository $userRepository */
+        $userRepository = $userRepository ?: \App::make('Giraffe\Users\UserRepository');
+        return $userRepository->getById($this->user_id);
     }
 
     public function author()

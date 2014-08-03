@@ -10,10 +10,15 @@ class PostGeneratorHelper
      * @var PostRepository
      */
     private $postRepository;
+    /**
+     * @var FeedService
+     */
+    private $feedService;
 
-    public function __construct(PostRepository $postRepository)
+    public function __construct(PostRepository $postRepository, FeedService $feedService)
     {
         $this->postRepository = $postRepository;
+        $this->feedService = $feedService;
     }
 
     /**
@@ -33,6 +38,7 @@ class PostGeneratorHelper
                 'hash' => Str::random(32)
             ]
         );
+        $this->feedService->invalidateTopPostCache();
         $post = $this->postRepository->getByHashWithPostable($post->hash);
         return $post;
     }

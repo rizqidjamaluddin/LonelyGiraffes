@@ -356,8 +356,9 @@ class UserAccountCase extends AcceptanceCase
         $response = $this->call("DELETE", "/api/users/" . $mario->hash);
         $this->assertResponseStatus(200);
 
-        $this->setExpectedException('Giraffe\Common\NotFoundModelException');
-        $this->repository->get($mario->hash);
+        $fetch = $this->call("GET", "/api/users/" . $mario->hash);
+        $this->assertResponseStatus(404);
+
     }
 
     /**

@@ -2,6 +2,8 @@
 
 interface ParserDriver
 {
+    public function parseLinks($input);
+
     /**
      * Parse content for "rich" use, such as posts and events.
      *

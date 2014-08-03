@@ -8,7 +8,7 @@ class ShoutTransformer extends TransformerAbstract
 
     public function transform(ShoutModel $shoutModel)
     {
-        $author = (new UserTransformer())->transform($shoutModel->author);
+        $author = (new UserTransformer())->transform($shoutModel->fetchAuthor());
 
         return [
             'hash' => $shoutModel->hash,

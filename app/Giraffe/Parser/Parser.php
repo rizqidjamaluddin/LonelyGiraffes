@@ -20,6 +20,12 @@ class Parser
         $this->parserDriver = $parserDriver;
     }
 
+    public function parseLinks($input)
+    {
+        if (!self::ENABLED) return e($input);
+        return $this->parserDriver->parseLinks($input);
+    }
+
     public function parseRich($input)
     {
         if (!self::ENABLED) return e($input);
