@@ -41,6 +41,14 @@ class BuddyRequestService extends Service
         $this->creationValidator = $creationValidator;
     }
 
+    public function check($user1, $user2)
+    {
+        // $this->gatekeeper->mayI
+        $user1 = $this->userRepository->getByHash($user1);
+        $user2 = $this->userRepository->getByHash($user2);
+        return $this->buddyRequestRepository->getByPair($user1, $user2);
+    }
+
 
     public function createBuddyRequest($userHash, $targetHash)
     {

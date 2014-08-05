@@ -324,7 +324,7 @@ class BuddyTest extends AcceptanceCase
     {
         $mario = $this->registerMario();
         $luigi = $this->registerLuigi();
-        $this->establishMarioAndLuigiBuddies($luigi, $mario);
+        $this->establishMarioAndLuigiBuddies($mario, $luigi);
 
         $this->registerAndLoginAsBowser();
         $this->callJson('DELETE', "/api/users/{$mario->hash}/buddies/{$luigi->hash}");
@@ -347,7 +347,35 @@ class BuddyTest extends AcceptanceCase
     {
         $mario = $this->registerMario();
         $luigi = $this->registerLuigi();
-        $this->establishMarioAndLuigiBuddies($luigi, $mario);
+
+
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$luigi->hash}");
+        $this->assertResponseOk();
+        $this->assertFalse(in_array('buddy', $endpoint->users[0]->relationships));
+
+        $this->asUser($luigi->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertResponseOk();
+        $this->assertFalse(in_array('buddy', $endpoint->users[0]->relationships));
+
+        // send offer
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$luigi->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('pending', $endpoint->users[0]->relationships));
+
+        $this->asUser($luigi->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('outgoing', $endpoint->users[0]->relationships));
+
+        // accept
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
 
         $this->asUser($mario->hash);
         $endpoint = $this->callJson('GET', "/api/users/{$luigi->hash}");
@@ -361,10 +389,31 @@ class BuddyTest extends AcceptanceCase
     }
 
     /**
-     * @param $luigi
-     * @param $mario
+     *
      */
-    protected function establishMarioAndLuigiBuddies($luigi, $mario)
+    public function clients_can_get_pending_requests_for_the_logged_in_user()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/outgoing-buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($check->buddy_requests), 0);
+
+        $this->establishMarioAndLuigiBuddies($mario, $luigi);
+
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/outgoing-buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($check->buddy_requests), 0);
+    }
+
+    /**
+     * @param $mario
+     * @param $luigi
+     */
+    protected function establishMarioAndLuigiBuddies($mario, $luigi)
     {
         $this->asUser($luigi->hash);
         $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
