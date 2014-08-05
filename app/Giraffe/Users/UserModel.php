@@ -7,6 +7,7 @@ use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Buddies\BuddyService;
 use Giraffe\BuddyRequests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\Locatable;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\UnlocatableModelException;
@@ -170,6 +171,9 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
         /** @var BuddyService $buddyService */
         $buddyService = \App::make(BuddyService::class);
 
+        /** @var BuddyRequestService $buddyRequestService */
+        $buddyRequestService = \App::make(BuddyRequestService::class);
+
         $rel = [];
 
         // check for 'self'
@@ -180,6 +184,18 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
         // check for 'buddy'
         if ($buddyService->checkBuddies($this, $user)) {
             $rel[] = 'buddy';
+        }
+
+        // check for 'outgoing' and 'pending'
+        try {
+            $request = $buddyRequestService->check($this, $user);
+            if ($request->sender->id == $user->id) {
+                $rel[] = 'outgoing';
+            } else {
+                $rel[] = 'pending';
+            }
+        } catch (NotFoundModelException $e) {
+             // continue
         }
 
         return $rel;

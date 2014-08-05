@@ -29,7 +29,11 @@ class BuddyRequestController extends Controller
 
     public function outgoingIndex($userHash)
     {
-        $models = $this->buddyRequestService->getOutgoingBuddyRequests($userHash);
+        if ($userFilter = Input::get('user')) {
+            $models = $this->buddyRequestService->getOutgoingBuddyRequestBetweenUsers($userHash, $userFilter);
+        } else {
+            $models = $this->buddyRequestService->getOutgoingBuddyRequests($userHash);
+        }
         return $this->returnBuddyRequestModels($models);
     }
 
@@ -56,7 +60,7 @@ class BuddyRequestController extends Controller
         return $this->withItem($models, new BuddyRequestTransformer(), 'buddy_requests');
     }
 
-    public function returnBuddyRequestModels(Collection $models)
+    public function returnBuddyRequestModels(\Illuminate\Support\Collection $models)
     {
         return $this->withCollection($models, new BuddyRequestTransformer(), 'buddy_requests');
     }
