@@ -1,9 +1,12 @@
 <?php  namespace Giraffe\Buddies;
 
+use Giraffe\Common\DuplicateCreationException;
 use Giraffe\Common\EloquentRepository;
+use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Users\UserRepository;
 use Giraffe\Users\UserModel;
+use Illuminate\Database\QueryException;
 
 class BuddyRepository extends EloquentRepository
 {
@@ -22,6 +25,14 @@ class BuddyRepository extends EloquentRepository
     {
         parent::__construct($buddyModel);
     }
+
+    public function create(array $attributes)
+    {
+        $this->getCache()->tags(['buddies:' . $attributes['user1_id']])->flush();
+        $this->getCache()->tags(['buddies:' . $attributes['user2_id']])->flush();
+        return parent::create($attributes);
+    }
+
 
     /**
      * Gets Buddy relationships for a user.
@@ -63,6 +74,8 @@ class BuddyRepository extends EloquentRepository
         $model = $this->model
             ->where('user1_id', '=', $user->id)->where('user2_id', '=', $buddy->id)
             ->orWhere('user1_id', '=', $buddy->id)->where('user2_id', '=', $user->id)
+            ->cacheTags(['buddies:'.$user->id, 'buddies:'.$buddy->id])
+            ->remember(20)
             ->first();
         if(!$model)
             throw new NotFoundModelException();
