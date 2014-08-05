@@ -323,10 +323,8 @@ class BuddyTest extends AcceptanceCase
     public function a_user_cannot_delete_another_users_buddy()
     {
         $mario = $this->registerMario();
-        $luigi = $this->registerAndLoginAsLuigi();
-        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
-        $this->asUser($mario->hash);
-        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+        $luigi = $this->registerLuigi();
+        $this->establishMarioAndLuigiBuddies($luigi, $mario);
 
         $this->registerAndLoginAsBowser();
         $this->callJson('DELETE', "/api/users/{$mario->hash}/buddies/{$luigi->hash}");
@@ -340,5 +338,37 @@ class BuddyTest extends AcceptanceCase
         $this->asUser($mario->hash);
         $buddies = $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
         $this->assertEquals(1, count($buddies->buddies));
+    }
+
+    /**
+     * @test
+     */
+    public function users_can_see_their_buddy_status_on_the_user_profile()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+        $this->establishMarioAndLuigiBuddies($luigi, $mario);
+
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$luigi->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('buddy', $endpoint->users[0]->relationships));
+
+        $this->asUser($luigi->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('buddy', $endpoint->users[0]->relationships));
+    }
+
+    /**
+     * @param $luigi
+     * @param $mario
+     */
+    protected function establishMarioAndLuigiBuddies($luigi, $mario)
+    {
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
     }
 }

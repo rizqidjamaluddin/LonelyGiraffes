@@ -394,4 +394,15 @@ class UserAccountCase extends AcceptanceCase
         $this->assertEquals($check->name, $this->genericUser['name']);
         $this->assertEquals($check->email, $this->genericUser['email']);
     }
+
+    /**
+     * @test
+     */
+    public function users_have_a_relationship_of_self_on_their_endpoint()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $endpoint = $this->callJson('GET', "/api/users/" . $mario->hash);
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('self', $endpoint->users[0]->relationships));
+    }
 }

@@ -4,6 +4,8 @@ use Carbon\Carbon;
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
+use Giraffe\Buddies\BuddyService;
+use Giraffe\BuddyRequests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Geolocation\Locatable;
 use Giraffe\Geolocation\Location;
@@ -154,6 +156,36 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
     }
 
     /**
+     * Gets an array of the relationships this user has with another user.
+     *
+     * @param UserModel $user
+     * @return array
+     */
+    public function getUserRelationships($user)
+    {
+        if (!$user instanceof UserModel) {
+            return [];
+        }
+
+        /** @var BuddyService $buddyService */
+        $buddyService = \App::make(BuddyService::class);
+
+        $rel = [];
+
+        // check for 'self'
+        if ($user->id == $this->id) {
+            $rel[] = 'self';
+        }
+
+        // check for 'buddy'
+        if ($buddyService->checkBuddies($this, $user)) {
+            $rel[] = 'buddy';
+        }
+
+        return $rel;
+    }
+
+    /**
      * @return Location
      */
     public function getLocation()
@@ -167,6 +199,7 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
         if ($this->cell) $location->provideCacheMetadata($this->cell);
         return $location;
     }
+
     public function receivedBuddyRequests()
     {
         return $this->belongsTo('Giraffe\BuddyRequests\BuddyRequestModel', 'to_user_id');
