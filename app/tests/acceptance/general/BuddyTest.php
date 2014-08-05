@@ -389,22 +389,38 @@ class BuddyTest extends AcceptanceCase
     }
 
     /**
-     *
+     * @test
      */
     public function clients_can_get_pending_requests_for_the_logged_in_user()
     {
         $mario = $this->registerMario();
         $luigi = $this->registerLuigi();
+        $yoshi = $this->registerYoshi();
+
+        // add a friend request from luigi to yoshi to ensure it doesn't pollute the lists
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('POST', "/api/users/{$yoshi->hash}/buddy-requests");
 
         $this->asUser($mario->hash);
-        $check = $this->callJson('GET', "/api/users/{$mario->hash}/outgoing-buddy-requests", ['user' => $luigi->hash]);
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
         $this->assertResponseOk();
         $this->assertEquals(count($check->buddy_requests), 0);
 
-        $this->establishMarioAndLuigiBuddies($mario, $luigi);
+        // send offer
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
 
         $this->asUser($mario->hash);
-        $check = $this->callJson('GET', "/api/users/{$mario->hash}/outgoing-buddy-requests", ['user' => $luigi->hash]);
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($check->buddy_requests), 1);
+
+        // accept
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
         $this->assertResponseOk();
         $this->assertEquals(count($check->buddy_requests), 0);
     }
