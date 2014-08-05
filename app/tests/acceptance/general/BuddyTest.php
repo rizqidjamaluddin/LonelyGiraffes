@@ -324,7 +324,7 @@ class BuddyTest extends AcceptanceCase
     {
         $mario = $this->registerMario();
         $luigi = $this->registerLuigi();
-        $this->establishMarioAndLuigiBuddies($mario, $luigi);
+        $this->establishBuddies($mario, $luigi);
 
         $this->registerAndLoginAsBowser();
         $this->callJson('DELETE', "/api/users/{$mario->hash}/buddies/{$luigi->hash}");
@@ -426,14 +426,55 @@ class BuddyTest extends AcceptanceCase
     }
 
     /**
-     * @param $mario
-     * @param $luigi
+     * @test
      */
-    protected function establishMarioAndLuigiBuddies($mario, $luigi)
+    public function it_can_filter_buddy_lists_for_a_specific_user()
     {
-        $this->asUser($luigi->hash);
-        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+        $yoshi = $this->registerYoshi();
+
         $this->asUser($mario->hash);
-        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($fetch->buddies), 0);
+
+        // make yoshi friends with yoshi
+        $this->establishBuddies($mario, $yoshi);
+
+        // make sure that the filter is working; this should not show yoshi
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($fetch->buddies), 0);
+
+        // make 'em buddies
+        $this->establishBuddies($mario, $luigi);
+
+        // should now contain luigi
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($fetch->buddies), 1);
+        $this->assertEquals($fetch->buddies[0]->name, $this->luigi['name']);
+
+        // access should remain restricted
+        $this->registerAndLoginAsBowser();
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(403);
+
+
+    }
+
+    /**
+     * @param $requested
+     * @param $requester
+     */
+    protected function establishBuddies($requested, $requester)
+    {
+        $this->asUser($requester->hash);
+        $request = $this->callJson('POST', "/api/users/{$requested->hash}/buddy-requests")->buddy_requests[0];
+        $this->asUser($requested->hash);
+        $this->callJson('POST', "/api/users/{$requested->hash}/buddy-requests/{$request->hash}/accept");
     }
 }

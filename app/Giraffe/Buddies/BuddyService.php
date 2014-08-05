@@ -4,6 +4,7 @@ use Giraffe\BuddyRequests\BuddyRequestModel;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Collection;
 
 class BuddyService extends Service
 {
@@ -48,6 +49,20 @@ class BuddyService extends Service
             return false;
         }
         return true;
+    }
+
+    public function getUserIfBuddies($actingUser, $destinationUser)
+    {
+        $actingUser = $this->userRepository->getByHash($actingUser);
+        $destinationUser = $this->userRepository->getByHash($destinationUser);
+
+        $this->gatekeeper->mayI('read_buddy', $actingUser)->please();
+
+        if ($this->checkBuddies($actingUser, $destinationUser)) {
+            return new Collection([$destinationUser]);
+        } else {
+            return new Collection;
+        }
     }
 
     public function unbuddy($userHash, $buddyHash)
