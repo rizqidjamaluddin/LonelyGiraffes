@@ -39,16 +39,13 @@ class ChatTest extends ChatCase
     /**
      * @test
      */
-    public function a_chatroom_can_be_made_public_and_users_can_join_them()
+    public function a_chatroom_can_be_public_and_users_can_join_them()
     {
         $this->registerAndLoginAsMario();
-        $create = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
-        $hash = $create->hash;
+        $publish = $this->callJson('POST', "/api/chatrooms", ['public' => true]);
+        $hash  = $publish;
         $this->assertResponseOk();
-
-        // make public
-        $publish = $this->callJson('POST', "/api/chatrooms/$hash/publish");
-        $this->assertResponseOk();
+        $this->assertEquals($publish);
 
         $this->registerAndLoginAsLuigi();
         $fetch = $this->callJson('GET', "/api/chatrooms/$hash")->chatrooms[0];
@@ -61,11 +58,6 @@ class ChatTest extends ChatCase
         // guests don't count as actual users
         $this->assertChatroomUserCount($fetch, 2);
         $this->assertResponseOk();
-    }
-
-    public function users_other_than_the_founder_cannot_publish_a_room()
-    {
-
     }
 
     public function users_can_see_the_rooms_they_are_in()
