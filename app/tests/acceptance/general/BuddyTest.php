@@ -462,8 +462,33 @@ class BuddyTest extends AcceptanceCase
         $this->registerAndLoginAsBowser();
         $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
         $this->assertResponseStatus(403);
+    }
 
+    /**
+     * @test
+     */
+    public function it_can_filter_buddy_requests_from_a_user()
+    {
+        $mario = $this->registerMario();
 
+        // make requests on behalf of both luigi and yoshi
+        $luigi = $this->registerAndLoginAsLuigi();
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+        $yoshi = $this->registerAndLoginAsYoshi();
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+
+        // check that mario can filter for it
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($check->buddy_requests));
+        $this->assertEquals($this->luigi['email'], $check->buddy_requests[0]->sender->email);
+        $this->assertEquals($this->mario['email'], $check->buddy_requests[0]->recipient->email);
+
+        // check that yoshi can't try to use that same endpoint
+        $this->asUser($yoshi->hash);
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(403);
     }
 
     /**

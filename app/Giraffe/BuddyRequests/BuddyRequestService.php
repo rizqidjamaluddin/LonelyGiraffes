@@ -125,4 +125,21 @@ class BuddyRequestService extends Service
 
         $this->buddyRequestRepository->delete($request);
     }
+
+    public function getBuddyRequestsBetweenUsers($userHash, $userFilter)
+    {
+        $receiver = $this->userRepository->getByHash($userHash);
+        $sender = $this->userRepository->getByHash($userFilter);
+
+        $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);
+        $this->gatekeeper->mayI('read', $request)->please();
+
+        try {
+            $result = new Collection([$request]);
+        } catch (NotFoundModelException $e) {
+            $result = new Collection;
+        }
+
+        return $result;
+    }
 } 
