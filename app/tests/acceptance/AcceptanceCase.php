@@ -1,6 +1,7 @@
 <?php
 
 use Giraffe\Authorization\Gatekeeper;
+use Giraffe\Images\ImageTypeModel;
 use Illuminate\Http\Response;
 
 abstract class AcceptanceCase extends TestCase
@@ -48,6 +49,10 @@ abstract class AcceptanceCase extends TestCase
         DB::disableQueryLog();
         Artisan::call('migrate');
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
+        ImageTypeModel::create(array(
+            'name' => 'profile pic',
+            'unique_per_user' => true
+        ));
     }
 
     public function toJson(Response $model)

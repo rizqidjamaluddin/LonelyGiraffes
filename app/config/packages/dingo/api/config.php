@@ -99,12 +99,12 @@ return [
 
         'authenticated' => [
             'limit' => 1440,
-            'reset' => 60
+            'reset' => 1
         ],
 
         'unauthenticated' => [
             'limit' => 720,
-            'reset' => 60
+            'reset' => 1
         ],
 
         'exceeded' => 'API rate limit has been exceeded.'
