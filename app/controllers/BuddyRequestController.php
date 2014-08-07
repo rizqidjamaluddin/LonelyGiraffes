@@ -23,7 +23,11 @@ class BuddyRequestController extends Controller
 
     public function requestIndex($userHash)
     {
-        $models = $this->buddyRequestService->getBuddyRequests($userHash);
+        if ($userFilter = Input::get('user')) {
+            $models = $this->buddyRequestService->getBuddyRequestsBetweenUsers($userHash, $userFilter);
+        } else {
+            $models = $this->buddyRequestService->getBuddyRequests($userHash);
+        }
         return $this->returnBuddyRequestModels($models);
     }
 
