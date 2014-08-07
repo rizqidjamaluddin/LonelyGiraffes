@@ -423,6 +423,11 @@ class BuddyTest extends AcceptanceCase
         $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
         $this->assertResponseOk();
         $this->assertEquals(count($check->buddy_requests), 0);
+
+        // make sure other users can't use this interface
+        $this->registerAndLoginAsBowser();
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
+        $this->assertResponseStatus(403);
     }
 
     /**
@@ -470,9 +475,15 @@ class BuddyTest extends AcceptanceCase
     public function it_can_filter_buddy_requests_from_a_user()
     {
         $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+
+        // make sure nobody else can do queries
+        $this->registerAndLoginAsBowser();
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(403);
 
         // make requests on behalf of both luigi and yoshi
-        $luigi = $this->registerAndLoginAsLuigi();
+        $this->asUser($luigi->hash);
         $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
         $yoshi = $this->registerAndLoginAsYoshi();
         $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
