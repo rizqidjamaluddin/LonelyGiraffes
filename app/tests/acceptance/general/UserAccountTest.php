@@ -356,8 +356,9 @@ class UserAccountCase extends AcceptanceCase
         $response = $this->call("DELETE", "/api/users/" . $mario->hash);
         $this->assertResponseStatus(200);
 
-        $this->setExpectedException('Giraffe\Common\NotFoundModelException');
-        $this->repository->get($mario->hash);
+        $fetch = $this->call("GET", "/api/users/" . $mario->hash);
+        $this->assertResponseStatus(404);
+
     }
 
     /**
@@ -392,5 +393,16 @@ class UserAccountCase extends AcceptanceCase
         $this->assertResponseOk();
         $this->assertEquals($check->name, $this->genericUser['name']);
         $this->assertEquals($check->email, $this->genericUser['email']);
+    }
+
+    /**
+     * @test
+     */
+    public function users_have_a_relationship_of_self_on_their_endpoint()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $endpoint = $this->callJson('GET', "/api/users/" . $mario->hash);
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('self', $endpoint->users[0]->relationships));
     }
 }

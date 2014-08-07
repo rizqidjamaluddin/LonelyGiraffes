@@ -98,13 +98,13 @@ return [
     'rate_limiting' => [
 
         'authenticated' => [
-            'limit' => 0,
-            'reset' => 60
+            'limit' => 1440,
+            'reset' => 1
         ],
 
         'unauthenticated' => [
-            'limit' => 0,
-            'reset' => 60
+            'limit' => 720,
+            'reset' => 1
         ],
 
         'exceeded' => 'API rate limit has been exceeded.'

@@ -1,12 +1,14 @@
 <?php  namespace Giraffe\Users;
+use Giraffe\Authorization\Gatekeeper;
 use League\Fractal\TransformerAbstract;
 use Giraffe\Images\ImageTransformer;
 
 class UserTransformer extends TransformerAbstract
 {
 
-    public function transform($userModel)
+    public function transform(UserModel $userModel)
     {
+        $actingUser = \App::make(Gatekeeper::class)->me();
         $optionals = [];
 
         if ($userModel->gender)
@@ -27,7 +29,8 @@ class UserTransformer extends TransformerAbstract
             'city' => $userModel->city,
             'state' => $userModel->state,
             'country' => $userModel->country,
-            'href' => $this->buildUrl($userModel->hash)
+            'href' => $this->buildUrl($userModel->hash),
+            'relationships' => $userModel->getUserRelationships($actingUser)
         ], $optionals);
     }
 

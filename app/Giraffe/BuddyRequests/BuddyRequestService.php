@@ -7,6 +7,7 @@ use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Collection;
 use Str;
 
 class BuddyRequestService extends Service
@@ -22,7 +23,7 @@ class BuddyRequestService extends Service
     /**
      * @var \Giraffe\BuddyRequests\BuddyRequestService
      */
-    private $buddyRequestSerivce;
+    private $buddyRequestService;
     /**
      * @var \Giraffe\BuddyRequests\BuddyRequestCreationValidator
      */
@@ -39,6 +40,14 @@ class BuddyRequestService extends Service
         $this->buddyService = $buddyService;
         $this->buddyRequestRepository = $buddyRequestRepository;
         $this->creationValidator = $creationValidator;
+    }
+
+    public function check($user1, $user2)
+    {
+        // $this->gatekeeper->mayI
+        $user1 = $this->userRepository->getByHash($user1);
+        $user2 = $this->userRepository->getByHash($user2);
+        return $this->buddyRequestRepository->getByPair($user1, $user2);
     }
 
 
@@ -77,8 +86,30 @@ class BuddyRequestService extends Service
     public function getBuddyRequests($userHash)
     {
         $user = $this->userRepository->getByHash($userHash);
-        $this->gatekeeper->mayI('read_buddy_requests', $user)->please();
+        $this->gatekeeper->mayI('read_buddy_request', $user)->please();
         return $this->buddyRequestRepository->getReceivedByUser($user);
+    }
+
+    public function getOutgoingBuddyRequestBetweenUsers($userHash, $userFilter)
+    {
+        $sender = $this->userRepository->getByHash($userHash);
+        $receiver = $this->userRepository->getByHash($userFilter);
+
+        try {
+            $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);
+            $this->gatekeeper->mayI('read', $request)->please();
+        } catch (NotFoundModelException $e) {
+            $request = false;
+            if (!in_array($this->gatekeeper->me()->hash, [$sender->hash, $receiver->hash])) {
+                $this->gatekeeper->refuse();
+            }
+        }
+
+        $result = new Collection();
+        if ($request) {
+            $result->push($request);
+        }
+        return $result;
     }
 
     public function getOutgoingBuddyRequests($userHash)
@@ -104,5 +135,25 @@ class BuddyRequestService extends Service
         $this->gatekeeper->mayI('delete', $request)->please();
 
         $this->buddyRequestRepository->delete($request);
+    }
+
+    public function getBuddyRequestsBetweenUsers($userHash, $userFilter)
+    {
+        $receiver = $this->userRepository->getByHash($userHash);
+        $sender = $this->userRepository->getByHash($userFilter);
+
+
+        try {
+            $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);
+            $result = new Collection([$request]);
+            $this->gatekeeper->mayI('read', $request)->please();
+        } catch (NotFoundModelException $e) {
+            $result = new Collection;
+            if (!in_array($this->gatekeeper->me()->hash, [$sender->hash, $receiver->hash])) {
+                $this->gatekeeper->refuse();
+            }
+        }
+
+        return $result;
     }
 } 

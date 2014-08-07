@@ -45,8 +45,3 @@ echo '###############'
 echo '# Run PHPunit #'
 echo '###############'
 grunt phpunit
-
-echo '##############'
-echo '# Run Intern #'
-echo '##############'
-grunt intern

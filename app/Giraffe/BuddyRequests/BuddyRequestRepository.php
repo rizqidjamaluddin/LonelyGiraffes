@@ -15,10 +15,18 @@ class BuddyRequestRepository extends EloquentRepository
 
     public function getByPair(UserModel $user1, UserModel $user2)
     {
-        $buddyRequest = $this->model->where('from_user_id', '=', $user1->id)->where('to_user_id', '=', $user2->id)->first();
+        $buddyRequest = $this->model->where('from_user_id', '=', $user1->id)->where(
+            'to_user_id',
+            '=',
+            $user2->id
+        )->first();
 
         if (!$buddyRequest) {
-            $buddyRequest = $this->model->where('from_user_id', '=', $user2->id)->where('to_user_id', '=', $user1->id)->first();
+            $buddyRequest = $this->model->where('from_user_id', '=', $user2->id)->where(
+                'to_user_id',
+                '=',
+                $user1->id
+            )->first();
 
             if (!$buddyRequest) {
                 throw new NotFoundModelException();
@@ -45,6 +53,17 @@ class BuddyRequestRepository extends EloquentRepository
         $buddyRequests = $this->model->with('sender')->with('recipient')->where('from_user_id', '=', $user->id)->get();
 
         return $buddyRequests;
+    }
+
+    public function getBySenderAndReceiver(UserModel $sender, UserModel $receiver)
+    {
+        $result = $this->model->with(['sender', 'recipient'])->where('from_user_id', $sender->id)
+                              ->where('to_user_id', $receiver->id)->first();
+
+        if (!$result) {
+            throw new NotFoundModelException;
+        }
+        return $result;
     }
 
     /**
@@ -75,10 +94,15 @@ class BuddyRequestRepository extends EloquentRepository
      * @throws \Giraffe\Common\NotFoundModelException
      * @return BuddyRequestModel
      */
-    public function destroyByPair($sender, $recipient) {
-        $buddyRequest = $this->model->where('from_user_id', '=', $sender->id)->where('to_user_id', '=', $recipient->id)->first();
+    public function destroyByPair($sender, $recipient)
+    {
+        $buddyRequest = $this->model->where('from_user_id', '=', $sender->id)->where(
+            'to_user_id',
+            '=',
+            $recipient->id
+        )->first();
 
-        if(!$buddyRequest)  {
+        if (!$buddyRequest) {
             throw new NotFoundModelException();
         }
 

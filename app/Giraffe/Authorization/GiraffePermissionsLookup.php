@@ -17,6 +17,7 @@ class GiraffePermissionsLookup
             'global' => [
                 'post'  => ['read'],
                 'event' => ['read'],
+                'profile' => ['read'],
             ]
         ];
         $member = array_merge_recursive(
@@ -24,14 +25,15 @@ class GiraffePermissionsLookup
             [
                 'self'   => [
                     'buddy'                  => ['delete'],
-                    'buddy_request'          => ['create', 'accept', 'delete'],
+                    'buddy_request'          => ['read', 'create', 'accept', 'delete'],
                     'event'                  => ['create', 'edit', 'update', 'delete'],
                     'image'                  => ['create', 'delete'],
                     'notification_container' => ['read', 'delete', 'dismiss_all'],
                     'post'                   => ['delete'],
+                    'profile'                => ['create', 'update'],
                     'shout'                  => ['create', 'delete'],
-                    'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddies',
-                                                'read_buddy_requests'],
+                    'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddy', 'delete_buddy',
+                                                'read_buddy_request'],
                     'test'                   => ['test'],
 
                 ],

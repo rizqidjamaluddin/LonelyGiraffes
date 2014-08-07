@@ -1,12 +1,16 @@
 <?php  namespace Giraffe\Users;
 
+use Eloquent;
+use Giraffe\Common\DuplicateUpdateException;
 use Giraffe\Common\EloquentRepository;
+use Giraffe\Common\InvalidUpdateException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchableRepository;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserSettingModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 
 class UserRepository extends EloquentRepository implements TwoDegreeCellSearchableRepository
 {
@@ -22,31 +26,26 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
         $this->userSettingModel = $userSettingModel;
     }
 
-    /**
-     * Extend the base get() method to accept a user's public_id
-     *
-     * @param \Eloquent|int|string $identifier
-     * @return UserModel|null
-     */
-    public function get($identifier){
+    public function update($identifier, Array $attributes)
+    {
+        $identifier = $this->flushForUser($identifier);
+        return parent::update($identifier, $attributes);
+    }
 
-        // skip specific search if identifier is null; delegate to parent to decide what to do
-        if (is_null($identifier)) {
-            return parent::get($identifier);
-        }
+    public function delete($identifier)
+    {
+        $identifier = $this->flushForUser($identifier);
+        return parent::delete($identifier);
+    }
 
-        // immediately return if already a UserModel
-        if ($identifier instanceof UserModel) {
-            return $identifier;
-        }
-
-        try {
-            $model = $this->getByHash($identifier);
-        } catch (NotFoundModelException $e) {
-            return parent::get($identifier);
+    public function getById($id)
+    {
+        if (!$model = $this->model->where('id', $id)->remember(100)->cacheTags(['user:'.$id])->first()) {
+            throw new NotFoundModelException();
         }
         return $model;
     }
+
 
     /**
      * @param string $hash
@@ -60,7 +59,7 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
             return $hash;
         }
 
-        if (!$model = $this->model->where('hash', '=', $hash)->first()) {
+        if (!$model = $this->model->where('hash', '=', $hash)->remember(100)->cacheTags(['user:'.$hash])->first()) {
             throw new NotFoundModelException();
         }
         return $model;
@@ -169,5 +168,17 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
         } else {
             return $this->model->whereIn('cell', $cell)->take($limit)->get();
         }
+    }
+
+    /**
+     * @param $identifier
+     * @return mixed
+     */
+    public function flushForUser($identifier)
+    {
+        $identifier = $this->get($identifier);
+        $this->getCache()->tags(['user:' . $identifier->hash])->flush();
+        $this->getCache()->tags(['user:' . $identifier->id])->flush();
+        return $identifier;
     }
 }

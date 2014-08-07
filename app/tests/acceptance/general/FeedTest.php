@@ -20,7 +20,7 @@ class FeedTest extends AcceptanceCase
         $results = $this->toJson($this->call('GET', '/api/posts'));
 
         $results = $results->posts;
-        $this->assertEquals(count($results), 10);
+        $this->assertEquals(10, count($results));
         foreach ($results as $result) {
             $this->assertEquals($result->body->body, $this->genericShoutBody);
         }
@@ -163,6 +163,85 @@ class FeedTest extends AcceptanceCase
         $this->assertEquals(1, count($fetch->posts));
         $this->assertEquals($this->genericShoutBody, $fetch->posts[0]->body->body);
         $this->assertEquals($mario->hash, $fetch->posts[0]->links->author->hash);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_use_before_and_after_parameters_on_user_feeds()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $this->callJson('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+        $this->callJson('POST', '/api/shouts', ['body' => $this->otherGenericShoutBody]);
+
+        list($second, $first) = $this->callJson('GET', '/api/posts')->posts;
+
+        $fetchBefore = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'before' => $second->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetchBefore->posts));
+        $this->assertEquals($this->genericShoutBody, $fetchBefore->posts[0]->body->body);
+
+        $fetchAfter = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'after' => $first->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetchAfter->posts));
+        $this->assertEquals($this->otherGenericShoutBody, $fetchAfter->posts[0]->body->body);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_use_the_take_parameter_to_determine_how_many_posts_to_fetch()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $this->callJson('POST', '/api/shouts', ['body' => "I am post number 1."]);
+        $this->callJson('POST', '/api/shouts', ['body' => "I am post number 2."]);
+        $this->callJson('POST', '/api/shouts', ['body' => "I am post number 3."]);
+        $this->callJson('POST', '/api/shouts', ['body' => "I am post number 4."]);
+
+        list($fourth, $third, $second, $first) = $this->callJson('GET', '/api/posts')->posts;
+
+        $fetch = $this->callJson('GET', '/api/posts', ['take' => 2]);
+        $this->assertResponseOk();
+        $this->assertEquals(2, count($fetch->posts));
+        $this->assertEquals("I am post number 4.", $fetch->posts[0]->body->body);
+        $this->assertEquals("I am post number 3.", $fetch->posts[1]->body->body);
+
+        // check that it can be combined with the other params
+
+        $fetchBefore = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'before' => $third->hash, 'take' => 1]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetchBefore->posts));
+        $this->assertEquals("I am post number 2.", $fetchBefore->posts[0]->body->body);
+
+        $fetchAfter = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'after' => $first->hash, 'take' => 1]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetchAfter->posts));
+        $this->assertEquals("I am post number 4.", $fetchAfter->posts[0]->body->body);
+
+        // try in-between
+
+        $fetchBetween = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'after' => $first->hash, 'before' => $fourth->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(2, count($fetchBetween->posts));
+        $this->assertEquals("I am post number 3.", $fetchBetween->posts[0]->body->body);
+        $this->assertEquals("I am post number 2.", $fetchBetween->posts[1]->body->body);
+
+        $fetchBetween = $this->callJson('GET', '/api/posts', ['user' => $mario->hash, 'after' => $first->hash, 'before' => $fourth->hash, 'take' => 1]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetchBetween->posts));
+        $this->assertEquals("I am post number 3.", $fetchBetween->posts[0]->body->body);
+    }
+
+    public function a_request_cannot_fetch_more_than_20_posts_with_take()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        for ($i = 0; $i < 50; $i++) {
+            $this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+        }
+
+        $fetch = $this->callJson('GET', '/api/posts', ['take' => 40]);
+        $this->assertResponseOk();
+        $this->assertEquals(20, count($fetch->posts));
     }
 
 } 

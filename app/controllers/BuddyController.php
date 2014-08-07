@@ -3,7 +3,7 @@
 use Giraffe\Common\Controller;
 use Giraffe\Buddies\BuddyService;
 use Giraffe\Users\UserTransformer;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class BuddyController extends Controller
 {
@@ -18,15 +18,17 @@ class BuddyController extends Controller
 
     public function index($user_hash)
     {
-        $models = $this->buddyService->getBuddies($user_hash);
+        if ($userFilter = Input::get('user')) {
+            $models = $this->buddyService->getUserIfBuddies($user_hash, $userFilter);
+        } else {
+            $models = $this->buddyService->getBuddies($user_hash);
+        }
         return $this->returnUserModels($models);
     }
 
-    public function destroy($user_hash)
+    public function destroy($user_hash, $target_hash)
     {
-        if(!Input::get('target'))
-            throw new BadRequestHttpException();
-        $this->buddyService->unbuddy($user_hash, Input::get('target'));
+        $this->buddyService->unbuddy($user_hash, $target_hash);
         return [];
     }
 

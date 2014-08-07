@@ -16,6 +16,11 @@ class ParsedownPurifierParserDriver implements ParserDriver
         'HTML.Allowed' => 'p,strong,em,a[href]'
     ];
 
+    protected $purify_linkify_settings = [
+        'HTML.Allowed' => 'p,a[href]',
+        'AutoFormat.Linkify' => true
+    ];
+
     /**
      * @var Parsedown
      */
@@ -48,6 +53,12 @@ class ParsedownPurifierParserDriver implements ParserDriver
     public function parseTrusted($input)
     {
         $input = $this->parsedown->text($input);
+        return $input;
+    }
+
+    public function parseLinks($input)
+    {
+        $input = $this->purifier->clean($input, $this->purify_linkify_settings);
         return $input;
     }
 }

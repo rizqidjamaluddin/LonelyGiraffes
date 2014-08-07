@@ -4,6 +4,7 @@ use Giraffe\BuddyRequests\BuddyRequestModel;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Collection;
 
 class BuddyService extends Service
 {
@@ -34,7 +35,7 @@ class BuddyService extends Service
     public function getBuddies($userHash)
     {
         $user = $this->userRepository->getByHash($userHash);
-        $this->gatekeeper->mayI('read_buddies', $user)->please();
+        $this->gatekeeper->mayI('read_buddy', $user)->please();
         return $this->buddyRepository->getByUser($user);
     }
 
@@ -50,11 +51,25 @@ class BuddyService extends Service
         return true;
     }
 
+    public function getUserIfBuddies($actingUser, $destinationUser)
+    {
+        $actingUser = $this->userRepository->getByHash($actingUser);
+        $destinationUser = $this->userRepository->getByHash($destinationUser);
+
+        $this->gatekeeper->mayI('read_buddy', $actingUser)->please();
+
+        if ($this->checkBuddies($actingUser, $destinationUser)) {
+            return new Collection([$destinationUser]);
+        } else {
+            return new Collection;
+        }
+    }
+
     public function unbuddy($userHash, $buddyHash)
     {
-        //$this->gatekeeper->mayI('destroy', 'buddies')->please();
         $user = $this->userRepository->getByHash($userHash);
         $buddy = $this->userRepository->getByHash($buddyHash);
+        $this->gatekeeper->mayI('delete_buddy', $user)->please();
 
         $this->buddyRepository->deleteByPair($user, $buddy);
     }
