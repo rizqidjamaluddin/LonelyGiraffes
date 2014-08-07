@@ -2,6 +2,8 @@
 /vendor
 /public/packages
 /public/storage/images
+/public/images/*
+!/public/images/.gitkeep
 /node_modules
 /.grunt
 composer.phar
