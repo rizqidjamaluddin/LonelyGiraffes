@@ -6,7 +6,7 @@
 	"require": {
 		"laravel/framework": "4.2.*",
         "doctrine/dbal": "~2.3",
-        "league/fractal": "0.8.*",
+        "league/fractal": "dev-master",
         "dingo/api": "dev-master",
         "mews/purifier": "dev-master",
         "erusev/parsedown": "dev-master",
