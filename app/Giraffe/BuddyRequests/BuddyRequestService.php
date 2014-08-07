@@ -94,11 +94,22 @@ class BuddyRequestService extends Service
     {
         $sender = $this->userRepository->getByHash($userHash);
         $receiver = $this->userRepository->getByHash($userFilter);
+
         try {
-            return new Collection([$this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver)]);
+            $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);
+            $this->gatekeeper->mayI('read', $request)->please();
         } catch (NotFoundModelException $e) {
-            return new Collection;
+            $request = false;
+            if (!in_array($this->gatekeeper->me()->hash, [$sender->hash, $receiver->hash])) {
+                $this->gatekeeper->refuse();
+            }
         }
+
+        $result = new Collection();
+        if ($request) {
+            $result->push($request);
+        }
+        return $result;
     }
 
     public function getOutgoingBuddyRequests($userHash)
@@ -131,13 +142,16 @@ class BuddyRequestService extends Service
         $receiver = $this->userRepository->getByHash($userHash);
         $sender = $this->userRepository->getByHash($userFilter);
 
-        $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);
-        $this->gatekeeper->mayI('read', $request)->please();
 
         try {
+            $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);
             $result = new Collection([$request]);
+            $this->gatekeeper->mayI('read', $request)->please();
         } catch (NotFoundModelException $e) {
             $result = new Collection;
+            if (!in_array($this->gatekeeper->me()->hash, [$sender->hash, $receiver->hash])) {
+                $this->gatekeeper->refuse();
+            }
         }
 
         return $result;
