@@ -11,6 +11,7 @@ use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\Locatable;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\UnlocatableModelException;
+use Giraffe\Images\ImageTypeModel;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
 
@@ -233,6 +234,7 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
 
     public function profilePic()
     {
-        return $this->images()->where('image_type_id', '=', '1')->first();
+        $profile_pic = ImageTypeModel::where('name', '=', 'profile_pic')->first();;
+        return $this->images()->where('image_type_id', '=', $profile_pic->id)->first();
     }
 }

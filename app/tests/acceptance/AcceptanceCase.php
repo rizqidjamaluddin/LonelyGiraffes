@@ -48,11 +48,8 @@ abstract class AcceptanceCase extends TestCase
         parent::setUp();
         DB::disableQueryLog();
         Artisan::call('migrate');
+        Artisan::call('lgsetup:seed_lookup');
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
-        ImageTypeModel::create(array(
-            'name' => 'profile pic',
-            'unique_per_user' => true
-        ));
     }
 
     public function toJson(Response $model)
