@@ -93,5 +93,7 @@ Route::api(
 
              Route::get('locations', ['uses' => 'LocationController@search']);
 
+             Route::post('images', ['uses' => 'ImageController@create']);
+             Route::delete('images/{img_id}', ['uses' => 'ImageController@delete']);
          }
 );

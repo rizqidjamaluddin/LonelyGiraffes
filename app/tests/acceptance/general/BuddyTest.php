@@ -323,10 +323,8 @@ class BuddyTest extends AcceptanceCase
     public function a_user_cannot_delete_another_users_buddy()
     {
         $mario = $this->registerMario();
-        $luigi = $this->registerAndLoginAsLuigi();
-        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
-        $this->asUser($mario->hash);
-        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+        $luigi = $this->registerLuigi();
+        $this->establishBuddies($mario, $luigi);
 
         $this->registerAndLoginAsBowser();
         $this->callJson('DELETE', "/api/users/{$mario->hash}/buddies/{$luigi->hash}");
@@ -340,5 +338,179 @@ class BuddyTest extends AcceptanceCase
         $this->asUser($mario->hash);
         $buddies = $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
         $this->assertEquals(1, count($buddies->buddies));
+    }
+
+    /**
+     * @test
+     */
+    public function users_can_see_their_buddy_status_on_the_user_profile()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+
+
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$luigi->hash}");
+        $this->assertResponseOk();
+        $this->assertFalse(in_array('buddy', $endpoint->users[0]->relationships));
+
+        $this->asUser($luigi->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertResponseOk();
+        $this->assertFalse(in_array('buddy', $endpoint->users[0]->relationships));
+
+        // send offer
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$luigi->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('pending', $endpoint->users[0]->relationships));
+
+        $this->asUser($luigi->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('outgoing', $endpoint->users[0]->relationships));
+
+        // accept
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$luigi->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('buddy', $endpoint->users[0]->relationships));
+
+        $this->asUser($luigi->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('buddy', $endpoint->users[0]->relationships));
+    }
+
+    /**
+     * @test
+     */
+    public function clients_can_get_pending_requests_for_the_logged_in_user()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+        $yoshi = $this->registerYoshi();
+
+        // add a friend request from luigi to yoshi to ensure it doesn't pollute the lists
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('POST', "/api/users/{$yoshi->hash}/buddy-requests");
+
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($check->buddy_requests), 0);
+
+        // send offer
+        $this->asUser($luigi->hash);
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests")->buddy_requests[0];
+
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($check->buddy_requests), 1);
+
+        // accept
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($check->buddy_requests), 0);
+
+        // make sure other users can't use this interface
+        $this->registerAndLoginAsBowser();
+        $check = $this->callJson('GET', "/api/users/{$luigi->hash}/outgoing-buddy-requests", ['user' => $mario->hash]);
+        $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_filter_buddy_lists_for_a_specific_user()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+        $yoshi = $this->registerYoshi();
+
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($fetch->buddies), 0);
+
+        // make yoshi friends with yoshi
+        $this->establishBuddies($mario, $yoshi);
+
+        // make sure that the filter is working; this should not show yoshi
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($fetch->buddies), 0);
+
+        // make 'em buddies
+        $this->establishBuddies($mario, $luigi);
+
+        // should now contain luigi
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(count($fetch->buddies), 1);
+        $this->assertEquals($fetch->buddies[0]->name, $this->luigi['name']);
+
+        // access should remain restricted
+        $this->registerAndLoginAsBowser();
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/buddies", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_filter_buddy_requests_from_a_user()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+
+        // make sure nobody else can do queries
+        $this->registerAndLoginAsBowser();
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(403);
+
+        // make requests on behalf of both luigi and yoshi
+        $this->asUser($luigi->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+        $yoshi = $this->registerAndLoginAsYoshi();
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+
+        // check that mario can filter for it
+        $this->asUser($mario->hash);
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($check->buddy_requests));
+        $this->assertEquals($this->luigi['email'], $check->buddy_requests[0]->sender->email);
+        $this->assertEquals($this->mario['email'], $check->buddy_requests[0]->recipient->email);
+
+        // check that yoshi can't try to use that same endpoint
+        $this->asUser($yoshi->hash);
+        $check = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(403);
+    }
+
+    /**
+     * @param $requested
+     * @param $requester
+     */
+    protected function establishBuddies($requested, $requester)
+    {
+        $this->asUser($requester->hash);
+        $request = $this->callJson('POST', "/api/users/{$requested->hash}/buddy-requests")->buddy_requests[0];
+        $this->asUser($requested->hash);
+        $this->callJson('POST', "/api/users/{$requested->hash}/buddy-requests/{$request->hash}/accept");
     }
 }

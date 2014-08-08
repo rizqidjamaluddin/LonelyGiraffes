@@ -3,7 +3,7 @@
 use Giraffe\Common\Controller;
 use Giraffe\Buddies\BuddyService;
 use Giraffe\Users\UserTransformer;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class BuddyController extends Controller
 {
@@ -18,7 +18,11 @@ class BuddyController extends Controller
 
     public function index($user_hash)
     {
-        $models = $this->buddyService->getBuddies($user_hash);
+        if ($userFilter = Input::get('user')) {
+            $models = $this->buddyService->getUserIfBuddies($user_hash, $userFilter);
+        } else {
+            $models = $this->buddyService->getBuddies($user_hash);
+        }
         return $this->returnUserModels($models);
     }
 

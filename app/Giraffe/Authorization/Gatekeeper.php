@@ -178,6 +178,15 @@ class Gatekeeper
         return true;
     }
 
+    public function refuse()
+    {
+        if ($this->authenticated) {
+            throw new GatekeeperException;
+        } else {
+            throw new GatekeeperUnauthorizedException;
+        }
+    }
+
     public function canI()
     {
         return $this->resolve();

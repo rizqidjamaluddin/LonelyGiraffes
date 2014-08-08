@@ -119,6 +119,7 @@ return array(
         'Mews\Purifier\PurifierServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
 //        'Barryvdh\Cors\CorsServiceProvider',
+        'Intervention\Image\ImageServiceProvider',
 
         // LG-specific
         'Giraffe\GiraffeServiceProvider',
@@ -194,6 +195,7 @@ return array(
         'Purifier' => 'Mews\Purifier\Facades\Purifier',
         'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',
         'ResourceServer' => 'LucaDegasperi\OAuth2Server\Facades\ResourceServerFacade',
+        'InterventionImage' => 'Intervention\Image\Facades\Image'
 	),
 
 );
