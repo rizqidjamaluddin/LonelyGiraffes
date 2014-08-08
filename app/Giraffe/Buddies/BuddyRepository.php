@@ -91,5 +91,7 @@ class BuddyRepository extends EloquentRepository
      */
     public function deleteByPair($user, $buddy) {
         $this->getByPair($user, $buddy)->delete();
+        $this->getCache()->tags(['buddies:' . $user->id])->flush();
+        $this->getCache()->tags(['buddies:' . $buddy->id])->flush();
     }
 } 
