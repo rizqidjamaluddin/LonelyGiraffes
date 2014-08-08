@@ -14,7 +14,7 @@ class AddHashColumnToChatMessages extends Migration {
 	{
 		Schema::table('chat_messages', function(Blueprint $table)
 		{
-			$table->string('hash')->unique();
+			$table->string('hash')->unique()->nullable();
 		});
 	}
 

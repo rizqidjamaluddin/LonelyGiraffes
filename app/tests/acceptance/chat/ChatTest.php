@@ -37,15 +37,15 @@ class ChatTest extends ChatCase
     }
 
     /**
-     * @test
+     * Not yet tested - public rooms are a v2.1.0 feature
      */
     public function a_chatroom_can_be_public_and_users_can_join_them()
     {
         $this->registerAndLoginAsMario();
         $publish = $this->callJson('POST', "/api/chatrooms", ['public' => true]);
-        $hash  = $publish;
+        $hash = $publish;
         $this->assertResponseOk();
-        $this->assertEquals($publish);
+        $this->assertEquals(count($publish->chatrooms[0]), 1);
 
         $this->registerAndLoginAsLuigi();
         $fetch = $this->callJson('GET', "/api/chatrooms/$hash")->chatrooms[0];
@@ -62,7 +62,7 @@ class ChatTest extends ChatCase
 
     public function users_can_see_the_rooms_they_are_in()
     {
-
+        
     }
 
     public function users_can_add_people_to_a_chatroom()

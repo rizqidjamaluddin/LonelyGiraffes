@@ -43,7 +43,7 @@ class ChatService
 
     }
 
-    public function leaveConversaton()
+    public function leaveConversation()
     {
 
     }
