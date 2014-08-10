@@ -121,8 +121,9 @@ class BuddyTest extends AcceptanceCase
 
         //////// Remove a buddy ////////
         $this->asUser($luigi->hash);
-        $this->callJson('DELETE', '/api/users/' . $luigi->hash . '/buddies/' . $mario->hash);
+        $response = $this->callJson('DELETE', '/api/users/' . $luigi->hash . '/buddies/' . $mario->hash);
         $this->assertResponseStatus(200);
+        $this->assertEquals($response->message, "Mario is no longer listed as a buddy");
 
         //////// Fail to find buddies....again ////////
         $this->asUser($mario->hash);

@@ -20,6 +20,7 @@ Artisan::add(new GeonameFilter());
 
 // lgsetup
 Artisan::add(new SeedOAuth());
+Artisan::add(new SeedLookup());
 
 // lgdev
 Artisan::add(new RunTests());

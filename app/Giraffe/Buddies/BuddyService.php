@@ -72,6 +72,7 @@ class BuddyService extends Service
         $this->gatekeeper->mayI('delete_buddy', $user)->please();
 
         $this->buddyRepository->deleteByPair($user, $buddy);
+        return $buddy;
     }
 
     /**

@@ -30,7 +30,7 @@ class ImageTest extends AcceptanceCase
         );
 
         // Create the image & check that the response is correct
-        $response = $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $response = $this->callJson('POST', '/api/images', array('type' => 'profile_pic'), array('image' => $file));
         $this->assertResponseStatus(200);
         $image = $response->images[0];
         $image_location = 'images/'.$mario->hash."/".$image->hash.".".$image->extension;
@@ -78,7 +78,7 @@ class ImageTest extends AcceptanceCase
             "audio/mpeg3",
             File::size($dumb_file)
         );
-        $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $this->callJson('POST', '/api/images', array('type' => 'profile_pic'), array('image' => $file));
         $this->assertResponseStatus(422);
 
 
@@ -92,7 +92,7 @@ class ImageTest extends AcceptanceCase
             "image/jpeg",
             File::size($img)
         );
-        $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $this->callJson('POST', '/api/images', array('type' => 'profile_pic'), array('image' => $file));
         $this->assertResponseStatus(422);
     }
 
@@ -116,7 +116,7 @@ class ImageTest extends AcceptanceCase
             File::size($img)
         );
 
-        $response = $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $response = $this->callJson('POST', '/api/images', array('type' => 'profile_pic'), array('image' => $file));
         $this->assertResponseStatus(200);
         $image1 = $response->images[0];
         $image1_location = 'images/'.$mario->hash."/".$image1->hash.".".$image1->extension;
@@ -137,7 +137,7 @@ class ImageTest extends AcceptanceCase
             File::size($img)
         );
 
-        $response = $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $response = $this->callJson('POST', '/api/images', array('type' => 'profile_pic'), array('image' => $file));
         $this->assertResponseStatus(200);
         $image2 = $response->images[0];
         $image2_location = 'images/'.$mario->hash."/".$image2->hash.".".$image2->extension;
@@ -178,7 +178,7 @@ class ImageTest extends AcceptanceCase
             File::size($img)
         );
 
-        $response = $this->callJson('POST', '/api/images', array('type' => 'profile pic'), array('image' => $file));
+        $response = $this->callJson('POST', '/api/images', array('type' => 'profile_pic'), array('image' => $file));
         $this->assertResponseStatus(200);
         $image = $response->images[0];
         $image_location = 'images/'.$mario->hash."/".$image->hash.".".$image->extension;
