@@ -4,7 +4,7 @@ use Giraffe\Common\Hash;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
 
-class ChatService
+class ChatService extends Service
 {
 
     /**
@@ -28,10 +28,13 @@ class ChatService
         $this->chatroomRepository = $chatroomRepository;
         $this->chatroomMembershipRepository = $chatroomMembershipRepository;
         $this->userRepository = $userRepository;
+        
+        parent::__construct();
     }
 
     public function createChatroom($owner)
     {
+        $this->gatekeeper->mayI('create', 'chatroom')->please();
         $owner = $this->userRepository->getByHash($owner);
         $create = $this->chatroomRepository->create(['hash' => new Hash]);
 
@@ -49,6 +52,7 @@ class ChatService
     public function getChatroom($roomHash)
     {
         $room = $this->chatroomRepository->getByHash($roomHash);
+        $this->gatekeeper->mayI('read', $room)->please();
         return $room;
     }
 
