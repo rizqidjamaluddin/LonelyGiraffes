@@ -27,6 +27,8 @@ class ChatroomController extends Controller
 
     public function show($chatroom)
     {
+        $chatroom = $this->chatService->getChatroom($chatroom);
+        return $this->withItem($chatroom, new ChatroomTransformer(), 'chatrooms');
 
     }
 

@@ -1,31 +1,55 @@
 <?php  namespace Giraffe\Chat;
 
+use Giraffe\Common\Hash;
 use Giraffe\Common\Service;
-use Giraffe\Chat\ChatRepository;
 use Giraffe\Users\UserRepository;
 
-class ChatService 
+class ChatService
 {
 
     /**
      * @var ChatroomRepository
      */
     private $chatroomRepository;
+    /**
+     * @var ChatroomMembershipRepository
+     */
+    private $chatroomMembershipRepository;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(ChatroomRepository $chatroomRepository)
-    {
+    public function __construct(
+        ChatroomRepository $chatroomRepository,
+        ChatroomMembershipRepository $chatroomMembershipRepository,
+        UserRepository $userRepository
+    ) {
         $this->chatroomRepository = $chatroomRepository;
+        $this->chatroomMembershipRepository = $chatroomMembershipRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function createChatroom($owner)
     {
+        $owner = $this->userRepository->getByHash($owner);
+        $create = $this->chatroomRepository->create(['hash' => new Hash]);
 
-        $create = $this->chatroomRepository->create([]);
+        // add author automatically to new chatroom
+        $membership = $this->chatroomMembershipRepository->create(
+            [
+                'user_id' => $owner->id,
+                'conversation_id' => $create->id
+            ]
+        );
+
+        return $create;
     }
 
-    public function showChatroom($conversation)
+    public function getChatroom($roomHash)
     {
-
+        $room = $this->chatroomRepository->getByHash($roomHash);
+        return $room;
     }
 
     public function acceptConversationInvite($user, $conversation)

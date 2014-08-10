@@ -13,10 +13,20 @@ class ChatTest extends ChatCase
         $create = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
         $this->assertResponseOk();
 
-        $fetch = $this->callJson('GET', "/api/chatrooms/{$create->hash}");
+        $fetch = $this->callJson('GET', "/api/chatrooms/{$create->hash}")->chatrooms[0];
         $this->assertResponseOk();
         $this->assertChatroomUserCount($fetch, 1);
 
+    }
+
+    /**
+     * @test
+     */
+    public function guests_cannot_create_chatrooms()
+    {
+        $this->asGuest();
+        $this->callJson('POST', '/api/chatrooms');
+        $this->assertResponseStatus(401);
     }
 
     /**
@@ -62,10 +72,10 @@ class ChatTest extends ChatCase
 
     public function users_can_see_the_rooms_they_are_in()
     {
-        
+
     }
 
-    public function users_can_add_people_to_a_chatroom()
+    public function users_can_see_people_and_add_people_to_a_chatroom()
     {
 
     }
@@ -86,7 +96,8 @@ class ChatTest extends ChatCase
      */
     protected function assertChatroomUserCount($fetch, $expectedUsers)
     {
-        $this->assertEquals($expectedUsers, $fetch->users);
+        $this->assertEquals($expectedUsers, $fetch->participantCount);
+        $this->assertEquals($expectedUsers, count($fetch->participants));
     }
 
 } 
