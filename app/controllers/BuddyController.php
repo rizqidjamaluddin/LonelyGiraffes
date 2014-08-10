@@ -28,8 +28,8 @@ class BuddyController extends Controller
 
     public function destroy($user_hash, $target_hash)
     {
-        $this->buddyService->unbuddy($user_hash, $target_hash);
-        return [];
+        $unbuddied = $this->buddyService->unbuddy($user_hash, $target_hash);
+        return ['message' => "{$unbuddied->name} is no longer listed as a buddy"];
     }
 
     public function returnUserModels(Collection $models)
