@@ -18,6 +18,7 @@ class GiraffePermissionsLookup
                 'post'  => ['read'],
                 'event' => ['read'],
                 'profile' => ['read'],
+                'shout' => ['read'],
             ]
         ];
         $member = array_merge_recursive(
