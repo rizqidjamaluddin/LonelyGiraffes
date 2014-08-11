@@ -3,6 +3,7 @@
 use Giraffe\Chat\ChatroomTransformer;
 use Giraffe\Common\Controller;
 use Giraffe\Chat\ChatService;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 
 class ChatroomController extends Controller
@@ -32,6 +33,20 @@ class ChatroomController extends Controller
 
     }
 
+    public function index()
+    {
+        $options = Input::only([]);
 
+        if (Input::exists('participating')) {
+            $results = $this->chatService->findChatroomsContainingUser($this->gatekeeper->me(), $options);
+        } else {
+            throw new BadRequestHttpException;
+        }
+
+        return $this->withCollection($results, new ChatroomTransformer(), 'chatrooms');
+
+
+    }
+    
 
 }

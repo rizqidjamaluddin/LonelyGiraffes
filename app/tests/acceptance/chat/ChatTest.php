@@ -70,8 +70,30 @@ class ChatTest extends ChatCase
         $this->assertResponseOk();
     }
 
+    /**
+     * @test
+     */
     public function users_can_see_the_rooms_they_are_in()
     {
+        $this->registerAndLoginAsMario();
+        $this->callJson('POST', '/api/chatrooms');
+        $this->callJson('POST', '/api/chatrooms');
+
+        // add extra polluting chatrooms to make sure they're not listed
+        $this->registerAndLoginAsLuigi();
+        $this->callJson('POST', '/api/chatrooms');
+        $this->callJson('POST', '/api/chatrooms');
+
+        // get list
+        $list = $this->callJson('GET', '/api/chatrooms?participating');
+        $this->assertResponseOk();
+        $this->assertEquals(count($list->chatrooms), 2);
+
+        // users with no chatrooms should just see a blank array
+        $this->registerAndLoginAsYoshi();
+        $list = $this->callJson('GET', '/api/chatrooms?participating');
+        $this->assertResponseOk();
+        $this->assertEquals(count($list->chatrooms), 0);
 
     }
 
@@ -81,6 +103,11 @@ class ChatTest extends ChatCase
     }
 
     public function users_can_receive_messages_in_a_chatroom()
+    {
+
+    }
+
+    public function users_can_set_titles_to_chatrooms()
     {
 
     }

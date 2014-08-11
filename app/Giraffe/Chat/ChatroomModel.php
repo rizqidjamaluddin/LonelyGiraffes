@@ -30,8 +30,14 @@ class ChatroomModel extends Eloquent implements ProtectedResource
 
     public function participantUserIDs()
     {
+        // TODO: Cache this
         $userIds = $this->memberships()->lists('user_id');
         return $userIds;
+    }
+
+    public function addParticipant(UserModel $userModel)
+    {
+
     }
 
     /**

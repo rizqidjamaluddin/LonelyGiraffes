@@ -85,6 +85,7 @@ Route::api(
              Route::get('users/{resource}/outgoing-buddy-requests', ['uses' => 'BuddyRequestController@outgoingIndex']);
 
              Route::post('chatrooms', ['uses' => 'ChatroomController@create']);
+             Route::get('chatrooms', ['uses' => 'ChatroomController@index']);
              Route::get('chatrooms/{resource}', ['uses' => 'ChatroomController@show']);
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);

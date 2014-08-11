@@ -3,6 +3,7 @@
 use Giraffe\Common\Hash;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Collection;
 
 class ChatService extends Service
 {
@@ -47,6 +48,30 @@ class ChatService extends Service
         );
 
         return $create;
+    }
+
+    public function findChatroomsContainingUser($user, $options)
+    {
+        $user = $this->userRepository->getByHash($user);
+        $memberships = $this->chatroomMembershipRepository->findForUser($user);
+
+        // bail early if there are no chatroom memberships
+        if (!$memberships) {
+            return new Collection;
+        }
+
+        $chatrooms = new Collection;
+        foreach ($memberships as $membership) {
+            $room = $this->chatroomRepository->findForMembership($membership);
+
+            // sanity check to make sure we can read from the room before adding it
+            if (!$this->gatekeeper->mayI('read', $room)->canI()) {
+                $chatrooms->push($room);
+            }
+        }
+
+        return $chatrooms;
+
     }
 
     public function getChatroom($roomHash)

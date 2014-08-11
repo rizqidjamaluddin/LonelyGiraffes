@@ -2,6 +2,10 @@
 
 use \Eloquent;
 
+/**
+ * @property int $user_id
+ * @property int $conversation_id
+ */
 class ChatroomMembershipModel extends Eloquent {
     protected $table = 'chatroom_memberships';
 	protected $fillable = ['user_id', 'conversation_id'];
