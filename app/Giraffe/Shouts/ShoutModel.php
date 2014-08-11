@@ -56,7 +56,7 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
 
     public function checkOwnership(UserModel $userModel)
     {
-        return $this->id == $userModel->id;
+        return $this->user_id == $userModel->id;
     }
 
     /**

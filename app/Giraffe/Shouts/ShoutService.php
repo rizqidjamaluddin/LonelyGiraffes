@@ -3,6 +3,7 @@
 use Giraffe\Authorization\Gatekeeper;
 use Giraffe\Common\Service;
 use Giraffe\Feed\PostGeneratorHelper;
+use Giraffe\Feed\PostRepository;
 use Giraffe\Parser\Parser;
 use Giraffe\Shouts\ShoutRepository;
 use Giraffe\Users\UserRepository;
@@ -31,13 +32,18 @@ class ShoutService extends Service
      * @var ShoutCreationValidator
      */
     private $creationValidator;
+    /**
+     * @var \Giraffe\Feed\PostRepository
+     */
+    private $postRepository;
 
     public function __construct(
         UserRepository $userRepository,
         ShoutRepository $shoutRepository,
         Parser $parser,
         PostGeneratorHelper $postGeneratorHelper,
-    ShoutCreationValidator $creationValidator
+        PostRepository $postRepository,
+        ShoutCreationValidator $creationValidator
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
@@ -46,6 +52,7 @@ class ShoutService extends Service
         $this->parser = $parser;
         $this->postGeneratorHelper = $postGeneratorHelper;
         $this->creationValidator = $creationValidator;
+        $this->postRepository = $postRepository;
     }
 
     public function createShout($user, $body)
@@ -75,8 +82,8 @@ class ShoutService extends Service
     public function getShout($hash)
     {
         $shout = $this->shoutRepository->getByHash($hash);
-        $this->gatekeeper->mayI('read', $shout);
-            return $shout;
+        $this->gatekeeper->mayI('read', $shout)->please();
+        return $shout;
     }
 
     public function getShouts($userHash)
@@ -89,6 +96,9 @@ class ShoutService extends Service
     {
         $shout = $this->getShout($hash);
         $this->gatekeeper->mayI('delete', $shout)->please();
-        return $this->shoutRepository->deleteByHash($hash);
+
+        $this->postRepository->deleteForPostable($shout);
+        $delete = $this->shoutRepository->deleteByHash($hash);
+        return true;
     }
 } 

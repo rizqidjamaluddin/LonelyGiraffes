@@ -29,6 +29,11 @@ class PostRepository extends EloquentRepository
         return $q->get();
     }
 
+    public function deleteForPostable(Postable $postable)
+    {
+        $this->model->where('postable_type', get_class($postable))->where('postable_id', $postable->getId())->delete();
+    }
+
     /**
      * @param $options
      * @return Collection

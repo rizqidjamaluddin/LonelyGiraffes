@@ -32,7 +32,8 @@ class ShoutController extends Controller
 
     public function destroy($hash)
     {
-        return $this->shoutService->deleteShout($hash);
+        $delete = $this->shoutService->deleteShout($hash);
+        return ['message' => 'Shout deleted'];
     }
 
     public function showAll($userHash)

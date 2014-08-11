@@ -198,25 +198,30 @@ class ShoutTest extends AcceptanceCase
      */
     public function users_can_delete_specific_shouts()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
+        // add some noise here to make sure other shouts don't get deleted
+        $luigi = $this->registerAndLoginAsLuigi();
+        $this->callJson('POST', '/api/shouts', ['body' => 'This shout should be intact']);
+        $this->callJson('POST', '/api/shouts', ['body' => 'This shout should be intact']);
 
-        $shout = $this->toJson(
-                      $this->call(
-                           'POST',
-                           '/api/shouts',
-                           [
-                               'body' => 'This is a shout!'
-                           ]
-                      )
-        );
+        $mario = $this->registerAndLoginAsMario();
 
-        $shoutChild = $shout->shouts[0];
+        $this->callJson('POST', '/api/shouts', ['body' => 'This shout should be intact']);
+        $shoutForDeletion = $this->callJson('POST', '/api/shouts', ['body' => 'Shout to be deleted']);
+        $this->callJson('POST', '/api/shouts', ['body' => 'This shout should be intact']);
+
+        $shoutChild = $shoutForDeletion->shouts[0];
 
         $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(200);
 
         $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->hash));
         $this->assertResponseStatus(404);
+
+        // deleting a shout should also delete its parent posts
+        $posts = $this->callJson('GET', '/api/posts', ['user' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(2, count($posts->posts));
+        $this->assertEquals('This shout should be intact', $posts->posts[0]->body->body);
+        $this->assertEquals('This shout should be intact', $posts->posts[1]->body->body);
     }
 } 
