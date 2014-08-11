@@ -65,7 +65,7 @@ class ChatService extends Service
             $room = $this->chatroomRepository->findForMembership($membership);
 
             // sanity check to make sure we can read from the room before adding it
-            if (!$this->gatekeeper->mayI('read', $room)->canI()) {
+            if ($this->gatekeeper->mayI('read', $room)->canI()) {
                 $chatrooms->push($room);
             }
         }

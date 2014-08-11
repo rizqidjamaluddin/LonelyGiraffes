@@ -75,7 +75,7 @@ class ChatTest extends ChatCase
      */
     public function users_can_see_the_rooms_they_are_in()
     {
-        $this->registerAndLoginAsMario();
+        $mario = $this->registerAndLoginAsMario();
         $this->callJson('POST', '/api/chatrooms');
         $this->callJson('POST', '/api/chatrooms');
 
@@ -85,9 +85,12 @@ class ChatTest extends ChatCase
         $this->callJson('POST', '/api/chatrooms');
 
         // get list
+        $this->asUser($mario->hash);
         $list = $this->callJson('GET', '/api/chatrooms?participating');
         $this->assertResponseOk();
         $this->assertEquals(count($list->chatrooms), 2);
+        $this->assertEquals($list->chatrooms[0]->participants[0]->user->name, 'Mario');
+        $this->assertEquals($list->chatrooms[1]->participants[0]->user->name, 'Mario');
 
         // users with no chatrooms should just see a blank array
         $this->registerAndLoginAsYoshi();
@@ -97,8 +100,24 @@ class ChatTest extends ChatCase
 
     }
 
+    /**
+     * @test
+     */
     public function users_can_see_people_and_add_people_to_a_chatroom()
     {
+        $mario = $this->registerAndLoginAsMario();
+        $luigi = $this->registerLuigi();
+
+        $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
+        $this->assertResponseOk();
+        $this->assertEquals($room->participantCount, 1);
+
+        $this->callJson('POST', "/api/chatrooms/{$room->hash}/add", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+
+        $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
+        $this->assertEquals($room->participantCount, 2);
+
 
     }
 
