@@ -17,6 +17,7 @@ class ChatroomTransformer extends TransformerAbstract
         }
 
         return [
+            'name' => $model->name ?: false,
             'hash'         => $model->hash,
             'href'         => $this->buildUrl($model->hash),
             'participants' => $participants,

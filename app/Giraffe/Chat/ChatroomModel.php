@@ -13,7 +13,7 @@ class ChatroomModel extends Eloquent implements ProtectedResource
     use HasEloquentHash, SoftDeletingTrait;
 
     protected $table = 'chatrooms';
-    protected $fillable = ['name', 'hash'];
+    protected $fillable = ['name', 'hash', 'name'];
 
     public function memberships()
     {

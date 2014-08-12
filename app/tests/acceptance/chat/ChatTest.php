@@ -133,7 +133,10 @@ class ChatTest extends ChatCase
 
     public function users_can_set_titles_to_chatrooms()
     {
+        $mario = $this->registerAndLoginAsMario();
+        $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
 
+        // initial room title should be false
     }
 
     public function users_can_leave_a_chatroom()
