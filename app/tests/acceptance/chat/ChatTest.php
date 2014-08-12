@@ -118,7 +118,12 @@ class ChatTest extends ChatCase
         $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
         $this->assertEquals(2, $room->participantCount);
 
-        // prevent from double-adding user
+        // make sure double-adding user doesn't break stuff
+        $this->callJson('POST', "/api/chatrooms/{$room->hash}/add", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+
+        $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
+        $this->assertEquals(2, $room->participantCount);
     }
 
     public function users_can_receive_messages_in_a_chatroom()
@@ -132,6 +137,11 @@ class ChatTest extends ChatCase
     }
 
     public function users_can_leave_a_chatroom()
+    {
+
+    }
+
+    public function users_can_be_removed_from_a_chatroom_by_other_users()
     {
 
     }
