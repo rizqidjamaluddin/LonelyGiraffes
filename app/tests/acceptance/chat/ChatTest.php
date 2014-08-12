@@ -110,15 +110,15 @@ class ChatTest extends ChatCase
 
         $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
         $this->assertResponseOk();
-        $this->assertEquals($room->participantCount, 1);
+        $this->assertEquals(1, $room->participantCount);
 
         $this->callJson('POST', "/api/chatrooms/{$room->hash}/add", ['user' => $luigi->hash]);
         $this->assertResponseOk();
 
-        $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
-        $this->assertEquals($room->participantCount, 2);
+        $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
+        $this->assertEquals(2, $room->participantCount);
 
-
+        // prevent from double-adding user
     }
 
     public function users_can_receive_messages_in_a_chatroom()

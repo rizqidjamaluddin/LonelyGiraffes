@@ -87,6 +87,7 @@ Route::api(
              Route::post('chatrooms', ['uses' => 'ChatroomController@create']);
              Route::get('chatrooms', ['uses' => 'ChatroomController@index']);
              Route::get('chatrooms/{resource}', ['uses' => 'ChatroomController@show']);
+             Route::post('chatrooms/{resource}/add', ['uses' => 'ChatroomController@add']);
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);

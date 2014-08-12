@@ -2,6 +2,7 @@
 
 use Giraffe\Common\Hash;
 use Giraffe\Common\Service;
+use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 use Illuminate\Support\Collection;
 
@@ -29,7 +30,7 @@ class ChatService extends Service
         $this->chatroomRepository = $chatroomRepository;
         $this->chatroomMembershipRepository = $chatroomMembershipRepository;
         $this->userRepository = $userRepository;
-        
+
         parent::__construct();
     }
 
@@ -42,7 +43,7 @@ class ChatService extends Service
         // add author automatically to new chatroom
         $membership = $this->chatroomMembershipRepository->create(
             [
-                'user_id' => $owner->id,
+                'user_id'         => $owner->id,
                 'conversation_id' => $create->id
             ]
         );
@@ -81,38 +82,32 @@ class ChatService extends Service
         return $room;
     }
 
-    public function acceptConversationInvite($user, $conversation)
-    {
-
-    }
-
-    public function denyConversationInvite($user, $conversation)
-    {
-
-    }
-
-    public function hideConversation($conversation)
-    {
-
-    }
-
-    public function leaveConversation()
-    {
-
-    }
-
-    public function listUserConversations()
-    {
-
-    }
-
-    public function sendConversationInvite()
-    {
-
-    }
-
     public function sendMessage()
     {
 
+    }
+
+    public function addUserToRoom($room, $target)
+    {
+        /** @var ChatroomModel $room */
+        $room = $this->chatroomRepository->getByHash($room);
+
+        /** @var UserModel $target */
+        $target = $this->userRepository->getByHash($target);
+
+        // finish if user is already in room
+        if ($this->chatroomMembershipRepository->findForUserInRoom($target, $room)) {
+            return true;
+        }
+
+        // create new participant
+        $membership = $this->chatroomMembershipRepository->create(
+            [
+                'user_id'         => $target->id,
+                'conversation_id' => $room->id
+            ]
+        );
+
+        return true;
     }
 } 

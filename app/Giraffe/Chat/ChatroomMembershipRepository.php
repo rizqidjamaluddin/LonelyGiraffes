@@ -16,4 +16,10 @@ class ChatroomMembershipRepository extends EloquentRepository
         return $this->model->where('user_id', $userModel->id)->get();
     }
 
+    public function findForUserInRoom($userModel, $chatroom)
+    {
+        return $this->model->where('user_id', $userModel->id)->where('conversation_id', $chatroom->id)
+            ->first();
+    }
+
 } 

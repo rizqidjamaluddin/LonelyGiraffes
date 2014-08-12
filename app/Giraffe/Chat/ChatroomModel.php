@@ -35,11 +35,6 @@ class ChatroomModel extends Eloquent implements ProtectedResource
         return $userIds;
     }
 
-    public function addParticipant(UserModel $userModel)
-    {
-
-    }
-
     /**
      * Lowercase name of this resource.
      *

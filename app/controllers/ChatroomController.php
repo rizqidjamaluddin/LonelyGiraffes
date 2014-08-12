@@ -44,8 +44,12 @@ class ChatroomController extends Controller
         }
 
         return $this->withCollection($results, new ChatroomTransformer(), 'chatrooms');
+    }
 
-
+    public function add($room)
+    {
+        $this->chatService->addUserToRoom($room, Input::get('user'));
+        return ['message' => 'User added'];
     }
     
 
