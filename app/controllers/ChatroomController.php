@@ -46,6 +46,17 @@ class ChatroomController extends Controller
         return $this->withCollection($results, new ChatroomTransformer(), 'chatrooms');
     }
 
+    public function edit($room)
+    {
+        if (Input::exists('title')) {
+            $chatroom = $this->chatService->updateRoomTitle($room, Input::get('title'));
+            return $this->withItem($chatroom, new ChatroomTransformer(), 'chatrooms');
+        }
+
+        // just return the same thing if no changes were made
+        return $this->show($room);
+    }
+
     public function add($room)
     {
         $this->chatService->addUserToRoom($room, Input::get('user'));

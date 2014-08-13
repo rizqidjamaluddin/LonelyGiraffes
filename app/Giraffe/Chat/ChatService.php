@@ -110,4 +110,15 @@ class ChatService extends Service
 
         return true;
     }
+
+    public function updateRoomTitle($room, $title)
+    {
+        $room = $this->chatroomRepository->getByHash($room);
+        $this->gatekeeper->mayI('update', $room)->please();
+
+        $room->name = $title;
+        $this->chatroomRepository->save($room);
+
+        return $room;
+    }
 } 

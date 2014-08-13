@@ -131,12 +131,51 @@ class ChatTest extends ChatCase
 
     }
 
+    /**
+     * @test
+     */
     public function users_can_set_titles_to_chatrooms()
     {
         $mario = $this->registerAndLoginAsMario();
         $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
 
         // initial room title should be false
+        $this->assertEquals(false, $room->title);
+
+        // set title
+        $this->callJson('PUT', "/api/chatrooms/{$room->hash}", ['title' => 'New Title']);
+
+        // check new title
+        $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
+        $this->assertResponseOk();
+        $this->assertEquals('New Title', $room->title);
+
+        // other people in the chat can change it too
+        $luigi = $this->registerLuigi();
+        $this->callJson('POST', "/api/chatrooms/{$room->hash}/add", ['user' => $luigi->hash]);
+        $this->asUser($luigi->hash);
+        $this->callJson('PUT', "/api/chatrooms/{$room->hash}", ['title' => 'Another New Title']);
+
+        $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
+        $this->assertResponseOk();
+        $this->assertEquals('Another New Title', $room->title);
+
+        // people outside the chat can't change it
+        $bowser = $this->registerAndLoginAsBowser();
+        $this->callJson('PUT', "/api/chatrooms/{$room->hash}", ['title' => 'An Evil Title']);
+
+        // back to mario because bowser can't even access the room
+        $this->asUser($mario->hash);
+        $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
+        $this->assertResponseOk();
+        $this->assertEquals('Another New Title', $room->title);
+
+        // other participants, however, are allowed
+        $this->asUser($luigi->hash);
+        $this->callJson('PUT', "/api/chatrooms/{$room->hash}", ['title' => 'Luigi Title']);
+        $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
+        $this->assertResponseOk();
+        $this->assertEquals('Luigi Title', $room->title);
     }
 
     public function users_can_leave_a_chatroom()
