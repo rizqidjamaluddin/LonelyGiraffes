@@ -126,7 +126,53 @@ class ChatTest extends ChatCase
         $this->assertEquals(2, $room->participantCount);
     }
 
+    /**
+     * @test
+     */
     public function users_can_receive_messages_in_a_chatroom()
+    {
+        $luigi = $this->registerLuigi();
+        $mario = $this->registerAndLoginAsMario();
+        $room = $this->registerRoom()->hash;
+        $this->callJson('POST', "/api/chatrooms/$room/add", ['user' => $luigi->hash]);
+
+        $message = $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => 'Hello world!']);
+        $this->assertResponseOk();
+
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertResponseOk();
+        $this->assertEquals($messages[0]->body, 'Hello world!');
+        $this->assertEquals($messages[0]->author->name, 'Mario');
+
+        return;
+
+        // do the same thing as luigi
+        $this->asUser($luigi->hash);
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertResponseOk();
+        $this->assertEquals($messages[0]->message, 'Hello world');
+        $this->assertEquals($messages[0]->author->name, 'Mario');
+
+        // test message as luigi
+
+    }
+
+    public function users_cannot_send_messages_over_280_characters_long()
+    {
+
+    }
+
+    public function users_cannot_send_blank_messages()
+    {
+
+    }
+
+    public function newly_added_users_cannot_see_messages_prior_to_joining()
+    {
+
+    }
+
+    public function users_not_in_a_room_cannot_send_messages()
     {
 
     }
@@ -137,7 +183,7 @@ class ChatTest extends ChatCase
     public function users_can_set_titles_to_chatrooms()
     {
         $mario = $this->registerAndLoginAsMario();
-        $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
+        $room = $this->registerRoom();
 
         // initial room title should be false
         $this->assertEquals(false, $room->title);
@@ -196,6 +242,15 @@ class ChatTest extends ChatCase
     {
         $this->assertEquals($expectedUsers, $fetch->participantCount);
         $this->assertEquals($expectedUsers, count($fetch->participants));
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function registerRoom()
+    {
+        $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
+        return $room;
     }
 
 } 

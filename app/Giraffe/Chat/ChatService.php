@@ -2,9 +2,11 @@
 
 use Giraffe\Common\Hash;
 use Giraffe\Common\Service;
+use Giraffe\Parser\Parser;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 use Illuminate\Support\Collection;
+use Str;
 
 class ChatService extends Service
 {
@@ -21,17 +23,29 @@ class ChatService extends Service
      * @var UserRepository
      */
     private $userRepository;
+    /**
+     * @var ChatMessageRepository
+     */
+    private $chatMessageRepository;
+    /**
+     * @var Parser
+     */
+    private $parser;
 
     public function __construct(
         ChatroomRepository $chatroomRepository,
         ChatroomMembershipRepository $chatroomMembershipRepository,
-        UserRepository $userRepository
+        ChatMessageRepository $chatMessageRepository,
+        UserRepository $userRepository,
+        Parser $parser
     ) {
         $this->chatroomRepository = $chatroomRepository;
         $this->chatroomMembershipRepository = $chatroomMembershipRepository;
         $this->userRepository = $userRepository;
 
         parent::__construct();
+        $this->chatMessageRepository = $chatMessageRepository;
+        $this->parser = $parser;
     }
 
     public function createChatroom($owner)
@@ -80,11 +94,6 @@ class ChatService extends Service
         $room = $this->chatroomRepository->getByHash($roomHash);
         $this->gatekeeper->mayI('read', $room)->please();
         return $room;
-    }
-
-    public function sendMessage()
-    {
-
     }
 
     public function addUserToRoom($room, $target)

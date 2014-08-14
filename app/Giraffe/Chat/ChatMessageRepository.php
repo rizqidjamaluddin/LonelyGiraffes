@@ -7,4 +7,9 @@ class ChatMessageRepository extends EloquentRepository
     {
         parent::__construct($chatMessageModel);
     }
+
+    public function getRecentForRoom(ChatroomModel $room)
+    {
+        return $this->model->where('chatroom_id', $room->id)->limit(30)->orderBy('created_at', 'desc')->get();
+    }
 } 
