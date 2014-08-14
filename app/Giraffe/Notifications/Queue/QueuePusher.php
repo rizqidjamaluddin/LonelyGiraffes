@@ -19,6 +19,10 @@ class QueuePusher
         // this will wait for the worker transaction if one is in progress
         $task = DB::table('notification_queue')->where('user_id', $userModel->id)->lockForUpdate()->first();
 
+        // if there are no waiting notifications, bump the next_issue; otherwise ignore it
+
+        // raise waiting flag
+
         // add row if it doesn't exist
         if (!$task) {
             DB::table('notification_queue')->insert(
