@@ -144,13 +144,11 @@ class ChatTest extends ChatCase
         $this->assertEquals($messages[0]->body, 'Hello world!');
         $this->assertEquals($messages[0]->author->name, 'Mario');
 
-        return;
-
         // do the same thing as luigi
         $this->asUser($luigi->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals($messages[0]->message, 'Hello world');
+        $this->assertEquals($messages[0]->body, 'Hello world');
         $this->assertEquals($messages[0]->author->name, 'Mario');
 
         // test message as luigi
