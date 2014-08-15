@@ -44,11 +44,15 @@ class BuddyRepository extends EloquentRepository
      */
     public function getByUser($user)
     {
+        $this->log->debug($this, "Getting buddies for User #{$user->id}");
+
         if ($user instanceof BuddyModel) {
             return $user;
         }
 
         $users = $this->model->where('user1_id', '=', $user->id)->orWhere('user2_id', '=', $user->id)->get(array('user1_id', 'user2_id'));
+
+        $this->log->debug($this, "Buddies found for User #{$user->id}: " . count($users));
 
         // Flatten results array into ids, picking the one that IS NOT $user's.
         $users = $users->map(function($u) use ($user) {
@@ -56,6 +60,9 @@ class BuddyRepository extends EloquentRepository
                 return $u->user2_id;
             return $u->user1_id;
         });
+
+        $this->log->debug($this, "Flattened buddy list for User #{$user->id} (" . count($users) . ")" , $users->toArray());
+
         $models = UserModel::whereIn('id', $users->toArray())->get();
 
         return $models;

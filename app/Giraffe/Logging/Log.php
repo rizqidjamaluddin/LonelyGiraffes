@@ -62,7 +62,7 @@ class Log
     {
         $this->writer = $writer;
         $this->application = $application;
-        $this->defaultLogLevel = Logger::INFO;
+        $this->defaultLogLevel = Logger::DEBUG;
         $this->exceptionalLogLevel = Logger::WARNING;
     }
 
