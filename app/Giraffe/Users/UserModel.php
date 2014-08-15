@@ -180,11 +180,13 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
         // check for 'self'
         if ($user->id == $this->id) {
             $rel[] = 'self';
+            return $rel;
         }
 
         // check for 'buddy'
         if ($buddyService->checkBuddies($this, $user)) {
             $rel[] = 'buddy';
+            return $rel;
         }
 
         // check for 'outgoing' and 'pending'
