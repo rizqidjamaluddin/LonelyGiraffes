@@ -148,10 +148,33 @@ class ChatTest extends ChatCase
         $this->asUser($luigi->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals($messages[0]->body, 'Hello world');
+        $this->assertEquals($messages[0]->body, 'Hello world!');
         $this->assertEquals($messages[0]->author->name, 'Mario');
 
         // test message as luigi
+        $this->asUser($luigi->hash);
+        $message = $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => 'Hey there!']);
+        $this->assertResponseOk();
+
+        // two more checks
+        $this->asUser($mario->hash);
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertResponseOk();
+        $this->assertEquals($messages[0]->body, 'Hello world!');
+        $this->assertEquals($messages[0]->author->name, 'Mario');
+        $this->assertEquals($messages[1]->body, 'Hey there!');
+        $this->assertEquals($messages[1]->author->name, 'Luigi');
+
+        $this->asUser($luigi->hash);
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertResponseOk();
+        $this->assertEquals($messages[0]->body, 'Hello world!');
+        $this->assertEquals($messages[0]->author->name, 'Mario');
+        $this->assertEquals($messages[1]->body, 'Hey there!');
+        $this->assertEquals($messages[1]->author->name, 'Luigi');
+
+        // users not in the room can't make messages
+        $bowser = $this->registerAndLoginAsBowser();
 
     }
 
@@ -166,11 +189,6 @@ class ChatTest extends ChatCase
     }
 
     public function newly_added_users_cannot_see_messages_prior_to_joining()
-    {
-
-    }
-
-    public function users_not_in_a_room_cannot_send_messages()
     {
 
     }
