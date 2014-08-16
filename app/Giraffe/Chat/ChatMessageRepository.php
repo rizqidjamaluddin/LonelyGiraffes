@@ -1,5 +1,8 @@
-<?php  namespace Giraffe\Chat; 
+<?php  namespace Giraffe\Chat;
+
+use Carbon\Carbon;
 use Giraffe\Common\EloquentRepository;
+use Giraffe\Users\UserModel;
 
 class ChatMessageRepository extends EloquentRepository
 {
@@ -8,8 +11,19 @@ class ChatMessageRepository extends EloquentRepository
         parent::__construct($chatMessageModel);
     }
 
-    public function getRecentForRoom(ChatroomModel $room)
+    public function getRecentIn(ChatroomModel $room, $options)
     {
-        return $this->model->where('chatroom_id', $room->id)->limit(30)->orderBy('created_at', 'desc')->get();
+        $q = $this->model;
+        $q = $this->appendSinceOption($q, $options);
+
+        return $q->where('chatroom_id', $room->id)->limit(30)->orderBy('id', 'desc')->get();
+    }
+
+    protected function appendSinceOption($q, $options)
+    {
+        $since = array_get($options, 'earliest');
+        if (!$since) return $q;
+        if ($since instanceof Carbon) $since = $since->toDateTimeString();
+        return $q->where('created_at', '>=', $since);
     }
 } 

@@ -160,18 +160,18 @@ class ChatTest extends ChatCase
         $this->asUser($mario->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals('Hello world!', $messages[0]->body);
-        $this->assertEquals('Mario', $messages[0]->author->name);
-        $this->assertEquals('Hey there!', $messages[1]->body);
-        $this->assertEquals('Luigi', $messages[1]->author->name);
+        $this->assertEquals('Hey there!', $messages[0]->body);
+        $this->assertEquals('Luigi', $messages[0]->author->name);
+        $this->assertEquals('Hello world!', $messages[1]->body);
+        $this->assertEquals('Mario', $messages[1]->author->name);
 
         $this->asUser($luigi->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals('Hello world!', $messages[0]->body);
-        $this->assertEquals('Mario', $messages[0]->author->name);
-        $this->assertEquals('Hey there!', $messages[1]->body);
-        $this->assertEquals('Luigi', $messages[1]->author->name);
+        $this->assertEquals('Hey there!', $messages[0]->body);
+        $this->assertEquals('Luigi', $messages[0]->author->name);
+        $this->assertEquals('Hello world!', $messages[1]->body);
+        $this->assertEquals('Mario', $messages[1]->author->name);
 
         // users not in the room can't make messages
         $bowser = $this->registerAndLoginAsBowser();
@@ -182,20 +182,57 @@ class ChatTest extends ChatCase
         $this->asUser($mario->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertEquals(2, count($messages));
+
+        // empty messages are unacceptable
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => '']);
+        $this->assertResponseStatus(422);
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertEquals(2, count($messages));
+
+        // character limit is 250 characters; any longer gets truncated
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => str_repeat('A', 300)]);
+        $this->assertResponseStatus(200);
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertEquals(3, count($messages));
+        $this->assertEquals(str_repeat('A', 250), $messages[0]->body);
+
     }
 
-    public function users_cannot_send_messages_over_280_characters_long()
+    public function clients_can_use_before_and_after_parameters_to_navigate_messages()
     {
 
     }
 
-    public function users_cannot_send_blank_messages()
-    {
-
-    }
-
+    /**
+     * @test
+     */
     public function newly_added_users_cannot_see_messages_prior_to_joining()
     {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+
+        $this->asUser($mario->hash);
+        $room = $this->registerRoom()->hash;
+
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Secret Message 1"]);
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Secret Message 2"]);
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Secret Message 3"]);
+
+        // sleep 1 second to bump up a second; users can see messages up to the same second they joined
+        sleep(1);
+
+        $this->callJson('POST', "/api/chatrooms/$room/add", ['user' => $luigi->hash]);
+
+        $this->asUser($luigi->hash);
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($messages));
+
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Shared Message 1"]);
+        $this->assertResponseOk();
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertEquals(1, count($messages));
+        $this->assertEquals("Shared Message 1", $messages[0]->body);
 
     }
 
@@ -246,8 +283,46 @@ class ChatTest extends ChatCase
         $this->assertEquals('Luigi Title', $room->title);
     }
 
+    /**
+     * @test
+     */
     public function users_can_leave_a_chatroom()
     {
+        $mario = $this->registerAndLoginAsMario();
+        $luigi = $this->registerLuigi();
+
+        $this->asUser($mario->hash);
+        $room = $this->registerRoom()->hash;
+
+        $this->callJson("POST", "/api/chatrooms/{$room}/add", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+
+        $this->callJson('POST', "/api/chatrooms/{$room}/messages", ['message' => 'This is a message!']);
+        $this->assertResponseOk();
+
+        // only mario can make himself leave
+        $this->asUser($mario->hash);
+        $this->callJson('POST', "/api/chatrooms/$room/leave");
+        $this->assertResponseOk();
+
+        // check that mario can no longer query the chatroom
+        $this->asUser($mario->hash);
+        $this->callJson('GET', "/api/chatrooms/$room/messages");
+        $this->assertResponseStatus(403);
+        $this->callJson('GET', "/api/chatrooms/$room");
+        $this->assertResponseStatus(403);
+
+        // check that luigi still can
+        $this->asUser($luigi->hash);
+        $messages = $this->callJson("GET", "/api/chatrooms/$room/messages")->messages;
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($messages));
+
+        // check that luigi sees a room to himself
+        $participants = $this->callJson('GET', "/api/chatrooms/$room")->chatrooms[0]->participants;
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($participants));
+        $this->assertEquals($luigi->name, $participants[0]->user->name);
 
     }
 

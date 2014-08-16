@@ -4,6 +4,7 @@ use Giraffe\Common\Hash;
 use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\Service;
 use Giraffe\Parser\Parser;
+use Giraffe\Users\UserRepository;
 use Str;
 
 class ChatMessagingService extends Service
@@ -21,14 +22,26 @@ class ChatMessagingService extends Service
      * @var Parser
      */
     private $parser;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+    /**
+     * @var ChatroomMembershipRepository
+     */
+    private $chatroomMembershipRepository;
 
     public function __construct(
         ChatroomRepository $chatroomRepository,
         ChatMessageRepository $chatMessageRepository,
+        ChatroomMembershipRepository $chatroomMembershipRepository,
+        UserRepository $userRepository,
         Parser $parser
     ) {
         $this->chatroomRepository = $chatroomRepository;
         $this->chatMessageRepository = $chatMessageRepository;
+        $this->chatroomMembershipRepository = $chatroomMembershipRepository;
+        $this->userRepository = $userRepository;
         $this->parser = $parser;
         parent::__construct();
     }
@@ -40,7 +53,7 @@ class ChatMessagingService extends Service
         $this->gatekeeper->mayI('chat', $room)->please();
 
         // this may break formatting, so clients should help enforce this
-        $message = Str::limit($message, 280, '');
+        $message = Str::limit($message, 250, '');
         if (strlen($message) < 1) {
             throw new InvalidCreationException;
         }
@@ -57,10 +70,18 @@ class ChatMessagingService extends Service
         return $generated;
     }
 
-    public function getRecentMessages($room)
+    public function getRecentMessages($room, $user)
     {
+        $user = $this->userRepository->getByHash($user);
         $room = $this->chatroomRepository->getByHash($room);
-        $recent = $this->chatMessageRepository->getRecentForRoom($room);
+
+        $this->gatekeeper->mayI('read', $room)->please();
+
+        $userMembership = $this->chatroomMembershipRepository->findForUserInRoom($user, $room);
+
+        $earliestLimit = $userMembership->created_at;
+
+        $recent = $this->chatMessageRepository->getRecentIn($room, ['earliest' => $earliestLimit]);
         return $recent;
     }
 } 

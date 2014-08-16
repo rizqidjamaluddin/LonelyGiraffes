@@ -89,6 +89,7 @@ Route::api(
              Route::get('chatrooms/{room}', ['uses' => 'ChatroomController@show']);
              Route::put('chatrooms/{room}', ['uses' => 'ChatroomController@edit']);
              Route::post('chatrooms/{room}/add', ['uses' => 'ChatroomController@add']);
+             Route::post('chatrooms/{room}/leave', ['uses' => 'ChatroomController@leave']);
              Route::get('chatrooms/{room}/messages', ['uses' => 'ChatroomMessageController@recent']);
              Route::post('chatrooms/{room}/messages', ['uses' => 'ChatroomMessageController@add']);
 
