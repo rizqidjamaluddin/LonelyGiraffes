@@ -141,15 +141,15 @@ class ChatTest extends ChatCase
 
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals($messages[0]->body, 'Hello world!');
-        $this->assertEquals($messages[0]->author->name, 'Mario');
+        $this->assertEquals('Hello world!', $messages[0]->body);
+        $this->assertEquals('Mario', $messages[0]->author->name);
 
         // do the same thing as luigi
         $this->asUser($luigi->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals($messages[0]->body, 'Hello world!');
-        $this->assertEquals($messages[0]->author->name, 'Mario');
+        $this->assertEquals('Hello world!', $messages[0]->body);
+        $this->assertEquals('Mario', $messages[0]->author->name);
 
         // test message as luigi
         $this->asUser($luigi->hash);
@@ -160,22 +160,28 @@ class ChatTest extends ChatCase
         $this->asUser($mario->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals($messages[0]->body, 'Hello world!');
-        $this->assertEquals($messages[0]->author->name, 'Mario');
-        $this->assertEquals($messages[1]->body, 'Hey there!');
-        $this->assertEquals($messages[1]->author->name, 'Luigi');
+        $this->assertEquals('Hello world!', $messages[0]->body);
+        $this->assertEquals('Mario', $messages[0]->author->name);
+        $this->assertEquals('Hey there!', $messages[1]->body);
+        $this->assertEquals('Luigi', $messages[1]->author->name);
 
         $this->asUser($luigi->hash);
         $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
         $this->assertResponseOk();
-        $this->assertEquals($messages[0]->body, 'Hello world!');
-        $this->assertEquals($messages[0]->author->name, 'Mario');
-        $this->assertEquals($messages[1]->body, 'Hey there!');
-        $this->assertEquals($messages[1]->author->name, 'Luigi');
+        $this->assertEquals('Hello world!', $messages[0]->body);
+        $this->assertEquals('Mario', $messages[0]->author->name);
+        $this->assertEquals('Hey there!', $messages[1]->body);
+        $this->assertEquals('Luigi', $messages[1]->author->name);
 
         // users not in the room can't make messages
         $bowser = $this->registerAndLoginAsBowser();
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => 'Malicious content']);
+        $this->assertResponseStatus(403);
 
+        // make sure it was never sent
+        $this->asUser($mario->hash);
+        $messages = $this->callJson('GET', "/api/chatrooms/$room/messages")->messages;
+        $this->assertEquals(2, count($messages));
     }
 
     public function users_cannot_send_messages_over_280_characters_long()

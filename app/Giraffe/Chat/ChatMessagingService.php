@@ -30,11 +30,14 @@ class ChatMessagingService extends Service
         $this->chatroomRepository = $chatroomRepository;
         $this->chatMessageRepository = $chatMessageRepository;
         $this->parser = $parser;
+        parent::__construct();
     }
 
     public function sendMessage($room, $user, $message)
     {
         $room = $this->chatroomRepository->getByHash($room);
+
+        $this->gatekeeper->mayI('chat', $room)->please();
 
         // this may break formatting, so clients should help enforce this
         $message = Str::limit($message, 280, '');
