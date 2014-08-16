@@ -504,6 +504,21 @@ class BuddyTest extends AcceptanceCase
     }
 
     /**
+     * @test
+     * @see http://git.thinksterlabs.com/root/lonelygiraffes/issues/30
+     *
+     * This bug does not appear under SQLite, but does cause MySQL to break. Leaving test here
+     * for future purposes.
+     */
+    public function client_sees_empty_collection_when_they_have_no_buddies()
+    {
+        $mario = $this->registerAndLoginAsMario()->hash;
+        $buddies = $this->callJson('GET', "/api/users/$mario/buddies");
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($buddies->buddies));
+    }
+
+    /**
      * @param $requested
      * @param $requester
      */

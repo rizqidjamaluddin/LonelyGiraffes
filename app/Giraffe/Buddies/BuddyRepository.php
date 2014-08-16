@@ -7,6 +7,7 @@ use Giraffe\Common\NotFoundModelException;
 use Giraffe\Users\UserRepository;
 use Giraffe\Users\UserModel;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 
 class BuddyRepository extends EloquentRepository
 {
@@ -20,9 +21,10 @@ class BuddyRepository extends EloquentRepository
      */
     private $userModel;
 
-    public function __construct(BuddyModel $buddyModel,
-                                UserRepository $userRepository)
-    {
+    public function __construct(
+        BuddyModel $buddyModel,
+        UserRepository $userRepository
+    ) {
         parent::__construct($buddyModel);
     }
 
@@ -44,24 +46,27 @@ class BuddyRepository extends EloquentRepository
      */
     public function getByUser($user)
     {
-        $this->log->debug($this, "Getting buddies for User #{$user->id}");
 
         if ($user instanceof BuddyModel) {
             return $user;
         }
 
-        $users = $this->model->where('user1_id', '=', $user->id)->orWhere('user2_id', '=', $user->id)->get(array('user1_id', 'user2_id'));
+        $users = $this->model->where('user1_id', '=', $user->id)->orWhere('user2_id', '=', $user->id)->get(['user1_id', 'user2_id']);
 
-        $this->log->debug($this, "Buddies found for User #{$user->id}: " . count($users));
+        // short circuit early if no buddies found
+        if ($users->count() === 0) {
+            return new Collection;
+        }
 
         // Flatten results array into ids, picking the one that IS NOT $user's.
-        $users = $users->map(function($u) use ($user) {
-            if($u->user1_id == $user->id)
-                return $u->user2_id;
-            return $u->user1_id;
-        });
-
-        $this->log->debug($this, "Flattened buddy list for User #{$user->id} (" . count($users) . ")" , $users->toArray());
+        $users = $users->map(
+                       function ($u) use ($user) {
+                           if ($u->user1_id == $user->id) {
+                               return $u->user2_id;
+                           }
+                           return $u->user1_id;
+                       }
+        );
 
         $models = UserModel::whereIn('id', $users->toArray())->get();
 
@@ -76,16 +81,18 @@ class BuddyRepository extends EloquentRepository
      * @return BuddyModel|null
      * @throws NotFoundModelException
      */
-    public function getByPair($user, $buddy){
+    public function getByPair($user, $buddy)
+    {
 
         $model = $this->model
             ->where('user1_id', '=', $user->id)->where('user2_id', '=', $buddy->id)
             ->orWhere('user1_id', '=', $buddy->id)->where('user2_id', '=', $user->id)
-            ->cacheTags(['buddies:'.$user->id, 'buddies:'.$buddy->id])
+            ->cacheTags(['buddies:' . $user->id, 'buddies:' . $buddy->id])
             ->remember(20)
             ->first();
-        if(!$model)
+        if (!$model) {
             throw new NotFoundModelException();
+        }
 
         return $model;
     }
@@ -96,7 +103,8 @@ class BuddyRepository extends EloquentRepository
      * @return void
      * @throws NotFoundModelException
      */
-    public function deleteByPair($user, $buddy) {
+    public function deleteByPair($user, $buddy)
+    {
         $this->getByPair($user, $buddy)->delete();
         $this->getCache()->tags(['buddies:' . $user->id])->flush();
         $this->getCache()->tags(['buddies:' . $buddy->id])->flush();
