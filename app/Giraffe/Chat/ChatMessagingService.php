@@ -83,6 +83,8 @@ class ChatMessagingService extends Service
         $options = array_only($options, ['before', 'after', 'limit']);
         $options['earliest'] = $earliestLimit;
 
+        $options = $this->translateHashOptionsToIDs($options);
+
         $recent = $this->chatMessageRepository->getRecentIn($room, $options);
         return $recent;
     }
