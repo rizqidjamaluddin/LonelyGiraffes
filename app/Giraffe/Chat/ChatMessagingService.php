@@ -70,7 +70,7 @@ class ChatMessagingService extends Service
         return $generated;
     }
 
-    public function getRecentMessages($room, $user)
+    public function getRecentMessages($room, $user, $options)
     {
         $user = $this->userRepository->getByHash($user);
         $room = $this->chatroomRepository->getByHash($room);
@@ -80,8 +80,22 @@ class ChatMessagingService extends Service
         $userMembership = $this->chatroomMembershipRepository->findForUserInRoom($user, $room);
 
         $earliestLimit = $userMembership->created_at;
+        $options = array_only($options, ['before', 'after', 'limit']);
+        $options['earliest'] = $earliestLimit;
 
-        $recent = $this->chatMessageRepository->getRecentIn($room, ['earliest' => $earliestLimit]);
+        $recent = $this->chatMessageRepository->getRecentIn($room, $options);
         return $recent;
+    }
+
+    protected function translateHashOptionsToIDs($options)
+    {
+        if ($before = array_get($options, 'before')) {
+            $options['before'] = $this->chatMessageRepository->getByHash($before)->id;
+        }
+        if ($after = array_get($options, 'after')) {
+            $options['after'] = $this->chatMessageRepository->getByHash($after)->id;
+            return $options;
+        }
+        return $options;
     }
 } 

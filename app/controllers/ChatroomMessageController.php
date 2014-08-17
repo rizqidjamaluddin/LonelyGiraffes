@@ -31,7 +31,8 @@ class ChatroomMessageController extends Controller
 
     public function recent($room)
     {
-        $messages = $this->chatMessagingService->getRecentMessages($room, $this->gatekeeper->me());
+        $options = Input::only(['before', 'after', 'take']);
+        $messages = $this->chatMessagingService->getRecentMessages($room, $this->gatekeeper->me(), $options);
         return $this->withCollection($messages, new ChatMessageTransformer(), 'messages');
     }
 } 

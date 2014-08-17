@@ -68,6 +68,12 @@ class ChatroomController extends Controller
         $this->chatService->removeUserFromRoomVoluntarily($room, $this->gatekeeper->me());
         return ['message' => 'Room left'];
     }
+
+    public function kick($room)
+    {
+        $user = $this->chatService->kickUserFromRoom($room, Input::get('user'));
+        return ['message' => $user];
+    }
     
 
 }

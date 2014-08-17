@@ -11,7 +11,8 @@ class ChatMessageTransformer extends TransformerAbstract
         return [
             'body' => $message->body,
             'html_body' => $message->html_body,
-            'author' => $user
+            'hash' => $message->hash,
+            'author' => $user,
         ];
     }
 } 

@@ -9,7 +9,7 @@ class ChatMessageModel extends Eloquent {
     use HasEloquentHash, SoftDeletingTrait;
 
     protected $table = 'chat_messages';
-	protected $fillable = ['user_id', 'body', 'html_body', 'chatroom_id'];
+	protected $fillable = ['user_id', 'body', 'html_body', 'chatroom_id', 'hash'];
 
     public function author()
     {

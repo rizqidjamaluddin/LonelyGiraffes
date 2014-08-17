@@ -139,7 +139,19 @@ class ChatService extends Service
         $membership = $this->chatroomMembershipRepository->findForUserInRoom($user, $room);
 
         $this->gatekeeper->mayI('delete', $membership)->please();
-
         $this->chatroomMembershipRepository->delete($membership);
+        return $user;
+    }
+
+    public function kickUserFromRoom($room, $user)
+    {
+        $user = $this->userRepository->getByHash($user);
+        $room = $this->chatroomRepository->getByHash($room);
+
+        $membership = $this->chatroomMembershipRepository->findForUserInRoom($user, $room);
+
+        $this->gatekeeper->mayI('kick', $room)->please();
+        $this->chatroomMembershipRepository->delete($membership);
+        return $user;
     }
 } 

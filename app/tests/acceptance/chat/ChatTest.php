@@ -198,8 +198,46 @@ class ChatTest extends ChatCase
 
     }
 
+    /**
+     * @test
+     */
     public function clients_can_use_before_and_after_parameters_to_navigate_messages()
     {
+        $mario = $this->registerAndLoginAsMario();
+        $room = $this->registerRoom()->hash;
+
+        for ($i = 1; $i < 101; $i++) {
+            $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Message $i"]);
+        }
+
+        // by default it should get the 30 latest ones
+        $fetch = $this->callJson("GET", "/api/chatrooms/$room/messages")->messages;
+        $this->assertResponseOk();
+        $this->assertEquals(30, count($fetch));
+        $this->assertEquals('Message 100', reset($fetch)->body);
+        $this->assertEquals('Message 71', end($fetch)->body);
+
+        // it can then get 30 further behind...
+        $latest = reset($fetch)->hash;
+        $oldest = end($fetch)->hash;
+        $fetch = $this->callJson("GET", "/api/chatrooms/$room/messages", ['before' => $oldest])->messages;
+        $this->assertResponseOk();
+        $this->assertEquals(30, count($fetch));
+        $this->assertEquals('Message 70', reset($fetch)->body);
+        $this->assertEquals('Message 41', end($fetch)->body);
+
+        // add a few new ones
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Message 101"]);
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Message 102"]);
+        $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Message 103"]);
+
+        // it can get the newest ones too
+        $fetch = $this->callJson("GET", "/api/chatrooms/$room/messages", ['after' => $latest])->messages;
+        $this->assertResponseOk();
+        $this->assertEquals(3, count($fetch));
+        $this->assertEquals('Message 103', reset($fetch)->body);
+        $this->assertEquals('Message 101', end($fetch)->body);
+
 
     }
 
@@ -326,9 +364,39 @@ class ChatTest extends ChatCase
 
     }
 
-    public function users_can_be_removed_from_a_chatroom_by_other_users()
+    /**
+     * @test
+     */
+    public function users_can_be_removed_from_a_chatroom_by_other_participants()
     {
+        $mario = $this->registerAndLoginAsMario();
+        $luigi = $this->registerLuigi();
+        $room = $this->registerRoom()->hash;
+        $this->callJson("POST", "/api/chatrooms/{$room}/add", ['user' => $luigi->hash]);
+        $this->callJson('POST', "/api/chatrooms/{$room}/messages", ['message' => 'This is a message!']);
 
+        // bowser or guest can't remove luigi
+        $this->registerAndLoginAsBowser();
+        $this->callJson("POST", "/api/chatrooms/{$room}/kick", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(403);
+        $this->asGuest();
+        $this->callJson("POST", "/api/chatrooms/{$room}/kick", ['user' => $luigi->hash]);
+        $this->assertResponseStatus(401);
+
+        // mario can kick luigi out
+        $this->asUser($mario->hash);
+        $kick = $this->callJson("POST", "/api/chatrooms/{$room}/kick", ['user' => $luigi->hash]);
+        $this->assertResponseOk();
+
+        // check participants count
+        $participants = $this->callJson('GET', "/api/chatrooms/{$room}")->chatrooms[0]->participants;
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($participants));
+
+        // luigi no longer has access
+        $this->asUser($luigi->hash);
+        $this->callJson('GET', "/api/chatrooms/{$room}");
+        $this->assertResponseStatus(403);
     }
 
     /**
