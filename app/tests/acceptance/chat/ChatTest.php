@@ -237,8 +237,21 @@ class ChatTest extends ChatCase
         $this->assertEquals(3, count($fetch));
         $this->assertEquals('Message 103', reset($fetch)->body);
         $this->assertEquals('Message 101', end($fetch)->body);
+    }
 
-
+    /**
+     * @test
+     */
+    public function clients_cannot_fetch_more_than_50_messages_at_once()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $room = $this->registerRoom()->hash;
+        for ($i = 1; $i < 101; $i++) {
+            $this->callJson('POST', "/api/chatrooms/$room/messages", ['message' => "Message $i"]);
+        }
+        $fetch = $this->callJson("GET", "/api/chatrooms/$room/messages", ['take' => 100])->messages;
+        $this->assertResponseOk();
+        $this->assertEquals(50, count($fetch));
     }
 
     /**

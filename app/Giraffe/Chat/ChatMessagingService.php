@@ -80,10 +80,11 @@ class ChatMessagingService extends Service
         $userMembership = $this->chatroomMembershipRepository->findForUserInRoom($user, $room);
 
         $earliestLimit = $userMembership->created_at;
-        $options = array_only($options, ['before', 'after', 'limit']);
+        $options = array_only($options, ['before', 'after', 'take']);
         $options['earliest'] = $earliestLimit;
 
         $options = $this->translateHashOptionsToIDs($options);
+        $options = $this->truncateTakeOption($options);
 
         $recent = $this->chatMessageRepository->getRecentIn($room, $options);
         return $recent;
@@ -96,6 +97,15 @@ class ChatMessagingService extends Service
         }
         if ($after = array_get($options, 'after')) {
             $options['after'] = $this->chatMessageRepository->getByHash($after)->id;
+            return $options;
+        }
+        return $options;
+    }
+
+    protected function truncateTakeOption($options)
+    {
+        if (array_get($options, 'take') > 50) {
+            $options['take'] = 50;
             return $options;
         }
         return $options;
