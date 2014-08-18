@@ -20,6 +20,9 @@
         <testsuite name="acceptance">
             <directory>./app/tests/acceptance/</directory>
         </testsuite>
+        <testsuite name="acceptance-chat">
+            <directory>./app/tests/acceptance/chat/</directory>
+        </testsuite>
         <testsuite name="acceptance-general">
             <directory>./app/tests/acceptance/general/</directory>
         </testsuite>

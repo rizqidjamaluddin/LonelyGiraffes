@@ -27,4 +27,10 @@ trait HasEloquentHash
     {
         return $this->where('hash', '=', $hash)->delete();
     }
+
+    public function setHashAttribute($value)
+    {
+        $this->attributes['hash'] = (string) $value;
+    }
+
 }

@@ -3,7 +3,7 @@
 /**
  * @method assertTrue($a)
  * @method assertFalse($a)
- * @method assertEquals($a, $b)
+ * @method assertEquals($expected, $actual)
  * @method setExpectedException($exception)
  * @method markTestIncomplete($message = "")
  * @method markTestSkipped($message = "")

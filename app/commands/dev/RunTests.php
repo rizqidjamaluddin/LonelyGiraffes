@@ -14,6 +14,7 @@ class RunTests extends Command
     protected $commands = [
         'unit'       => 'phpunit --testsuite=unit',
         'acceptance.general' => 'phpunit --testsuite=acceptance-general',
+        'acceptance.chat' => 'phpunit --testsuite=acceptance-chat',
         'acceptance.geolocation' => 'phpunit --testsuite=acceptance-geolocation',
         'component'  => 'phpunit --testsuite=component',
     ];
