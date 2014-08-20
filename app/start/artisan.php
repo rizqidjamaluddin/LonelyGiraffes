@@ -24,3 +24,4 @@ Artisan::add(new SeedLookup());
 
 // lgdev
 Artisan::add(new RunTests());
+Artisan::add(new EmulateFail());
