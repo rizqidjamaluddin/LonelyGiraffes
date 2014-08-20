@@ -17,7 +17,7 @@ abstract class TestCase extends Illuminate\Foundation\Testing\TestCase {
 	 */
 	public function createApplication()
 	{
-        ini_set('memory_limit', '512M');
+        ini_set('memory_limit', '368M');
         $unitTesting = true;
 		$testEnvironment = 'testing';
 		return require __DIR__.'/../../bootstrap/start.php';
