@@ -84,6 +84,6 @@ return array(
 	|
 	*/
 
-	'prefix' => 'lg',
+	'prefix' => 'lg-api-v2',
 
 );
