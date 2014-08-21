@@ -46,7 +46,8 @@ class GeolocationTest extends AcceptanceCase
     }
 
     protected function it_has_a_humanized_string_form()
-    {$results = $this->toJson($this->call('GET', '/api/locations?hint=new'))->locations;
+    {
+        $results = $this->toJson($this->call('GET', '/api/locations?hint=new'))->locations;
         $this->assertResponseOk();
 
         // similar to above test, with humanized check
