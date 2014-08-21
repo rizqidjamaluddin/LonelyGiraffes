@@ -7,13 +7,15 @@ class CommentTest extends AcceptanceCase
     public function posts_can_have_comment_streams()
     {
         $mario = $this->registerAndLoginAsMario();
-        $shout = $this->callJson('POST', '/api/shouts', 'This shout will have comments')->shouts[0]->hash;
+        $shout = $this->callJson('POST', '/api/shouts', ['body' => 'This shout will have comments'])->shouts[0]->hash;
 
-        $this->callJson('POST', "/api/shouts/$shout/comments", "Comment 1");
+        $this->callJson('POST', "/api/shouts/$shout/comments", ['body' => "Comment 1"]);
         $this->assertResponseOk();
 
         $fetch = $this->callJson('GET', "/api/shouts/$shout/comments");
         $this->assertResponseOk();
+        $this->assertEquals(1, count($fetch->comments));
+        $this->assertEquals("Comment 1", $fetch->comments[0]->body);
 
         // extra tests
 
