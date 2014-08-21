@@ -101,4 +101,13 @@ class Location
         return [null, null];
     }
 
+    public function getHumanizedForm()
+    {
+        $humanized = '';
+        if ($this->city) $humanized .= $this->city . ', ';
+        if ($this->state) $humanized .= $this->state . ', ';
+        if ($this->country) $humanized .= $this->country;
+        return $humanized;
+    }
+
 }
