@@ -2,6 +2,7 @@
 
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
+use Giraffe\Comments\Commentable;
 use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Users\UserModel;
@@ -15,7 +16,7 @@ use Giraffe\Users\UserRepository;
  * @property $body string
  * @property $html_body string
  */
-class ShoutModel extends Eloquent implements Postable, ProtectedResource, TransformableInterface {
+class ShoutModel extends Eloquent implements Postable, ProtectedResource, TransformableInterface, Commentable {
     
     use HasEloquentHash;
 

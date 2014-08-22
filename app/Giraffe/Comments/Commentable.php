@@ -2,5 +2,5 @@
 
 interface Commentable
 {
-
+    public function getKey();
 } 

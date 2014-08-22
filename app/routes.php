@@ -62,6 +62,8 @@ Route::api(
              Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
              Route::get('shouts/user/{resource}', ['uses' => 'ShoutController@showAll']);
              Route::delete('shouts/{resource}', ['uses' => 'ShoutController@destroy']);
+             Route::get('shouts/{r}/comments', ['uses' => 'ShoutCommentController@index']);
+             Route::post('shouts/{r}/comments', ['uses' => 'ShoutCommentController@store']);
 
              Route::post('users', ['uses' => 'UserController@store']);
              Route::delete('users/{resource}', ['uses' => 'UserController@destroy']);

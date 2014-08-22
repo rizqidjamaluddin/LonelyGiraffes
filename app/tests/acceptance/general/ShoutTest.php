@@ -224,4 +224,13 @@ class ShoutTest extends AcceptanceCase
         $this->assertEquals('This shout should be intact', $posts->posts[0]->body->body);
         $this->assertEquals('This shout should be intact', $posts->posts[1]->body->body);
     }
+
+    /**
+     * @test
+     */
+    public function shouts_have_comment_metadata()
+    {
+        // comment metadata section should include number of comments and maybe a compact list of users
+        $this->markTestIncomplete();
+    }
 } 
