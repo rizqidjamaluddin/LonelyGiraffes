@@ -8,6 +8,7 @@ use Giraffe\Common\Repository;
 use Giraffe\Logging\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 use stdClass;
 
 /**
@@ -80,6 +81,16 @@ abstract class EloquentRepository implements Repository
             throw new NotFoundModelException();
         }
         return $model;
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Collection|array $collection
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getMany($collection)
+    {
+        if (count($collection) == 0) return new Collection;
+        return $this->model->whereIn('id', $collection)->get();
     }
 
     public function create(array $attributes)

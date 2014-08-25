@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Shouts;
 
+use Giraffe\Authorization\GatekeeperUnauthorizedException;
 use Giraffe\Comments\CommentStreamModel;
 use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Common\Service;
@@ -32,15 +33,19 @@ class ShoutCommentingService extends Service
         parent::__construct();
     }
 
-    public function getForShout($shout)
+    public function getForShout($shout, $options = [])
     {
+        /** @var ShoutModel $shout */
         $shout = $this->shoutRepository->getByHash($shout);
+        $comments = $shout->getComments($options);
 
-        return new Collection;
+        return $comments;
     }
 
     public function addComment($shout, $body, $user)
     {
+        if (!$user) throw new GatekeeperUnauthorizedException;
+
         /** @var ShoutModel $shout */
         $shout = $this->shoutRepository->getByHash($shout);
         $user = $this->userRepository->getByHash($user);

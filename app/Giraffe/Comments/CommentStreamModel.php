@@ -8,6 +8,32 @@ class CommentStreamModel extends Eloquent
     protected $table = "comment_streams";
     protected $fillable = ['commentable_type', 'commentable_id'];
 
+    public function getComments($options = [])
+    {
+        /** @var CommentRepository $commentRepository */
+        $commentRepository = \App::make(CommentRepository::class);
+
+        return $commentRepository->getFor($this, $options);
+    }
+
+    public function getCommentCount()
+    {
+        /** @var CommentRepository $commentRepository */
+        $commentRepository = \App::make(CommentRepository::class);
+
+        return $commentRepository->countFor($this);
+
+    }
+
+    public function getParticipatingUsers()
+    {
+        /** @var CommentRepository $commentRepository */
+        $commentRepository = \App::make(CommentRepository::class);
+
+        $users = $commentRepository->getUsersFor($this);
+        return $users;
+    }
+
     public function postComment($body, UserModel $user)
     {
         /** @var CommentRepository $commentRepository */
@@ -25,4 +51,4 @@ class CommentStreamModel extends Eloquent
         $instance->commentable_id = $commentable->getKey();
         return $instance;
     }
-} 
+}

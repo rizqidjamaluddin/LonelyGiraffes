@@ -4,7 +4,7 @@ use Dingo\Api\Exception\ResourceException;
 class ValidationException extends ResourceException
 {
 
-    public function __construct($message, $context)
+    public function __construct($message, $context = [])
     {
         // strip out empty context keys
         $context = array_filter($context, function($value){

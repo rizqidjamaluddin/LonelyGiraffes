@@ -3,11 +3,13 @@
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Comments\Commentable;
+use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Users\UserModel;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Collection;
 
 /**
  * @property $id int
@@ -36,6 +38,40 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
         return $userRepository->getById($this->user_id);
     }
 
+    public function getComments($options = [])
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+        $stream = $commentStreamRepository->getFor($this);
+
+        if (!$stream) return new Collection();
+
+        return $stream->getComments($options);
+    }
+
+    public function getCommentCount()
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+        $stream = $commentStreamRepository->getFor($this);
+
+        if (!$stream) return 0;
+
+        return $stream->getCommentCount();
+    }
+
+    public function getCommentators()
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+        $stream = $commentStreamRepository->getFor($this);
+
+        if (!$stream) return new Collection();
+
+        return $stream->getParticipatingUsers();
+    }
+
+
     public function author()
     {
         return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
@@ -54,7 +90,6 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
     {
         return "shout";
     }
-
     public function checkOwnership(UserModel $userModel)
     {
         return $this->user_id == $userModel->id;

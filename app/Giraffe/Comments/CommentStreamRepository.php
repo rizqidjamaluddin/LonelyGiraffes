@@ -16,9 +16,7 @@ class CommentStreamRepository extends EloquentRepository
      */
     public function getOrCreateFor(Commentable $commentable)
     {
-        $class = get_class($commentable);
-        $id = $commentable->getKey();
-        $find = $this->model->where('commentable_type', $class)->where('commentable_id', $id)->first();
+        $find = $this->getFor($commentable);
 
         // return stream if immediately available
         if ($find) return $find;
@@ -27,5 +25,16 @@ class CommentStreamRepository extends EloquentRepository
         $create = CommentStreamModel::generate($commentable);
         $this->save($create);
         return $create;
+    }
+
+    /**
+     * @param Commentable $commentable
+     * @return CommentStreamModel
+     */
+    public function getFor(Commentable $commentable)
+    {
+        $class = get_class($commentable);
+        $id = $commentable->getKey();
+        return $this->model->where('commentable_type', $class)->where('commentable_id', $id)->first();
     }
 } 
