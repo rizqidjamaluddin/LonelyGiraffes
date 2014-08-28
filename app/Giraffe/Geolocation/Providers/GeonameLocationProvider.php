@@ -53,6 +53,7 @@ class GeonameLocationProvider implements LocationProvider
               ->where('city', 'LIKE', $hint . '%')
               ->take($limit)
               ->orderBy('population', 'desc')
+              ->rememberForever()
               ->get()
         );
 
