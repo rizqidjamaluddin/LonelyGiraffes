@@ -23,11 +23,7 @@ class GeonameLocationProvider implements LocationProvider
         // look up by city
         $cities = $this->searchForCities($hint);
 
-        // Look up by state - return highest pop city.
-        $stateCities = $this->searchViaState($hint);
-
         // merge and transform
-        $cities = $cities->merge($stateCities);
         $results = $this->transformToLocations($cities);
 
         return $results;
@@ -41,32 +37,6 @@ class GeonameLocationProvider implements LocationProvider
     protected function getCompositeIdentifier($city)
     {
         return $city->country_code . '.' . $city->state_code . '.' . $city->city;
-    }
-
-    /**
-     * There isn't a single consistent way to make this a join so only one result is returned each
-     * so we'll just do a naive multi-query lookup. Caching will help.
-     *
-     * @param $hint
-     * @return Collection
-     */
-    protected function searchViaState($hint)
-    {
-        /** @var Array $states */
-        $states = DB::table('lookup_geoname_states')->where('name', 'LIKE', $hint . '%')
-                    ->take(self::STATE_SEARCH_CAP)
-                    ->get();
-        $stateCities = new Collection();
-        foreach ($states as $state) {
-            $stateCities->push(
-                DB::table(self::CITY_TABLE)->where('state_code', $state->state_code)
-                  ->where('country_code', $state->country_code)
-                  ->orderBy('population', 'desc')
-                  ->first()
-            );
-        }
-
-        return $stateCities;
     }
 
     /**
