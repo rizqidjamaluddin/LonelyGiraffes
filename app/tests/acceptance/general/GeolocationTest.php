@@ -37,12 +37,6 @@ class GeolocationTest extends AcceptanceCase
         $this->assertEquals($expectNewYork->city, 'New York City');
         $this->assertEquals($expectNewYork->state, 'New York');
         $this->assertEquals($expectNewYork->country, 'United States');
-
-        // Sydney, New South Wales expected to be the second result
-        $expectNSW = $results[1];
-        $this->assertEquals($expectNSW->city, 'Sydney');
-        $this->assertEquals($expectNSW->state, 'New South Wales');
-        $this->assertEquals($expectNSW->country, 'Australia');
     }
 
     protected function it_has_a_humanized_string_form()
