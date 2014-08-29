@@ -2,12 +2,13 @@
 
 use DB;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Geolocation\ExactLocationProvider;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationProvider;
 use Giraffe\Geolocation\NotFoundLocationException;
 use Illuminate\Support\Collection;
 
-class GeonameLocationProvider implements LocationProvider
+class GeonameLocationProvider implements LocationProvider, ExactLocationProvider
 {
     const CITY_TABLE = 'lookup_geoname_places';
     const STATE_SEARCH_CAP = 10;
@@ -101,6 +102,7 @@ class GeonameLocationProvider implements LocationProvider
      * @param string $city
      * @param string $state
      * @param string $country
+     * @throws \Giraffe\Geolocation\NotFoundLocationException
      * @return Location
      */
     public function findExact($city, $state, $country)
