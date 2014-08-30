@@ -2,6 +2,7 @@
 use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchStrategy;
 use Giraffe\Geolocation\Providers\GeonameLocationProvider;
+use Giraffe\Geolocation\Providers\GeonamePostalCodeLocationProvider;
 use Illuminate\Support\ServiceProvider;
 
 class GiraffeServiceProvider extends ServiceProvider {
@@ -29,8 +30,10 @@ class GiraffeServiceProvider extends ServiceProvider {
         /** @var LocationService $locationService */
         $locationService = $this->app->make('Giraffe\Geolocation\LocationService');
 
-        $geonameLocationProvider = $this->app->make('Giraffe\Geolocation\Providers\GeonameLocationProvider');
+        $geonameLocationProvider = $this->app->make(GeonameLocationProvider::class);
+        $geonamePostalCodeLocationProvider = $this->app->make(GeonamePostalCodeLocationProvider::class);
         $locationService->pushProvider($geonameLocationProvider);
+        $locationService->pushProvider($geonamePostalCodeLocationProvider);
         $locationService->setCanonicalProvider($geonameLocationProvider);
 
         $fiveDegreeCellStrat = new TwoDegreeCellSearchStrategy();
