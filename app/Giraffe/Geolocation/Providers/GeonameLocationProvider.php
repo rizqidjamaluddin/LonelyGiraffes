@@ -129,7 +129,7 @@ class GeonameLocationProvider implements LocationProvider, ExactLocationProvider
             throw new NotFoundLocationException;
         }
 
-        $place = Location::makeFromCity($city, $state, $country);
+        $place = Location::makeFromCity($city, $result->state, $result->country);
         $place->provideCoordinates($result->lat, $result->long);
         $place->providePopulation($result->population);
         return $place;
