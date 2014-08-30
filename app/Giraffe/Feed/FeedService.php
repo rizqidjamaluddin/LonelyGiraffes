@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Feed;
 
 use Cache;
+use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Common\Service;
 use Giraffe\Geolocation\LocationHelper;
 use Giraffe\Parser\Parser;
@@ -46,20 +47,16 @@ class FeedService extends Service
         $this->cache = $cache;
     }
 
-    public function getGlobalFeed($options)
+    public function getGlobalFeed(QueryFilter $options)
     {
         $this->gatekeeper->mayI('read', 'feed')->please();
-        $options = array_only($options, ['before', 'after', 'take']);
 
-        $options = $this->truncateTakeOption($options);
-        $options = $this->translateHashOptionsToIDs($options);
-
-        if (count($options) > 0) {
+        if ($options->any()) {
             return $this->postRepository->getGlobal($options);
         }
 
         // only update the top post cache if it was called without options
-        $fetch = $this->postRepository->getGlobal();
+        $fetch = $this->postRepository->getGlobal($options);
         $this->setTopPostCache($fetch->first());
         return $fetch;
     }
@@ -91,44 +88,12 @@ class FeedService extends Service
         return $post;
     }
 
-    public function getUserPosts($user, $options)
+    public function getUserPosts($user, QueryFilter $options)
     {
         $user = $this->userRepository->getByHash($user);
-        $options = $this->translateHashOptionsToIDs($options);
         // no specific gatekeeper check here; adjust PostRepository call if policy changes
         $this->gatekeeper->mayI('read', 'posts')->please();
-        $options = $this->truncateTakeOption($options);
         return $this->postRepository->getForUser($user->id, $options);
     }
-
-    /**
-     * @param $options
-     * @return mixed
-     */
-    protected function translateHashOptionsToIDs($options)
-    {
-        if ($before = array_get($options, 'before')) {
-            $options['before'] = $this->postRepository->getByHash($before)->id;
-        }
-        if ($after = array_get($options, 'after')) {
-            $options['after'] = $this->postRepository->getByHash($after)->id;
-            return $options;
-        }
-        return $options;
-    }
-
-    /**
-     * @param $options
-     * @return mixed
-     */
-    protected function truncateTakeOption($options)
-    {
-        if (array_get($options, 'take') > 20) {
-            $options['take'] = 20;
-            return $options;
-        }
-        return $options;
-    }
-
 
 } 

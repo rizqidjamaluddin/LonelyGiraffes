@@ -1,4 +1,4 @@
-<?php  namespace Giraffe\Common; 
+<?php  namespace Giraffe\Common\Value;
 
 use Illuminate\Support\Str;
 

@@ -1,6 +1,6 @@
 <?php  namespace Giraffe\Chat;
 
-use Giraffe\Common\Hash;
+use Giraffe\Common\Value\Hash;
 use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\Service;
 use Giraffe\Parser\Parser;

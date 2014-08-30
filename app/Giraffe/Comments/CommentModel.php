@@ -4,7 +4,7 @@ use Eloquent;
 use Giraffe\Authorization\Gatekeeper;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
-use Giraffe\Common\Hash;
+use Giraffe\Common\Value\Hash;
 use Giraffe\Parser\Parser;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
