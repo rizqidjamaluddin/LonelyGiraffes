@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Chat;
 
+use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Common\Value\Hash;
 use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\Service;
@@ -70,7 +71,7 @@ class ChatMessagingService extends Service
         return $generated;
     }
 
-    public function getRecentMessages($room, $user, $options)
+    public function getRecentMessages($room, $user, QueryFilter $options)
     {
         $user = $this->userRepository->getByHash($user);
         $room = $this->chatroomRepository->getByHash($room);
@@ -80,34 +81,10 @@ class ChatMessagingService extends Service
         $userMembership = $this->chatroomMembershipRepository->findForUserInRoom($user, $room);
 
         $earliestLimit = $userMembership->created_at;
-        $options = array_only($options, ['before', 'after', 'take']);
-        $options['earliest'] = $earliestLimit;
-
-        $options = $this->translateHashOptionsToIDs($options);
-        $options = $this->truncateTakeOption($options);
+        $options->set('earliest', $earliestLimit);
 
         $recent = $this->chatMessageRepository->getRecentIn($room, $options);
         return $recent;
     }
 
-    protected function translateHashOptionsToIDs($options)
-    {
-        if ($before = array_get($options, 'before')) {
-            $options['before'] = $this->chatMessageRepository->getByHash($before)->id;
-        }
-        if ($after = array_get($options, 'after')) {
-            $options['after'] = $this->chatMessageRepository->getByHash($after)->id;
-            return $options;
-        }
-        return $options;
-    }
-
-    protected function truncateTakeOption($options)
-    {
-        if (array_get($options, 'take') > 50) {
-            $options['take'] = 50;
-            return $options;
-        }
-        return $options;
-    }
-} 
+}

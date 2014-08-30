@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Giraffe\Common\EloquentRepository;
+use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Users\UserModel;
 
 class ChatMessageRepository extends EloquentRepository
@@ -11,9 +12,9 @@ class ChatMessageRepository extends EloquentRepository
         parent::__construct($chatMessageModel);
     }
 
-    public function getRecentIn(ChatroomModel $room, $options)
+    public function getRecentIn(ChatroomModel $room, QueryFilter $options)
     {
-        $amount = array_get($options, 'take') ?: 30;
+        $amount = $options->get('take');
 
         $q = $this->model;
         $q = $this->appendSinceOption($q, $options);
@@ -22,23 +23,22 @@ class ChatMessageRepository extends EloquentRepository
         return $q->where('chatroom_id', $room->id)->limit($amount)->orderBy('id', 'desc')->get();
     }
 
-    protected function appendSinceOption($q, $options)
+    protected function appendSinceOption($q, QueryFilter $options)
     {
-        $since = array_get($options, 'earliest');
+        $since = $options->get('earliest');
         if (!$since) return $q;
         if ($since instanceof Carbon) $since = $since->toDateTimeString();
         return $q->where('created_at', '>=', $since);
     }
 
-    protected function appendOptions($query, $options)
+    protected function appendOptions($query, QueryFilter $options)
     {
-        $take = array_get($options, 'take') ?: 10;
-        $query = $query->take($take);
-        if ($after = array_get($options, 'after')) {
-            $query = $query->where('id', '>', $after);
+        $query = $query->take($options->get('take'));
+        if ($after = $options->get('after')) {
+            $query = $query->where('id', '>', $after->id);
         }
-        if ($before = array_get($options, 'before')) {
-            $query = $query->where('id', '<', $before);
+        if ($before = $options->get('before')) {
+            $query = $query->where('id', '<', $before->id);
         }
         return $query;
     }
