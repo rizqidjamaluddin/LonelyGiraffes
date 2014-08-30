@@ -40,9 +40,9 @@ class GeonameFilter extends Command
     public function fire()
     {
 
-        $path = __DIR__ . '/../../' . $this->option('source');
+        $path = app_path() . $this->option('source');
         $file = new SplFileObject($path);
-        $destination = new SplFileObject(__DIR__ . '/../../' . $this->option('destination'), 'w+');
+        $destination = new SplFileObject(app_path() . $this->option('destination'), 'w+');
         $destination->ftruncate(0);
 
         $this->info('Filtering Geonames database to cities with a population of over ' . $this->option('minpop') . '.');
@@ -109,14 +109,14 @@ class GeonameFilter extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Source geonames file.',
-                'app/data/geonames-cities-15000.txt'
+                '/data/geonames-cities-15000.txt'
             ),
             array(
                 'destination',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Destination file to write to.',
-                'app/data/geonames-cities-filtered.txt'
+                '/data/geonames-cities-filtered.txt'
             ),
             array(
                 'minpop',
