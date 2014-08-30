@@ -7,7 +7,7 @@ class GeolocationTest extends AcceptanceCase
     {
         parent::setUp();
         $m = microtime(true);
-        Artisan::call('lgdb:geonames', ['source' => 'app/data/geonames-1M-testdata.txt']);
+        Artisan::call('lg:db:geonames', ['source' => '/data/geonames-1M-testdata.txt']);
     }
 
     /**
