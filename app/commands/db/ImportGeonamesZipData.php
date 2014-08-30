@@ -2,6 +2,7 @@
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\ProgressHelper;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -68,16 +69,18 @@ class ImportGeonamesZipData extends Command
 
         $this->info('> Starting data import...');
 
-        /** @var ProgressHelper $progress */
-        $progress = $this->getHelperSet()->get('progress');
         $source->seek($source->getSize());
         $linesTotal = $source->key();
         $source->rewind();
-        $progress->start($this->output, $linesTotal + 1);
+
+        $progress = new ProgressBar($this->output, $linesTotal);
+        $progress->setFormat("%message%\n %current%/%max% [%bar%] %percent:3s%% (%elapsed:6s%/%estimated:-6s%)");
 
         $locationCount = 0;
         $insertCount = 0;
         $start = microtime(true);
+
+        $progress->start();
         while (!$source->eof()) {
             $row = $source->fgets();
             $row = explode("\t", $row);
@@ -102,7 +105,10 @@ class ImportGeonamesZipData extends Command
             );
 
             $insertCount++;
-            if ($locationCount % 100 == 0 ) $progress->setCurrent($locationCount);
+            if ($locationCount % 100 == 0 ){
+                $progress->setCurrent($locationCount);
+                $progress->setMessage(sprintf("%s is at %50s, %s, %s ...", $code, $city, $state, $country));
+            }
 
         }
         $progress->finish();

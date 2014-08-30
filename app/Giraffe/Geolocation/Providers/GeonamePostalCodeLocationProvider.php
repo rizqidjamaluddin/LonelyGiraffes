@@ -26,7 +26,7 @@ class GeonamePostalCodeLocationProvider implements LocationProvider
     public function search($hint)
     {
         try {
-            $points = new Collection(\DB::table('lookup_geoname_postal_codes')->where('code', 'LIKE', $hint . '%')->limit(10)->rememberForever()->get());
+            $points = new Collection(\DB::table('lookup_geoname_postal_codes')->where('code', $hint)->limit(10)->rememberForever()->get());
         } catch (QueryException $e) {
             return new Collection;
         }
