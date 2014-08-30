@@ -17,7 +17,7 @@ class GeonameLocationProvider implements LocationProvider, ExactLocationProvider
 
     /**
      * @param $hint
-     * @return \Giraffe\Geolocation\Location[]
+     * @return Collection
      */
     public function search($hint)
     {
@@ -63,7 +63,7 @@ class GeonameLocationProvider implements LocationProvider, ExactLocationProvider
 
     /**
      * @param $cities
-     * @return array
+     * @return Collection
      */
     protected function transformToLocations($cities)
     {
@@ -87,15 +87,7 @@ class GeonameLocationProvider implements LocationProvider, ExactLocationProvider
             $registry[] = $this->getCompositeIdentifier($city);
         }
 
-        $results = $results->sortBy(
-            function ($location) {
-                return $location->population;
-            },
-            SORT_NUMERIC,
-            true
-        );
-
-        return $results->toArray();
+        return $results;
     }
 
     /**
@@ -110,12 +102,36 @@ class GeonameLocationProvider implements LocationProvider, ExactLocationProvider
         $result = DB::table(self::CITY_TABLE)
                     ->where('city', $city)
                     ->where('state', $state)
-                    ->where('country', $country)->first();
+                    ->where('country', $country)
+                    ->rememberForever()
+                    ->first();
 
-        if (!$result) throw new NotFoundLocationException;
+        if (!$result) {
+            throw new NotFoundLocationException;
+        }
 
         $place = Location::makeFromCity($city, $state, $country);
         $place->provideCoordinates($result->lat, $result->long);
+        $place->providePopulation($result->population);
+        return $place;
+    }
+
+    public function findByStateAndCountryCode($city, $state, $country)
+    {
+        $result = DB::table(self::CITY_TABLE)
+                    ->where('city', $city)
+                    ->where('state_code', $state)
+                    ->where('country_code', $country)
+                    ->rememberForever()
+                    ->first();
+
+        if (!$result) {
+            throw new NotFoundLocationException;
+        }
+
+        $place = Location::makeFromCity($city, $state, $country);
+        $place->provideCoordinates($result->lat, $result->long);
+        $place->providePopulation($result->population);
         return $place;
     }
 }

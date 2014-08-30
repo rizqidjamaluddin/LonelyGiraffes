@@ -52,7 +52,7 @@ class Location
         $fragments = explode(',', $location);
         if (count($fragments) == 3) {
             array_walk($fragments, function(&$v){ $v = trim($v); });
-            /** @var LocationProvider $canonicalSource */
+            /** @var ExactLocationProvider $canonicalSource */
             $canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
             return $canonicalSource->findExact($fragments[0], $fragments[1], $fragments[2]);
         }

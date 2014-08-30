@@ -14,7 +14,7 @@ class GenerateGeonames extends Command
      *
      * @var string
      */
-    protected $name = 'lgdb:geonames';
+    protected $name = 'lg:db:geonames';
 
     /**
      * The console command description.
