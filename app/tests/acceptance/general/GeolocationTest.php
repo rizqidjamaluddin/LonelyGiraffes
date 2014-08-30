@@ -7,7 +7,7 @@ class GeolocationTest extends AcceptanceCase
     {
         parent::setUp();
         $m = microtime(true);
-        Artisan::call('lgdb:geonames', ['source' => 'app/data/geonames-1M-testdata.txt']);
+        Artisan::call('lg:db:geonames', ['source' => '/data/geonames-1M-testdata.txt']);
     }
 
     /**
@@ -19,6 +19,7 @@ class GeolocationTest extends AcceptanceCase
     {
         $this->it_cannot_return_results_for_one_letter_hints();
         $this->it_can_look_up_a_city_name_and_state_name();
+        $this->it_has_a_humanized_string_form();
         $this->it_can_distinguish_cities_of_the_same_name_in_one_country();
 
         $this->it_can_find_unicode_city_names();
@@ -36,12 +37,20 @@ class GeolocationTest extends AcceptanceCase
         $this->assertEquals($expectNewYork->city, 'New York City');
         $this->assertEquals($expectNewYork->state, 'New York');
         $this->assertEquals($expectNewYork->country, 'United States');
+    }
 
-        // Sydney, New South Wales expected to be the second result
-        $expectNSW = $results[1];
-        $this->assertEquals($expectNSW->city, 'Sydney');
-        $this->assertEquals($expectNSW->state, 'New South Wales');
-        $this->assertEquals($expectNSW->country, 'Australia');
+    protected function it_has_a_humanized_string_form()
+    {
+        $results = $this->toJson($this->call('GET', '/api/locations?hint=new'))->locations;
+        $this->assertResponseOk();
+
+        // similar to above test, with humanized check
+        $expectNewYork = $results[0];
+        $this->assertEquals($expectNewYork->humanized, 'New York City, New York, United States');
+        $this->assertEquals($expectNewYork->city, 'New York City');
+        $this->assertEquals($expectNewYork->state, 'New York');
+        $this->assertEquals($expectNewYork->country, 'United States');
+
     }
 
     protected function it_cannot_return_results_for_one_letter_hints()

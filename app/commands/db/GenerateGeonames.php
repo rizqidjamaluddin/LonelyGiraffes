@@ -14,7 +14,7 @@ class GenerateGeonames extends Command
      *
      * @var string
      */
-    protected $name = 'lgdb:geonames';
+    protected $name = 'lg:db:geonames';
 
     /**
      * The console command description.
@@ -47,13 +47,15 @@ class GenerateGeonames extends Command
         $total_countries = 0;
         $total_states = 0;
 
-        $path = __DIR__ . '/../../' . $this->argument('source');
+        $path = app_path() . $this->argument('source');
         $filesize = File::size($path);
         $this->info('Importing Geonames database.');
         $this->info("Source File: $path ($filesize bytes)");
 
+        $countries = new SplFileObject(app_path() . '/data/general-countries.csv');
+        $states = new SplFileObject(app_path() . '/data/geonames-states.txt');
+
         $this->info('> Creating countries list table...');
-        $countries = new SplFileObject(__DIR__ . '/../data/general-countries.csv');
         DB::statement('drop table if exists `lookup_countries`');
 //        DB::statement(
 //            'CREATE TABLE `lookup_countries` (
@@ -117,7 +119,6 @@ class GenerateGeonames extends Command
 
 
         $this->info('> Creating administration district list table...');
-        $states = new SplFileObject(__DIR__ . '/../data/geonames-states.txt');
         DB::statement('drop table if exists `lookup_geoname_states`');
 
         Schema::create(
@@ -306,7 +307,7 @@ class GenerateGeonames extends Command
                 'source',
                 InputArgument::OPTIONAL,
                 'Source geonames file',
-                'app/data/geonames-cities-15000.txt'
+                '/data/geonames-cities-15000.txt'
             ),
         );
     }

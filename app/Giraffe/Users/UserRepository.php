@@ -26,6 +26,10 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
         $this->userSettingModel = $userSettingModel;
     }
 
+    public function getFromIds(array $ids){
+        return $this->model->whereIn('id', $ids)->get();
+    }
+
     public function update($identifier, Array $attributes)
     {
         $identifier = $this->flushForUser($identifier);

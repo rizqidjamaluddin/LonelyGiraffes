@@ -13,6 +13,7 @@
 
 // lgdb
 Artisan::add(new GenerateGeonames());
+Artisan::add(new ImportGeonamesZipData());
 
 // lgutil
 Artisan::add(new Promote());
@@ -24,3 +25,4 @@ Artisan::add(new SeedLookup());
 
 // lgdev
 Artisan::add(new RunTests());
+Artisan::add(new EmulateFail());

@@ -224,4 +224,53 @@ class ShoutTest extends AcceptanceCase
         $this->assertEquals('This shout should be intact', $posts->posts[0]->body->body);
         $this->assertEquals('This shout should be intact', $posts->posts[1]->body->body);
     }
+
+    /**
+     * @test
+     */
+    public function shouts_show_the_number_of_comments_they_have()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $shout = $this->callJson('POST', '/api/shouts', ['body' => 'A shout with comments'])->shouts[0]->hash;
+
+        $fetch = $this->callJson('GET', "/api/shouts/$shout");
+        $this->assertResponseOk();
+        $this->assertEquals(0, $fetch->shouts[0]->comment_count);
+
+        $comment = $this->callJson('POST', "/api/shouts/$shout/comments", ['body' => "Comment 1"]);
+
+        $fetch = $this->callJson('GET', "/api/shouts/$shout");
+        $this->assertResponseOk();
+        $this->assertEquals(1, $fetch->shouts[0]->comment_count);
+    }
+
+    /**
+     * Similar to the above, except this is a small list of people participating in a shout comment thread
+     * @test
+     */
+    public function shouts_have_comment_author_lists()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $shout = $this->callJson('POST', '/api/shouts', ['body' => 'A shout with comments'])->shouts[0]->hash;
+
+        $fetch = $this->callJson('GET', "/api/shouts/$shout");
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($fetch->shouts[0]->commentators));
+
+        $comment = $this->callJson('POST', "/api/shouts/$shout/comments", ['body' => "Comment 1"]);
+        $fetch = $this->callJson('GET', "/api/shouts/$shout");
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetch->shouts[0]->commentators));
+        $this->assertEquals($this->mario['name'], $fetch->shouts[0]->commentators[0]->name);
+
+        $luigi = $this->registerAndLoginAsLuigi();
+
+        $comment = $this->callJson('POST', "/api/shouts/$shout/comments", ['body' => "Comment 1"]);
+        $fetch = $this->callJson('GET', "/api/shouts/$shout");
+        $this->assertResponseOk();
+        $this->assertEquals(2, count($fetch->shouts[0]->commentators));
+        $commentators = array_pluck($fetch->shouts[0]->commentators, 'name');
+        $this->assertTrue(in_array($this->mario['name'], $commentators));
+        $this->assertTrue(in_array($this->luigi['name'], $commentators));
+    }
 } 

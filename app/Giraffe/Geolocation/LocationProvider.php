@@ -1,18 +1,12 @@
 <?php  namespace Giraffe\Geolocation;
 
+use Illuminate\Support\Collection;
+
 interface LocationProvider
 {
     /**
      * @param $hint
-     * @return Location[]
+     * @return Collection
      */
     public function search($hint);
-
-    /**
-     * @param string $city
-     * @param string $state
-     * @param string $country
-     * @return Location
-     */
-    public function findExact($city, $state, $country);
 }

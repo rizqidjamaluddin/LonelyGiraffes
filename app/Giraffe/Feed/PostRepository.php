@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Feed;
 
 use Giraffe\Common\EloquentRepository;
+use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Feed\Postable;
 use Giraffe\Feed\PostModel;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,7 @@ class PostRepository extends EloquentRepository
         return $this->model->with('postable', 'postable.author')->where('hash', $hash)->first();
     }
 
-    public function getForUser($userId, $options)
+    public function getForUser($userId, QueryFilter $options)
     {
         $q = $this->model;
         $q = $this->appendOptions($q, $options);
@@ -38,7 +39,7 @@ class PostRepository extends EloquentRepository
      * @param $options
      * @return Collection
      */
-    public function getGlobal($options = [])
+    public function getGlobal(QueryFilter $options)
     {
         $q = $this->model;
         $q = $this->appendOptions($q, $options);
@@ -51,15 +52,14 @@ class PostRepository extends EloquentRepository
      * @param         $options
      * @return \Illuminate\Database\Query\Builder
      */
-    protected function appendOptions($query, $options)
+    protected function appendOptions($query, QueryFilter $options)
     {
-        $take = array_get($options, 'take') ?: 10;
-        $query = $query->take($take);
-        if ($after = array_get($options, 'after')) {
-            $query = $query->where('id', '>', $after);
+        $query = $query->take($options->get('take'));
+        if ($after = $options->get('after')) {
+            $query = $query->where('id', '>', $after->id);
         }
-        if ($before = array_get($options, 'before')) {
-            $query = $query->where('id', '<', $before);
+        if ($before = $options->get('before')) {
+            $query = $query->where('id', '<', $before->id);
         }
         return $query;
     }

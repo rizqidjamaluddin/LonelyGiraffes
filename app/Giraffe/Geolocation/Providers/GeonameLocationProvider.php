@@ -2,12 +2,13 @@
 
 use DB;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Geolocation\ExactLocationProvider;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationProvider;
 use Giraffe\Geolocation\NotFoundLocationException;
 use Illuminate\Support\Collection;
 
-class GeonameLocationProvider implements LocationProvider
+class GeonameLocationProvider implements LocationProvider, ExactLocationProvider
 {
     const CITY_TABLE = 'lookup_geoname_places';
     const STATE_SEARCH_CAP = 10;
@@ -16,18 +17,14 @@ class GeonameLocationProvider implements LocationProvider
 
     /**
      * @param $hint
-     * @return \Giraffe\Geolocation\Location[]
+     * @return Collection
      */
     public function search($hint)
     {
         // look up by city
         $cities = $this->searchForCities($hint);
 
-        // Look up by state - return highest pop city.
-        $stateCities = $this->searchViaState($hint);
-
         // merge and transform
-        $cities = $cities->merge($stateCities);
         $results = $this->transformToLocations($cities);
 
         return $results;
@@ -44,32 +41,6 @@ class GeonameLocationProvider implements LocationProvider
     }
 
     /**
-     * There isn't a single consistent way to make this a join so only one result is returned each
-     * so we'll just do a naive multi-query lookup. Caching will help.
-     *
-     * @param $hint
-     * @return Collection
-     */
-    protected function searchViaState($hint)
-    {
-        /** @var Array $states */
-        $states = DB::table('lookup_geoname_states')->where('name', 'LIKE', $hint . '%')
-                    ->take(self::STATE_SEARCH_CAP)
-                    ->get();
-        $stateCities = new Collection();
-        foreach ($states as $state) {
-            $stateCities->push(
-                DB::table(self::CITY_TABLE)->where('state_code', $state->state_code)
-                  ->where('country_code', $state->country_code)
-                  ->orderBy('population', 'desc')
-                  ->first()
-            );
-        }
-
-        return $stateCities;
-    }
-
-    /**
      * @param $hint
      * @return Collection
      */
@@ -83,6 +54,7 @@ class GeonameLocationProvider implements LocationProvider
               ->where('city', 'LIKE', $hint . '%')
               ->take($limit)
               ->orderBy('population', 'desc')
+              ->rememberForever()
               ->get()
         );
 
@@ -91,7 +63,7 @@ class GeonameLocationProvider implements LocationProvider
 
     /**
      * @param $cities
-     * @return array
+     * @return Collection
      */
     protected function transformToLocations($cities)
     {
@@ -115,21 +87,14 @@ class GeonameLocationProvider implements LocationProvider
             $registry[] = $this->getCompositeIdentifier($city);
         }
 
-        $results = $results->sortBy(
-            function ($location) {
-                return $location->population;
-            },
-            SORT_NUMERIC,
-            true
-        );
-
-        return $results->toArray();
+        return $results;
     }
 
     /**
      * @param string $city
      * @param string $state
      * @param string $country
+     * @throws \Giraffe\Geolocation\NotFoundLocationException
      * @return Location
      */
     public function findExact($city, $state, $country)
@@ -137,12 +102,36 @@ class GeonameLocationProvider implements LocationProvider
         $result = DB::table(self::CITY_TABLE)
                     ->where('city', $city)
                     ->where('state', $state)
-                    ->where('country', $country)->first();
+                    ->where('country', $country)
+                    ->rememberForever()
+                    ->first();
 
-        if (!$result) throw new NotFoundLocationException;
+        if (!$result) {
+            throw new NotFoundLocationException;
+        }
 
         $place = Location::makeFromCity($city, $state, $country);
         $place->provideCoordinates($result->lat, $result->long);
+        $place->providePopulation($result->population);
+        return $place;
+    }
+
+    public function findByStateAndCountryCode($city, $state, $country)
+    {
+        $result = DB::table(self::CITY_TABLE)
+                    ->where('city', $city)
+                    ->where('state_code', $state)
+                    ->where('country_code', $country)
+                    ->rememberForever()
+                    ->first();
+
+        if (!$result) {
+            throw new NotFoundLocationException;
+        }
+
+        $place = Location::makeFromCity($city, $result->state, $result->country);
+        $place->provideCoordinates($result->lat, $result->long);
+        $place->providePopulation($result->population);
         return $place;
     }
 }

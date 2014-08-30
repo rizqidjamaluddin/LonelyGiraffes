@@ -52,7 +52,7 @@ class Location
         $fragments = explode(',', $location);
         if (count($fragments) == 3) {
             array_walk($fragments, function(&$v){ $v = trim($v); });
-            /** @var LocationProvider $canonicalSource */
+            /** @var ExactLocationProvider $canonicalSource */
             $canonicalSource = \App::make('Giraffe\Geolocation\LocationService')->getCanonicalProvider();
             return $canonicalSource->findExact($fragments[0], $fragments[1], $fragments[2]);
         }
@@ -99,6 +99,15 @@ class Location
             return [$this->lat, $this->long];
         }
         return [null, null];
+    }
+
+    public function getHumanizedForm()
+    {
+        $humanized = '';
+        if ($this->city) $humanized .= $this->city . ', ';
+        if ($this->state) $humanized .= $this->state . ', ';
+        if ($this->country) $humanized .= $this->country;
+        return $humanized;
     }
 
 }

@@ -62,6 +62,8 @@ Route::api(
              Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
              Route::get('shouts/user/{resource}', ['uses' => 'ShoutController@showAll']);
              Route::delete('shouts/{resource}', ['uses' => 'ShoutController@destroy']);
+             Route::get('shouts/{r}/comments', ['uses' => 'ShoutCommentController@index']);
+             Route::post('shouts/{r}/comments', ['uses' => 'ShoutCommentController@store']);
 
              Route::post('users', ['uses' => 'UserController@store']);
              Route::delete('users/{resource}', ['uses' => 'UserController@destroy']);
@@ -84,15 +86,15 @@ Route::api(
 
              Route::get('users/{resource}/outgoing-buddy-requests', ['uses' => 'BuddyRequestController@outgoingIndex']);
 
-             Route::get('conversations', ['uses' => 'ConversationController@index']);
-             Route::post('conversations', ['uses' => 'ConversationController@create']);
-             Route::delete('conversations/{conversation}', ['uses' => 'ConversationController@leave']);
-             Route::post('conversations/{conversation}/messages', ['uses' => 'ConversationController@createMessage']);
-             Route::delete(
-                  'conversations/{conversation}/messages/{message}',
-                  ['uses' => 'ConversationController@deleteMessage']
-             );
-             Route::post('conversations/{conversation}/invite', ['uses' => 'ConversationController@invite']);
+             Route::post('chatrooms', ['uses' => 'ChatroomController@create']);
+             Route::get('chatrooms', ['uses' => 'ChatroomController@index']);
+             Route::get('chatrooms/{room}', ['uses' => 'ChatroomController@show']);
+             Route::put('chatrooms/{room}', ['uses' => 'ChatroomController@edit']);
+             Route::post('chatrooms/{room}/add', ['uses' => 'ChatroomController@add']);
+             Route::post('chatrooms/{room}/leave', ['uses' => 'ChatroomController@leave']);
+             Route::post('chatrooms/{room}/kick', ['uses' => 'ChatroomController@kick']);
+             Route::get('chatrooms/{room}/messages', ['uses' => 'ChatroomMessageController@recent']);
+             Route::post('chatrooms/{room}/messages', ['uses' => 'ChatroomMessageController@add']);
 
              Route::get('notifications', ['uses' => 'NotificationController@index']);
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);

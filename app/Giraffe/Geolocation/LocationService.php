@@ -4,6 +4,7 @@ use Giraffe\Common\ConfigurationException;
 use Giraffe\Common\Service;
 use Giraffe\Common\ValidationException;
 use Giraffe\Geolocation\NearbySearchableRepository;
+use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class LocationService extends Service
@@ -70,12 +71,18 @@ class LocationService extends Service
             throw new LocationQueryTooShortException;
         }
 
-        $results = [];
+        $results = new Collection;
 
         // loop through providers and grab all results
         foreach ($this->providers as $provider) {
-            $results = array_merge($results, $provider->search($hint));
+            $results = $results->merge($provider->search($hint));
         }
+
+        $filter = function ($location) {
+            return $location->population ?: 1;
+        };
+        $results = $results->sortBy($filter, SORT_NUMERIC, true);
+
 
         return $results;
     }
