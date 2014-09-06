@@ -18,6 +18,7 @@ Artisan::add(new ImportGeonamesZipData());
 // lgutil
 Artisan::add(new Promote());
 Artisan::add(new GeonameFilter());
+Artisan::add(new Notify());
 
 // lgsetup
 Artisan::add(new SeedOAuth());

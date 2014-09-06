@@ -64,7 +64,7 @@ class NotificationTest extends AcceptanceCase
 
         $this->assertResponseStatus(200);
         $this->assertEquals(count($notifications->notifications), 1);
-        $this->assertEquals($notifications->notifications[0]->type, 'SystemNotificationModel');
+        $this->assertEquals($notifications->notifications[0]->type, 'system_notification');
         $this->assertEquals($notifications->notifications[0]->body->message, 'Test notification');
     }
 
@@ -207,5 +207,30 @@ class NotificationTest extends AcceptanceCase
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(1, count($notifications->notifications));
         $this->assertEquals('Test Notification', $notifications->notifications[0]->body->message);
+    }
+
+    /**
+     * @test
+     */
+    public function a_client_can_filter_notifications_by_type()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification']);
+
+        $fetch = $this->callJson('GET', '/api/notifications');
+        $this->assertEquals(1, count($fetch->notifications));
+        $this->assertEquals('Test Notification', $fetch->notifications[0]->body->message);
+
+        $fetch = $this->callJson('GET', '/api/notifications', ['only' => 'nonexistent_notification']);
+        $this->assertEquals(0, count($fetch->notifications));
+
+        $fetch = $this->callJson('GET', '/api/notifications', ['only' => 'system_notification']);
+        $this->assertEquals(1, count($fetch->notifications));
+        $this->assertEquals('Test Notification', $fetch->notifications[0]->body->message);
+
+        $fetch = $this->callJson('GET', '/api/notifications', ['except' => 'system_notification']);
+        $this->assertEquals(0, count($fetch->notifications));
+
+
     }
 } 

@@ -17,7 +17,7 @@ class NotificationContainerTransformer extends TransformerAbstract
         }
 
         return [
-         'type' => class_basename(get_class($model->notification)),
+         'type' => $model->notification->getClass(),
          'timestamp' => (string) $model->created_at,
          'body' => $body,
         ];
