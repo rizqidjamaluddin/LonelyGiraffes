@@ -11,9 +11,9 @@ abstract class Notification extends Eloquent
 
     abstract public function getBody();
 
-    public function getClass()
+    public static function getClass()
     {
-        $name = snake_case(class_basename(get_class($this)));
+        $name = snake_case(class_basename(static::class));
         // remove _model off the end, if applicable
         if (substr($name, -6, 6) == '_model') {
             $name = substr($name, 0, count($name) - 7);

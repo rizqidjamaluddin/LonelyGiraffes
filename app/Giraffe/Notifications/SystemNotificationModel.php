@@ -6,6 +6,7 @@ use Giraffe\Notifications\Notification;
 
 class SystemNotificationModel extends Notification implements TransformableInterface
 {
+    protected $morphClass = "system_notification";
     protected $table = 'system_notifications';
     protected $fillable = ['title', 'message'];
 

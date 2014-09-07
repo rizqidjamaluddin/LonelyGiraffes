@@ -3,6 +3,8 @@ use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchStrategy;
 use Giraffe\Geolocation\Providers\GeonameLocationProvider;
 use Giraffe\Geolocation\Providers\GeonamePostalCodeLocationProvider;
+use Giraffe\Notifications\NotificationService;
+use Giraffe\Notifications\SystemNotificationModel;
 use Illuminate\Support\ServiceProvider;
 
 class GiraffeServiceProvider extends ServiceProvider {
@@ -26,6 +28,18 @@ class GiraffeServiceProvider extends ServiceProvider {
     public function boot()
     {
         $this->app->make('Giraffe\Logging\Log')->boot();
+
+        /*
+         * Notifications
+         */
+
+        /** @var NotificationService $notificationService */
+        $notificationService = $this->app->make(NotificationService::class);
+        $notificationService->registerNotification(SystemNotificationModel::class);
+
+        /*
+         * Geolocation
+         */
 
         /** @var LocationService $locationService */
         $locationService = $this->app->make('Giraffe\Geolocation\LocationService');

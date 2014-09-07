@@ -5,6 +5,7 @@ use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class NotificationService extends Service
@@ -18,6 +19,11 @@ class NotificationService extends Service
      * @var \Giraffe\Users\UserRepository
      */
     private $userRepository;
+
+    /**
+     * @var Array
+     */
+    protected $registry = [];
 
     public function __construct(
         NotificationContainerRepository $containerRepository,
@@ -105,6 +111,16 @@ class NotificationService extends Service
 
         return true;
 
+    }
+
+    /**
+     * Register a notification class. Packages that implement their own notifications should register here.
+     *
+     * @param string $class
+     */
+    public function registerNotification($class)
+    {
+        // todo: finish notification registrations
     }
 
 } 

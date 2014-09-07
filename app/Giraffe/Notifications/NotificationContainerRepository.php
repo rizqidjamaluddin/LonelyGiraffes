@@ -2,6 +2,7 @@
 
 use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\Internal\QueryFilter;
+use Illuminate\Support\Collection;
 
 class NotificationContainerRepository extends EloquentRepository
 {
@@ -18,7 +19,6 @@ class NotificationContainerRepository extends EloquentRepository
     public function getForUser($userId, QueryFilter $filter)
     {
         $q = $this->model;
-
         $q = $this->appendLimitingOptions($q, $filter);
 
         return $q->where('user_id', $userId)->get();
@@ -26,12 +26,15 @@ class NotificationContainerRepository extends EloquentRepository
 
     protected function appendLimitingOptions($q, QueryFilter $filter)
     {
+
         if ($only = $filter->get('only')) {
-            $q = $q->whereIn('notification_type', explode(',', $only));
+            $onlyFilter = new Collection(explode(',', $only));
+            $q = $q->whereIn('notification_type', $onlyFilter->toArray());
         }
 
         if ($except = $filter->get('except')) {
-            $q = $q->whereNotIn('notification_type', explode(',', $except));
+            $exceptFilter = new Collection(explode(',', $except));
+            $q = $q->whereNotIn('notification_type', $exceptFilter->toArray());
         }
 
         return $q;
