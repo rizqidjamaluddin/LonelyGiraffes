@@ -104,4 +104,9 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
     {
         return new ShoutTransformer;
     }
+
+    public function getType()
+    {
+        return 'shout';
+    }
 }

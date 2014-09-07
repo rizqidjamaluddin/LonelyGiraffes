@@ -8,9 +8,9 @@ use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 
 /**
- * @property $user UserModel
- * @property $postable mixed
- * @property $hash string
+ * @property UserModel $user
+ * @property Postable $postable
+ * @property String $hash
  */
 class PostModel extends Eloquent implements ProtectedResource, TransformableInterface {
     use HasEloquentHash;

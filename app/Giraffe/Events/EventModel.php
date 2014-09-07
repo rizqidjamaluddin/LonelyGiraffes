@@ -1,12 +1,13 @@
 <?php namespace Giraffe\Events;
 
+use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Feed\Postable;
 use Giraffe\Users\UserModel;
 
-class EventModel extends Eloquent implements Postable, ProtectedResource{
+class EventModel extends Eloquent implements Postable, ProtectedResource, TransformableInterface{
     use HasEloquentHash;
 
     protected $table = 'events';
@@ -46,5 +47,20 @@ class EventModel extends Eloquent implements Postable, ProtectedResource{
     public function getOwnerId()
     {
         return $this->user_id;
+    }
+
+    public function getType()
+    {
+        return 'event';
+    }
+
+    /**
+     * Get the transformer instance.
+     *
+     * @return mixed
+     */
+    public function getTransformer()
+    {
+        return new EventTransformer();
     }
 }
