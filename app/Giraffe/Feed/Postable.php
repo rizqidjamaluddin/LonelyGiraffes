@@ -4,4 +4,5 @@ interface Postable
 {
     public function getId();
     public function getOwnerId();
+    public function getType();
 } 

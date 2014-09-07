@@ -18,12 +18,15 @@ class PostTransformer extends TransformerAbstract
 
         if ($body instanceof TransformableInterface) {
             $transformer = $body->getTransformer();
-            $body = $transformer->transform($body);
+            $child = $transformer->transform($body);
         };
+
+            $type = $body->getType();
 
         return [
             'hash' => $post->hash,
-            'body' => $body,
+            'type' => $type,
+            'body' => $child,
             'href' => url('api/posts/'.$post->hash),
             'links' => [
                 'author' => $author,

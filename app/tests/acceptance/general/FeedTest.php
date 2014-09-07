@@ -134,6 +134,7 @@ class FeedTest extends AcceptanceCase
         $this->assertResponseOk();
         $this->assertEquals(count($fetch), 1);
         $this->assertEquals($fetch[0]->body->body, 'Details of my awesome event');
+        $this->assertEquals($fetch[0]->type, 'event');
     }
 
     /**
@@ -242,6 +243,20 @@ class FeedTest extends AcceptanceCase
         $fetch = $this->callJson('GET', '/api/posts', ['take' => 40]);
         $this->assertResponseOk();
         $this->assertEquals(20, count($fetch->posts));
+    }
+
+    /**
+     * @test
+     */
+    public function posts_define_the_type_of_object_they_wrap()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $this->call('POST', '/api/shouts', ['body' => $this->genericShoutBody]);
+
+        $fetch = $this->callJson('GET', '/api/posts');
+        $this->assertResponseOk();
+        $this->assertEquals('shout', $fetch->posts[0]->type);
+
     }
 
 } 
