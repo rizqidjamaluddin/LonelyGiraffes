@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Notifications; 
 
 use Giraffe\Common\EloquentRepository;
+use Giraffe\Common\Internal\QueryFilter;
 
 class NotificationContainerRepository extends EloquentRepository
 {
@@ -14,9 +15,26 @@ class NotificationContainerRepository extends EloquentRepository
      *
      * @return NotificationContainerModel[]
      */
-    public function getForUser($userId)
+    public function getForUser($userId, QueryFilter $filter)
     {
-        return $this->model->with('notification')->where('user_id', $userId)->get();
+        $q = $this->model;
+
+        $q = $this->appendLimitingOptions($q, $filter);
+
+        return $q->where('user_id', $userId)->get();
+    }
+
+    protected function appendLimitingOptions($q, QueryFilter $filter)
+    {
+        if ($only = $filter->get('only')) {
+            $q = $q->whereIn('notification_type', explode(',', $only));
+        }
+
+        if ($except = $filter->get('except')) {
+            $q = $q->whereNotIn('notification_type', explode(',', $except));
+        }
+
+        return $q;
     }
 
 } 

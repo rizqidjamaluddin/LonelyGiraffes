@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Notifications;
 
+use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserModel;
@@ -34,11 +35,11 @@ class NotificationService extends Service
      *
      * @return \Giraffe\Notifications\NotificationContainerModel[]
      */
-    public function getUserNotifications($user)
+    public function getUserNotifications($user, QueryFilter $filter)
     {
         $this->gatekeeper->mayI('read', 'notification_container')->please();
         $user = $this->userRepository->getByHash($user);
-        $notifications = $this->containerRepository->getForUser($user->id);
+        $notifications = $this->containerRepository->getForUser($user->id, $filter);
         return $notifications;
     }
 
@@ -96,7 +97,7 @@ class NotificationService extends Service
         $this->gatekeeper->mayI('dismiss_all', 'notification_container')->please();
 
         $user = $this->userRepository->getByHash($user);
-        $notifications = $this->containerRepository->getForUser($user->id);
+        $notifications = $this->containerRepository->getForUser($user->id, new QueryFilter());
         foreach ($notifications as $notificationContainer) {
             $notificationContainer->notification->delete();
             $notificationContainer->delete();
