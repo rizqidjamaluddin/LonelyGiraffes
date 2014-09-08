@@ -4,9 +4,9 @@ use Dingo\Api\Transformer\TransformableInterface;
 use League\Fractal\TransformerAbstract;
 use stdClass;
 
-class NotificationContainerTransformer extends TransformerAbstract
+class NotificationTransformer extends TransformerAbstract
 {
-    public function transform(NotificationContainerModel $model)
+    public function transform(NotificationModel $model)
     {
 
         $body = $model->notification;
@@ -17,7 +17,7 @@ class NotificationContainerTransformer extends TransformerAbstract
         }
 
         return [
-         'type' => $model->notification->getClass(),
+         'type' => $model->notification->getType(),
          'timestamp' => (string) $model->created_at,
          'body' => $body,
         ];

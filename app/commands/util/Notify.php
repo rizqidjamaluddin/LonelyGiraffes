@@ -1,7 +1,7 @@
 <?php
 
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
 use Giraffe\Users\UserRepository;
 use Giraffe\Users\UserService;
 use Illuminate\Console\Command;

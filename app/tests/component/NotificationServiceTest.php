@@ -1,8 +1,9 @@
 <?php
 
-use Giraffe\Notifications\NotificationContainerRepository;
+use Giraffe\Notifications\NotificationRepository;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
 use Giraffe\Users\UserService;
 
 class NotificationServiceTest extends TestCase
@@ -13,9 +14,14 @@ class NotificationServiceTest extends TestCase
     protected $service;
 
     /**
-     * @var NotificationContainerRepository
+     * @var NotificationRepository
      */
     protected $repository;
+
+    /**
+     * @var SystemNotificationRepository
+     */
+    protected $systemNotificationRepository;
 
     public function setUp()
     {
@@ -23,8 +29,10 @@ class NotificationServiceTest extends TestCase
         $this->refreshApplication();
         Artisan::call('migrate');
 
-        $this->service = App::make('Giraffe\Notifications\NotificationService');
-        $this->repository = App::make('Giraffe\Notifications\NotificationContainerRepository');
+        $this->service = App::make(NotificationService::class);
+        $this->repository = App::make(NotificationRepository::class);
+
+        $this->systemNotificationRepository = App::make(SystemNotificationRepository::class);
     }
 
     /**
@@ -34,15 +42,16 @@ class NotificationServiceTest extends TestCase
     {
         $testUser = $this->generateTestUser();
         $notification = new SystemNotificationModel(['title' => 'Test Notification', 'message' => 'foo']);
-        $container = $this->service->queue($notification, $testUser);
+        $this->systemNotificationRepository->save($notification);
+        $container = $this->service->issue($notification, $testUser);
 
-        $this->assertTrue(!is_null($container), 'Service::queue should return an instance of NotificationContainerModel');
-        $this->assertEquals(get_class($container), 'Giraffe\Notifications\NotificationContainerModel');
+        $this->assertTrue(!is_null($container), 'NotificationService::issue should return an instance of NotificationModel');
+        $this->assertTrue($container instanceof \Giraffe\Notifications\NotificationModel);
 
         $check = $this->repository->get($container->id);
         $this->assertEquals($check->destination->hash, $testUser->hash);
-        $this->assertEquals($check->notification->title, 'Test Notification');
-        $this->assertEquals($check->notification->message, 'foo');
+        $this->assertEquals($check->notifiable()->title, 'Test Notification');
+        $this->assertEquals($check->notifiable()->message, 'foo');
     }
 
     /**

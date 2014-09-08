@@ -4,9 +4,9 @@ use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\Internal\QueryFilter;
 use Illuminate\Support\Collection;
 
-class NotificationContainerRepository extends EloquentRepository
+class NotificationRepository extends EloquentRepository
 {
-    public function __construct(NotificationContainerModel $containerModel)
+    public function __construct(NotificationModel $containerModel)
     {
         parent::__construct($containerModel);
     }
@@ -14,7 +14,7 @@ class NotificationContainerRepository extends EloquentRepository
     /**
      * @param $userId
      *
-     * @return NotificationContainerModel[]
+     * @return NotificationModel[]
      */
     public function getForUser($userId, QueryFilter $filter)
     {

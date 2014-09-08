@@ -1,15 +1,15 @@
 <?php
 
-use Giraffe\Notifications\NotificationContainerRepository;
+use Giraffe\Notifications\NotificationRepository;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
 use Giraffe\Users\UserRepository;
 
 class NotificationTest extends AcceptanceCase
 {
 
     /**
-     * @var NotificationContainerRepository
+     * @var NotificationRepository
      */
     protected $containerRepository;
 
@@ -128,7 +128,7 @@ class NotificationTest extends AcceptanceCase
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(count($notifications->notifications), 2);
 
-        // these are NotificationContainerModel objects, so the property is ->notification to get the body
+        // these are NotificationModel objects, so the property is ->notification to get the body
         $this->assertEquals($notifications->notifications[0]->body->message, 'Test Notification 1');
         $this->assertEquals($notifications->notifications[1]->body->message, 'Test Notification 3');
 

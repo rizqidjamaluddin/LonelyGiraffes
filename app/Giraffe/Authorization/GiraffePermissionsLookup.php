@@ -15,30 +15,36 @@ class GiraffePermissionsLookup
                 'feed' => ['read'],
             ],
             'global' => [
-                'post'  => ['read'],
-                'event' => ['read'],
+                'post'    => ['read'],
+                'event'   => ['read'],
                 'profile' => ['read'],
-                'shout' => ['read'],
+                'shout'   => ['read'],
             ]
         ];
         $member = array_merge_recursive(
             $guest,
             [
                 'self'   => [
-                    'buddy'                  => ['delete'],
-                    'buddy_request'          => ['read', 'create', 'accept', 'delete'],
-                    'chatroom'               => ['create', 'read', 'update', 'chat', 'kick'],
-                    'chatroom_membership'    => ['delete'],
-                    'comment'                => ['create', 'read', 'update'],
-                    'event'                  => ['create', 'edit', 'update', 'delete'],
-                    'image'                  => ['create', 'delete'],
-                    'notification_container' => ['read', 'delete', 'dismiss_all'],
-                    'post'                   => ['delete'],
-                    'profile'                => ['create', 'update'],
-                    'shout'                  => ['create', 'delete'],
-                    'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddy', 'delete_buddy',
-                                                'read_buddy_request'],
-                    'test'                   => ['test'],
+                    'buddy'               => ['delete'],
+                    'buddy_request'       => ['read', 'create', 'accept', 'delete'],
+                    'chatroom'            => ['create', 'read', 'update', 'chat', 'kick'],
+                    'chatroom_membership' => ['delete'],
+                    'comment'             => ['create', 'read', 'update'],
+                    'event'               => ['create', 'edit', 'update', 'delete'],
+                    'image'               => ['create', 'delete'],
+                    'notification'        => ['read', 'delete', 'dismiss_all'],
+                    'post'                => ['delete'],
+                    'profile'             => ['create', 'update'],
+                    'shout'               => ['create', 'delete'],
+                    'user'                => [
+                        'update',
+                        'deactivate',
+                        'add_buddy',
+                        'read_buddy',
+                        'delete_buddy',
+                        'read_buddy_request'
+                    ],
+                    'test'                => ['test'],
 
                 ],
                 'global' => [

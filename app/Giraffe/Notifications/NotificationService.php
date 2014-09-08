@@ -1,20 +1,26 @@
 <?php  namespace Giraffe\Notifications;
 
 use Giraffe\Common\Internal\QueryFilter;
-use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
+/**
+ * Class NotificationService
+ *
+ * To issue a notification, instantiate and persist a notifiable class (e.g. NewMessageNotification) in its own
+ * repository or mechanism of your choice. Then invoke NotificationService::issue(Notifiable $n, User $u) to
+ * generate a wrapper and issue it to the desired user.
+ *
+ * @package Giraffe\Notifications
+ */
 class NotificationService extends Service
 {
 
     /**
-     * @var NotificationContainerRepository
+     * @var NotificationRepository
      */
-    private $containerRepository;
+    private $repository;
     /**
      * @var \Giraffe\Users\UserRepository
      */
@@ -26,11 +32,11 @@ class NotificationService extends Service
     protected $registry = [];
 
     public function __construct(
-        NotificationContainerRepository $containerRepository,
+        NotificationRepository $repository,
         UserRepository $userRepository
     ) {
         parent::__construct();
-        $this->containerRepository = $containerRepository;
+        $this->repository = $repository;
         $this->userRepository = $userRepository;
     }
 
@@ -38,51 +44,40 @@ class NotificationService extends Service
      * Get notification containers for a particular user.
      *
      * @param UserModel|string $user
+     * @param QueryFilter      $filter
      *
-     * @return \Giraffe\Notifications\NotificationContainerModel[]
+     * @return \Giraffe\Notifications\NotificationModel[]
      */
     public function getUserNotifications($user, QueryFilter $filter)
     {
         $this->gatekeeper->mayI('read', 'notification_container')->please();
         $user = $this->userRepository->getByHash($user);
-        $notifications = $this->containerRepository->getForUser($user->id, $filter);
+        $notifications = $this->repository->getForUser($user->id, $filter);
         return $notifications;
     }
 
     /**
-     * Send a notification to a user. Build a class that extends Notification, with all the context relevant to that
-     * notification, and queue it using this method.
-     *
-     * @param Notification $notification
-     * @param              $destinationUser
-     *
-     * @return NotificationContainerModel
+     * @param Notifiable $notifiable
+     * @param UserModel  $destinationUser
+     * @return NotificationModel
      */
-    public function queue(Notification $notification, $destinationUser)
+    public function issue(Notifiable $notifiable, UserModel $destinationUser)
     {
-        $destinationUser = $this->userRepository->getByHash($destinationUser);
-        $notification->save();
-        $container = new NotificationContainerModel(
-            [
-                'user_id' => $destinationUser->id,
-                'hash'    => Str::random(32)
-            ]
-        );
-        $notification->container()->save($container);
-
-        return $container;
+        $notification = NotificationModel::generate($notifiable, $destinationUser);
+        $this->repository->save($notification);
+        return $notification;
     }
 
     /**
      * Dismiss a notification container as well as the embedded notification.
      *
-     * @param NotificationContainerModel|string $container
+     * @param NotificationModel|string $container
      * @return bool
      */
     public function dismiss($container)
     {
-        /** @var NotificationContainerModel $container */
-        $container = $this->containerRepository->getByHash($container);
+        /** @var NotificationModel $container */
+        $container = $this->repository->getByHash($container);
         $this->gatekeeper->mayI('delete', $container)->please();
 
         // delete body and container
@@ -103,7 +98,7 @@ class NotificationService extends Service
         $this->gatekeeper->mayI('dismiss_all', 'notification_container')->please();
 
         $user = $this->userRepository->getByHash($user);
-        $notifications = $this->containerRepository->getForUser($user->id, new QueryFilter());
+        $notifications = $this->repository->getForUser($user->id, new QueryFilter());
         foreach ($notifications as $notificationContainer) {
             $notificationContainer->notification->delete();
             $notificationContainer->delete();
@@ -111,16 +106,6 @@ class NotificationService extends Service
 
         return true;
 
-    }
-
-    /**
-     * Register a notification class. Packages that implement their own notifications should register here.
-     *
-     * @param string $class
-     */
-    public function registerNotification($class)
-    {
-        // todo: finish notification registrations
     }
 
 } 

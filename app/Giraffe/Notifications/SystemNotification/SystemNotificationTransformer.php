@@ -1,5 +1,6 @@
-<?php  namespace Giraffe\Notifications;
+<?php  namespace Giraffe\Notifications\SystemNotification;
 
+use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
 use League\Fractal\TransformerAbstract;
 use stdClass;
 

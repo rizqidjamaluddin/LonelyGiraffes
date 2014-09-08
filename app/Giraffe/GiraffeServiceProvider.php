@@ -3,8 +3,11 @@ use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchStrategy;
 use Giraffe\Geolocation\Providers\GeonameLocationProvider;
 use Giraffe\Geolocation\Providers\GeonamePostalCodeLocationProvider;
+use Giraffe\Notifications\Registry\NotifiableRegistry;
+use Giraffe\Notifications\NotificationRegistry;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
 use Illuminate\Support\ServiceProvider;
 
 class GiraffeServiceProvider extends ServiceProvider {
@@ -23,6 +26,8 @@ class GiraffeServiceProvider extends ServiceProvider {
         $this->app->singleton('Giraffe\Users\UserService');
         $this->app->singleton('Giraffe\Buddies\BuddyService');
         $this->app->singleton('Giraffe\BuddyRequests\BuddyRequestService');
+
+        $this->app->singleton(NotifiableRegistry::class);
     }
 
     public function boot()
@@ -33,9 +38,9 @@ class GiraffeServiceProvider extends ServiceProvider {
          * Notifications
          */
 
-        /** @var NotificationService $notificationService */
-        $notificationService = $this->app->make(NotificationService::class);
-        $notificationService->registerNotification(SystemNotificationModel::class);
+        /** @var NotifiableRegistry $notifiableRegistry */
+        $notifiableRegistry = \App::make(NotifiableRegistry::class);
+        $notifiableRegistry->register(SystemNotificationModel::class, $this->app->make(SystemNotificationRepository::class));
 
         /*
          * Geolocation

@@ -1,12 +1,13 @@
-<?php  namespace Giraffe\Notifications;
+<?php  namespace Giraffe\Notifications\SystemNotification;
 
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
-use Giraffe\Notifications\Notification;
+use Giraffe\Common\Transformable;
+use Giraffe\Notifications\Notifiable;
+use Giraffe\Notifications\SystemNotification\SystemNotificationTransformer;
 
-class SystemNotificationModel extends Notification implements TransformableInterface
+class SystemNotificationModel extends Eloquent implements Transformable, Notifiable
 {
-    protected $morphClass = "system_notification";
     protected $table = 'system_notifications';
     protected $fillable = ['title', 'message'];
 
@@ -24,11 +25,6 @@ class SystemNotificationModel extends Notification implements TransformableInter
         return $model;
     }
 
-    public function getBody()
-    {
-        return $this->message;
-    }
-
     /**
      * Get the transformer instance.
      *
@@ -37,5 +33,15 @@ class SystemNotificationModel extends Notification implements TransformableInter
     public function getTransformer()
     {
         return new SystemNotificationTransformer();
+    }
+
+    public static function getType()
+    {
+        return 'system_notification';
+    }
+
+    public function getID()
+    {
+        return $this->id;
     }
 }
