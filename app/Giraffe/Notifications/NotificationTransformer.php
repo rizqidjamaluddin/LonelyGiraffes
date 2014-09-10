@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Notifications; 
 
 use Dingo\Api\Transformer\TransformableInterface;
+use Giraffe\Common\Transformable;
 use League\Fractal\TransformerAbstract;
 use stdClass;
 
@@ -9,17 +10,18 @@ class NotificationTransformer extends TransformerAbstract
     public function transform(NotificationModel $model)
     {
 
-        $body = $model->notification;
+        $body = $model->notifiable();
 
-        if ($body instanceof TransformableInterface) {
+        if ($body instanceof Transformable) {
             $transformer = $body->getTransformer();
             $body = $transformer->transform($body);
         }
 
         return [
-         'type' => $model->notification->getType(),
+            'hash' => $model->hash,
+         'type' => $model->notifiable()->getType(),
          'timestamp' => (string) $model->created_at,
-         'body' => $body,
+         'attached' => $body,
         ];
     }
 

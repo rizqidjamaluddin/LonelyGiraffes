@@ -2,6 +2,7 @@
 
 use Giraffe\Notifications\NotificationService;
 use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
 use Giraffe\Users\UserRepository;
 use Giraffe\Users\UserService;
 use Illuminate\Console\Command;
@@ -30,9 +31,20 @@ class Notify extends Command {
         /** @var UserRepository $userRepository */
         $userRepository = \App::make(UserRepository::class);
 
+        /** @var SystemNotificationRepository $systemNotificationRepository */
+        $systemNotificationRepository = \App::make(SystemNotificationRepository::class);
+
+        $notification = SystemNotificationModel::make($body, $title);
+        $systemNotificationRepository->save($notification);
+
         $user = $userRepository->getByHash($this->argument('hash'));
 
-        $service->queue(SystemNotificationModel::make($body, $title), $user);
+        $this->info("Issuing notification ...");
+        $service->issue($notification, $user);
+        $this->info("Sent.");
+
+
+        $this->comment(json_encode($notification->toArray()));
 
         return 0;
 	}

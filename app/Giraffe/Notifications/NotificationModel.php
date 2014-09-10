@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 /**
  * @property integer    $id
- * @property Notifiable $notifiable
+ * @property string     $hash
  * @property string     $notification_type
  * @property integer    $notification_id
  * @property integer    $user_id
@@ -40,6 +40,9 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
     }
 
 
+    /**
+     * @return Notifiable
+     */
     public function notifiable()
     {
         /** @var NotifiableRegistry $notifiableRegistry */
@@ -47,6 +50,15 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
 
         $repository = $notifiableRegistry->resolveRepository($this->notification_type);
         return $repository->get($this->notification_id);
+    }
+
+    public function deleteNotifiable()
+    {
+        /** @var NotifiableRegistry $notifiableRegistry */
+        $notifiableRegistry = \App::make(NotifiableRegistry::class);
+
+        $repository = $notifiableRegistry->resolveRepository($this->notification_type);
+        return $repository->deleteById($this->notification_id);
     }
 
     public function destination()

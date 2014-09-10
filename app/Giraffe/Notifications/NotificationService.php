@@ -50,7 +50,7 @@ class NotificationService extends Service
      */
     public function getUserNotifications($user, QueryFilter $filter)
     {
-        $this->gatekeeper->mayI('read', 'notification_container')->please();
+        $this->gatekeeper->mayI('read', 'notification')->please();
         $user = $this->userRepository->getByHash($user);
         $notifications = $this->repository->getForUser($user->id, $filter);
         return $notifications;
@@ -81,8 +81,8 @@ class NotificationService extends Service
         $this->gatekeeper->mayI('delete', $container)->please();
 
         // delete body and container
-        $container->notification->delete();
-        $container->delete();
+        $container->deleteNotifiable();
+        $this->repository->delete($container);
 
         return true;
     }
@@ -95,13 +95,13 @@ class NotificationService extends Service
      */
     public function dismissAll($user)
     {
-        $this->gatekeeper->mayI('dismiss_all', 'notification_container')->please();
+        $this->gatekeeper->mayI('dismiss_all', 'notification')->please();
 
         $user = $this->userRepository->getByHash($user);
         $notifications = $this->repository->getForUser($user->id, new QueryFilter());
         foreach ($notifications as $notificationContainer) {
-            $notificationContainer->notification->delete();
-            $notificationContainer->delete();
+            $notificationContainer->deleteNotifiable();
+            $this->repository->delete($notificationContainer);
         }
 
         return true;
