@@ -1,12 +1,13 @@
 <?php  namespace Giraffe\Buddies; 
-use Giraffe\Buddies\BuddyRequests\BuddyRequestService;
+use Event;
+use Giraffe\Buddies\Requests\BuddyRequestService;
 use Illuminate\Support\ServiceProvider;
 
 class BuddiesServiceProvider extends ServiceProvider
 {
 
     public function boot() {
-
+        Event::subscribe(BuddyNotifier::class);
     }
 
     /**

@@ -3,7 +3,7 @@
 // Composer: "fzaninotto/faker": "v1.3.0"
 use Carbon\Carbon;
 use Faker\Factory as Faker;
-use Giraffe\Buddies\BuddyRequests\BuddyRequestModel;
+use Giraffe\Buddies\Requests\BuddyRequestModel;
 use Giraffe\Users\UserModel;
 use Giraffe\Buddies\BuddyModel;
 

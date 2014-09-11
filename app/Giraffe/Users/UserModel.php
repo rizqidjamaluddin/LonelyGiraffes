@@ -5,7 +5,7 @@ use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Buddies\BuddyService;
-use Giraffe\Buddies\BuddyRequests\BuddyRequestService;
+use Giraffe\Buddies\Requests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\Locatable;

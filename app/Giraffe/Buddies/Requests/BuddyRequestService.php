@@ -1,10 +1,10 @@
-<?php  namespace Giraffe\Buddies\BuddyRequests;
+<?php  namespace Giraffe\Buddies\Requests;
 
 
 use Giraffe\Buddies\BuddyRepository;
 use Giraffe\Buddies\Exceptions\AlreadyBuddiesException;
-use Giraffe\Buddies\BuddyRequests\BuddyRequestCreationValidator;
-use Giraffe\Buddies\BuddyRequests\BuddyRequestRepository;
+use Giraffe\Buddies\Requests\BuddyRequestCreationValidator;
+use Giraffe\Buddies\Requests\BuddyRequestRepository;
 use Giraffe\Buddies\BuddyService;
 use Giraffe\Buddies\Exceptions\ExistingBuddyRequestException;
 use Giraffe\Common\NotFoundModelException;
@@ -29,7 +29,7 @@ class BuddyRequestService extends Service
      */
     private $buddyRequestService;
     /**
-     * @var \Giraffe\Buddies\BuddyRequests\BuddyRequestCreationValidator
+     * @var \Giraffe\Buddies\Requests\BuddyRequestCreationValidator
      */
     private $creationValidator;
 

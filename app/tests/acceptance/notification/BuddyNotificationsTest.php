@@ -3,7 +3,7 @@
 class BuddyNotificationsTest extends AcceptanceCase
 {
     /**
-     *
+     * @test
      */
     public function a_user_is_notified_when_receiving_a_buddy_request()
     {

@@ -1,4 +1,4 @@
-<?php  namespace Giraffe\Buddies\BuddyRequests;
+<?php  namespace Giraffe\Buddies\Requests;
 
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
