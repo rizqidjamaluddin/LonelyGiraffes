@@ -1,6 +1,8 @@
 <?php  namespace Giraffe\Buddies\Events;
 
-class BuddyRequestSentEvent
+use Giraffe\Common\Event;
+
+class BuddyRequestSentEvent extends Event
 {
 
 } 

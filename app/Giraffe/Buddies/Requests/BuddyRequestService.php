@@ -2,6 +2,7 @@
 
 
 use Giraffe\Buddies\BuddyRepository;
+use Giraffe\Buddies\Events\BuddyRequestSentEvent;
 use Giraffe\Buddies\Exceptions\AlreadyBuddiesException;
 use Giraffe\Buddies\Requests\BuddyRequestCreationValidator;
 use Giraffe\Buddies\Requests\BuddyRequestRepository;
@@ -25,7 +26,7 @@ class BuddyRequestService extends Service
      */
     private $buddyRepository;
     /**
-     * @var \Giraffe\BuddyRequests\BuddyRequestService
+     * @var \Giraffe\Buddies\Requests\BuddyRequestService
      */
     private $buddyRequestService;
     /**
@@ -83,6 +84,7 @@ class BuddyRequestService extends Service
         $this->creationValidator->validate($data);
 
         $buddyRequest = $this->buddyRequestRepository->create($data);
+        $this->relay->dispatch(new BuddyRequestSentEvent());
         $this->log->info($this, 'Buddy Request created', $buddyRequest->toArray());
         return $buddyRequest->load(array('sender', 'recipient'));
     }

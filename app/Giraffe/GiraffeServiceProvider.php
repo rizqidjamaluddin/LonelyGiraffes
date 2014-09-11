@@ -1,4 +1,5 @@
 <?php namespace Giraffe;
+use Giraffe\Common\EventRelay;
 use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchStrategy;
 use Giraffe\Geolocation\Providers\GeonameLocationProvider;
@@ -25,6 +26,7 @@ class GiraffeServiceProvider extends ServiceProvider {
 
         $this->app->singleton('Giraffe\Users\UserService');
 
+        $this->app->singleton(EventRelay::class);
         $this->app->singleton(NotifiableRegistry::class);
     }
 

@@ -1,7 +1,26 @@
-<?php  namespace Giraffe\Common; 
+<?php  namespace Giraffe\Common;
 
-class EventRelay 
+use Illuminate\Events\Dispatcher;
+use Illuminate\Support\Collection;
+
+class EventRelay
 {
+    /**
+     * @var Collection
+     */
+    protected $queue;
+
+    /**
+     * @var Dispatcher
+     */
+    private $dispatcher;
+
+    public function __construct(Dispatcher $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+        $this->queue = new Collection();
+    }
+
     /**
      * Queue event to be sent out by relay. It does NOT immediately send it out, and waits for dispatch() first.
      *
@@ -9,7 +28,7 @@ class EventRelay
      */
     public function trigger(Event $event)
     {
-
+        $this->queue->push($event);
     }
 
     /**
@@ -19,7 +38,16 @@ class EventRelay
      */
     public function dispatch(Event $event = null)
     {
-        
+        if ($event) {
+            $this->trigger($event);
+        }
+        $dispatcher = $this->dispatcher;
+        $this->queue->each(
+            function (Event $event) use ($dispatcher) {
+                $dispatcher->fire($event->getName(), $event);
+            }
+        );
+        $this->cancel();
     }
 
     /**
@@ -27,7 +55,7 @@ class EventRelay
      */
     public function cancel()
     {
-
+        $this->queue = new Collection;
     }
 
     /**
@@ -38,7 +66,7 @@ class EventRelay
      */
     public function on($event, Callable $callback)
     {
-
+        $this->dispatcher->listen($event, $callback);
     }
 
     public function listen(EventListener $listener)
