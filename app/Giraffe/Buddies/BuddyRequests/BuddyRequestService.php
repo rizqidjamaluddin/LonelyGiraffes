@@ -1,8 +1,12 @@
-<?php  namespace Giraffe\BuddyRequests;
+<?php  namespace Giraffe\Buddies\BuddyRequests;
 
 
 use Giraffe\Buddies\BuddyRepository;
+use Giraffe\Buddies\Exceptions\AlreadyBuddiesException;
+use Giraffe\Buddies\BuddyRequests\BuddyRequestCreationValidator;
+use Giraffe\Buddies\BuddyRequests\BuddyRequestRepository;
 use Giraffe\Buddies\BuddyService;
+use Giraffe\Buddies\Exceptions\ExistingBuddyRequestException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
@@ -25,7 +29,7 @@ class BuddyRequestService extends Service
      */
     private $buddyRequestService;
     /**
-     * @var \Giraffe\BuddyRequests\BuddyRequestCreationValidator
+     * @var \Giraffe\Buddies\BuddyRequests\BuddyRequestCreationValidator
      */
     private $creationValidator;
 
@@ -61,7 +65,7 @@ class BuddyRequestService extends Service
         // make sure there's already a request
         try {
             $this->buddyRequestRepository->getByPair($user, $target);
-            throw new ExistingBuddyRequestException;
+            throw new \Giraffe\Buddies\Exceptions\ExistingBuddyRequestException;
         } catch (NotFoundModelException $e) {
             // continue
         }

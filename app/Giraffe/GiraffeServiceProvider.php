@@ -24,8 +24,6 @@ class GiraffeServiceProvider extends ServiceProvider {
         $this->app->singleton('Giraffe\Geolocation\Providers\GeonameLocationProvider');
 
         $this->app->singleton('Giraffe\Users\UserService');
-        $this->app->singleton('Giraffe\Buddies\BuddyService');
-        $this->app->singleton('Giraffe\BuddyRequests\BuddyRequestService');
 
         $this->app->singleton(NotifiableRegistry::class);
     }

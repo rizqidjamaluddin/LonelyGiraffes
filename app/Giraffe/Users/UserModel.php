@@ -5,7 +5,7 @@ use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Buddies\BuddyService;
-use Giraffe\BuddyRequests\BuddyRequestService;
+use Giraffe\Buddies\BuddyRequests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Geolocation\Locatable;
@@ -221,12 +221,12 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
 
     public function receivedBuddyRequests()
     {
-        return $this->belongsTo('Giraffe\BuddyRequests\BuddyRequestModel', 'to_user_id');
+        return $this->belongsTo('Giraffe\Buddies\BuddyRequests\BuddyRequestModel', 'to_user_id');
     }
 
     public function sentBuddyRequests()
     {
-        return $this->hasMany('Giraffe\BuddyRequests\BuddyRequestModel', 'from_user_id');
+        return $this->hasMany('Giraffe\Buddies\BuddyRequests\BuddyRequestModel', 'from_user_id');
     }
 
     public function images()

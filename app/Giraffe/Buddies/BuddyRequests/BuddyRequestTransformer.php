@@ -1,4 +1,4 @@
-<?php  namespace Giraffe\BuddyRequests;
+<?php  namespace Giraffe\Buddies\BuddyRequests;
 use Giraffe\Users\UserTransformer;
 use League\Fractal\TransformerAbstract;
 

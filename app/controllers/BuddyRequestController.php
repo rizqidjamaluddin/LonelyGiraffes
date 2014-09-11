@@ -1,10 +1,10 @@
 <?php
 
 use Giraffe\Buddies\BuddyModel;
-use Giraffe\BuddyRequests\BuddyRequestModel;
-use Giraffe\BuddyRequests\BuddyRequestTransformer;
+use Giraffe\Buddies\BuddyRequests\BuddyRequestModel;
+use Giraffe\Buddies\BuddyRequests\BuddyRequestTransformer;
 use Giraffe\Common\Controller;
-use Giraffe\BuddyRequests\BuddyRequestService;
+use Giraffe\Buddies\BuddyRequests\BuddyRequestService;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserTransformer;
 use Illuminate\Database\Eloquent\Collection;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 class BuddyRequestController extends Controller
 {
     /**
-     * @param Giraffe\BuddyRequests\BuddyRequestService $buddyRequestService
+     * @param \Giraffe\Buddies\BuddyRequests\BuddyRequestService $buddyRequestService
      */
     public function __construct(BuddyRequestService $buddyRequestService)
     {
