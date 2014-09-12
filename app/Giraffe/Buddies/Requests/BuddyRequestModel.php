@@ -4,6 +4,7 @@ use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Users\UserModel;
+use Giraffe\Users\UserRepository;
 
 class BuddyRequestModel extends Eloquent implements ProtectedResource {
     use HasEloquentHash;
@@ -18,12 +19,18 @@ class BuddyRequestModel extends Eloquent implements ProtectedResource {
 
     public function recipient()
     {
-        return $this->belongsTo('Giraffe\Users\UserModel', 'to_user_id');
+        /** @var UserRepository $userRepository */
+        $userRepository = \App::make(UserRepository::class);
+
+        return $userRepository->getById($this->to_user_id);
     }
 
     public function sender()
     {
-        return $this->belongsTo('Giraffe\Users\UserModel', 'from_user_id');
+        /** @var UserRepository $userRepository */
+        $userRepository = \App::make(UserRepository::class);
+
+        return $userRepository->getById($this->from_user_id);
     }
 
     /**
@@ -33,6 +40,6 @@ class BuddyRequestModel extends Eloquent implements ProtectedResource {
      */
     public function checkOwnership(UserModel $user)
     {
-        return $user->id === $this->sender->id || $user->id === $this->recipient->id;
+        return $user->id === $this->sender()->id || $user->id === $this->recipient()->id;
     }
 }

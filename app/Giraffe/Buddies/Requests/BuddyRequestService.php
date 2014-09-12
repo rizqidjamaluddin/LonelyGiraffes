@@ -47,6 +47,11 @@ class BuddyRequestService extends Service
         $this->creationValidator = $creationValidator;
     }
 
+    /**
+     * @param $user1
+     * @param $user2
+     * @return BuddyRequestModel
+     */
     public function check($user1, $user2)
     {
         // $this->gatekeeper->mayI
@@ -66,7 +71,7 @@ class BuddyRequestService extends Service
         // make sure there's already a request
         try {
             $this->buddyRequestRepository->getByPair($user, $target);
-            throw new \Giraffe\Buddies\Exceptions\ExistingBuddyRequestException;
+            throw new ExistingBuddyRequestException;
         } catch (NotFoundModelException $e) {
             // continue
         }
@@ -84,9 +89,9 @@ class BuddyRequestService extends Service
         $this->creationValidator->validate($data);
 
         $buddyRequest = $this->buddyRequestRepository->create($data);
-        $this->relay->dispatch(new BuddyRequestSentEvent());
+        $this->relay->dispatch(new BuddyRequestSentEvent($buddyRequest));
         $this->log->info($this, 'Buddy Request created', $buddyRequest->toArray());
-        return $buddyRequest->load(array('sender', 'recipient'));
+        return $buddyRequest;
     }
 
     public function getBuddyRequests($userHash)

@@ -192,7 +192,7 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
         // check for 'outgoing' and 'pending'
         try {
             $request = $buddyRequestService->check($this, $user);
-            if ($request->sender->id == $user->id) {
+            if ($request->sender()->id == $user->id) {
                 $rel[] = 'outgoing';
             } else {
                 $rel[] = 'pending';
