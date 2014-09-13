@@ -27,6 +27,7 @@ class NotifiableRegistry
         if (array_key_exists($type, $this->registry)) {
             return $this->registry[$type];
         } else {
+            dd(array_keys($this->registry));
             throw new UndefinedNotificationException;
         }
     }

@@ -14,9 +14,11 @@ class BuddyNotificationsTest extends AcceptanceCase
         $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
 
         // check notification
+        $this->asUser($mario->hash);
         $notifications = $this->callJson('GET', '/api/notifications');
         $this->assertResponseOk();
-        $this->assertEquals(1, count($notifications->notifications));
+         $this->assertEquals(1, count($notifications->notifications));
+
 
     }
 

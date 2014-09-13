@@ -20,4 +20,9 @@ class BuddyRequestSentEvent extends Event
     {
         return $this->buddyRequestModel->recipient();
     }
+
+    public function getBuddyRequest()
+    {
+        return $this->buddyRequestModel;
+    }
 } 
