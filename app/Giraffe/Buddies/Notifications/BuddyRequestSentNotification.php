@@ -2,12 +2,14 @@
 
 use Giraffe\Buddies\Requests\BuddyRequestModel;
 use Giraffe\Buddies\Requests\BuddyRequestRepository;
+use Giraffe\Common\Transformable;
 use Giraffe\Notifications\Notifiable;
 
-class BuddyRequestSentNotification extends \Eloquent implements Notifiable
+class BuddyRequestSentNotification extends \Eloquent implements Notifiable, Transformable
 {
 
     protected $fillable = ['buddy_request_id'];
+    protected static $type = 'new_buddy_request';
 
     /**
      * @var BuddyRequestModel
@@ -24,7 +26,7 @@ class BuddyRequestSentNotification extends \Eloquent implements Notifiable
 
     public static function getType()
     {
-        return 'new_buddy_request';
+        return self::$type;
     }
 
     public function getID()
@@ -45,5 +47,10 @@ class BuddyRequestSentNotification extends \Eloquent implements Notifiable
         $buddyRequestRepository = \App::make(BuddyRequestRepository::class);
 
         return $this->request = $buddyRequestRepository->getById($this->buddy_request_id);
+    }
+
+    public function getTransformer()
+    {
+        return new BuddyRequestSentNotificationTransformer();
     }
 }
