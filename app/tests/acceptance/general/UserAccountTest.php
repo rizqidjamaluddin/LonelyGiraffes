@@ -405,4 +405,21 @@ class UserAccountCase extends AcceptanceCase
         $this->assertResponseOk();
         $this->assertTrue(in_array('self', $endpoint->users[0]->relationships));
     }
+
+    /**
+     * @test
+     */
+    public function clients_can_find_their_acting_user_with_me()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $endpoint = $this->callJson('GET', "/api/users/?me");
+        $this->assertResponseOk();
+        $this->assertTrue(in_array('self', $endpoint->users[0]->relationships));
+        $this->assertEquals($mario->hash, $endpoint->users[0]->hash);
+
+        // check that guests get a 401 if they do this
+        $this->asGuest();
+        $this->callJson('GET', "/api/users/?me");
+        $this->assertResponseStatus(401);
+    }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Giraffe\Authorization\GatekeeperUnauthorizedException;
 use Giraffe\Common\Controller;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Users\UserModel;
@@ -40,6 +41,15 @@ class UserController extends Controller
 
     public function index()
     {
+
+        if (Input::exists('me')) {
+            try {
+                $user = $this->userService->getUser($this->gatekeeper->me());
+                return $this->returnUserModel($user);
+            } catch (NotFoundModelException $e) {
+                throw new GatekeeperUnauthorizedException;
+            }
+        }
 
         if (Input::get('email')) {
             try {
