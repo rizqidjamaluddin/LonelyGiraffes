@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Buddies\Requests;
 
 
+use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Buddies\BuddyRepository;
 use Giraffe\Buddies\Events\BuddyRequestSentEvent;
 use Giraffe\Buddies\Exceptions\AlreadyBuddiesException;
@@ -131,10 +132,16 @@ class BuddyRequestService extends Service
 
     public function acceptBuddyRequest($me, $targetHash)
     {
+        /** @var BuddyRequestModel $request */
         $request = $this->buddyRequestRepository->getByHash($targetHash);
         $this->gatekeeper->mayI('accept', $request)->please();
         $user = $this->userRepository->get($me);
         $this->gatekeeper->mayI('add_buddy', $user)->please();
+
+        // extra check - only the owning user can accept a request
+        if ($request->recipient()->hash != $user->hash) {
+            throw new GatekeeperException;
+        }
 
         $this->buddyRequestRepository->delete($request);
         return $this->buddyService->createBuddy($request);
@@ -152,7 +159,6 @@ class BuddyRequestService extends Service
     {
         $receiver = $this->userRepository->getByHash($userHash);
         $sender = $this->userRepository->getByHash($userFilter);
-
 
         try {
             $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);
