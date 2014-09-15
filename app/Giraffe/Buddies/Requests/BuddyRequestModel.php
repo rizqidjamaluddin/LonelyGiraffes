@@ -3,10 +3,11 @@
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Common\Transformable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 
-class BuddyRequestModel extends Eloquent implements ProtectedResource {
+class BuddyRequestModel extends Eloquent implements ProtectedResource, Transformable {
     use HasEloquentHash;
 
     protected $table = 'buddy_requests';
@@ -41,5 +42,10 @@ class BuddyRequestModel extends Eloquent implements ProtectedResource {
     public function checkOwnership(UserModel $user)
     {
         return $user->id === $this->sender()->id || $user->id === $this->recipient()->id;
+    }
+
+    public function getTransformer()
+    {
+        return new BuddyRequestTransformer();
     }
 }

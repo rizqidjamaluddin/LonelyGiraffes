@@ -6,8 +6,11 @@ class BuddyRequestSentNotificationTransformer extends TransformerAbstract
 {
     public function transform(BuddyRequestSentNotification $notification)
     {
+        $attached = $notification->getRequest();
+        $attached = $attached->getTransformer()->transform($attached);
+
         return [
-            'id' => $notification->getRequest()->id
+            'request' => $attached
         ];
     }
 } 

@@ -32,13 +32,12 @@ class BuddyNotificationsTest extends AcceptanceCase
         $notifications = $this->callJson('GET', '/api/notifications');
         $this->assertResponseOk();
         $this->assertEquals(0, count($notifications->notifications));
-
     }
 
     /**
      * @test
      */
-    public function a_user_is_notified_when_a_request_is_accepted()
+    public function the_sender_is_notified_when_a_request_is_accepted()
     {
 
     }
