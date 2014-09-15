@@ -44,6 +44,15 @@ class BuddyNotificationsTest extends AcceptanceCase
      */
     public function the_sender_is_notified_when_a_request_is_accepted()
     {
+        $mario = $this->registerMario();
+        $luigi = $this->registerAndLoginAsLuigi();
 
+        // execute request
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+
+        // accept it
+        $accept = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->buddy_requests[0]->hash}/accept");
+
+        dd($this->callJson('GET', "/api/users/{$mario->hash}"));
     }
 } 

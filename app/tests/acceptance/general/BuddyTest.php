@@ -315,6 +315,27 @@ class BuddyTest extends AcceptanceCase
         $this->asGuest();
         $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests/");
         $this->assertResponseStatus(401);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+        $this->assertResponseStatus(401);
+
+        // check
+        $this->asUser($mario->hash);
+        $buddies = $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($buddies->buddies));
+
+        // try as luigi
+        $this->asUser($luigi->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests/{$request->hash}/accept");
+        $this->assertResponseStatus(403);
+        $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests/");
+        $this->assertResponseStatus(403);
+
+        // check
+        $this->asUser($mario->hash);
+        $buddies = $this->callJson('GET', "/api/users/{$mario->hash}/buddies");
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($buddies->buddies));
 
     }
 

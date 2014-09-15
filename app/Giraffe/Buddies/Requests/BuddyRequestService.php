@@ -132,8 +132,8 @@ class BuddyRequestService extends Service
     public function acceptBuddyRequest($me, $targetHash)
     {
         $request = $this->buddyRequestRepository->getByHash($targetHash);
-        $user = $this->userRepository->get($me);
         $this->gatekeeper->mayI('accept', $request)->please();
+        $user = $this->userRepository->get($me);
         $this->gatekeeper->mayI('add_buddy', $user)->please();
 
         $this->buddyRequestRepository->delete($request);
