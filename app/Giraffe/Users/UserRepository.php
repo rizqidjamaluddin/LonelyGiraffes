@@ -44,6 +44,11 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
 
     public function getById($id)
     {
+
+        if ($id instanceof UserModel) {
+            return $id;
+        }
+
         if (!$model = $this->model->where('id', $id)->remember(100)->cacheTags(['user:'.$id])->first()) {
             throw new NotFoundModelException();
         }
