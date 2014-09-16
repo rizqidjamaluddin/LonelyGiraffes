@@ -50,7 +50,7 @@ class ParsedownPurifierParserTest extends TestCase
     {
         $parser = App::make(self::TEST);
         $raw = 'This is a [link test](http://google.com).';
-        $expected = '<p>This is a <a href="http://google.com">link test</a>.</p>';
+        $expected = '<p>This is a <a href="http://google.com" target="_blank">link test</a>.</p>';
 
         $parsed = $parser->parseRich($raw);
         $this->assertEquals($parsed, $expected);

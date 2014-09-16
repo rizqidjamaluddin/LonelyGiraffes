@@ -76,7 +76,7 @@ class UserProfileTest extends AcceptanceCase
         $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/profile");
         $this->assertEquals("A URL: http://www.google.com", $fetch->profiles[0]->bio);
         $this->assertEquals(
-            '<p>A URL: <a href="http://www.google.com">http://www.google.com</a></p>',
+            '<p>A URL: <a href="http://www.google.com" target="_blank">http://www.google.com</a></p>',
             $fetch->profiles[0]->html_bio
         );
     }
