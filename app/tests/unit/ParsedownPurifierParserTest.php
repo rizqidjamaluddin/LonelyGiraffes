@@ -58,6 +58,7 @@ class ParsedownPurifierParserTest extends TestCase
         $parsed = $parser->parseComment($raw);
         $this->assertEquals($parsed, $expected);
 
+
         $parsed = $parser->parseTrusted($raw);
         $this->assertEquals($parsed, $expected);
     }
