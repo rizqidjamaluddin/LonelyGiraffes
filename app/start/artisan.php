@@ -26,3 +26,7 @@ Artisan::add(new SeedLookup());
 // lgdev
 Artisan::add(new RunTests());
 Artisan::add(new EmulateFail());
+
+// stickies
+Artisan::add(new PostSticky());
+Artisan::add(new ClearSticky());
