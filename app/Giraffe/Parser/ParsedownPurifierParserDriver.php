@@ -7,18 +7,28 @@ use Parsedown;
 class ParsedownPurifierParserDriver implements ParserDriver
 {
 
+    protected $trusted_settings = [
+        'AutoFormat.Linkify' => true,
+        'HTML.TargetBlank' => true,
+    ];
+
     protected  $purify_rich_settings = [
-        'HTML.Allowed' => 'p,strong,em,a[href],img[src|alt],h1,h2,h3,blockquote,q,ul,cite,ol,li'
+        'HTML.Allowed' => 'p,strong,em,a[href],img[src|alt],h1,h2,h3,blockquote,q,ul,cite,ol,li',
+        'AutoFormat.Linkify' => true,
+        'HTML.TargetBlank' => true,
     ];
 
 
     protected  $purify_comment_settings = [
-        'HTML.Allowed' => 'p,strong,em,a[href]'
+        'HTML.Allowed' => 'p,strong,em,a[href]',
+        'AutoFormat.Linkify' => true,
+        'HTML.TargetBlank' => true,
     ];
 
     protected $purify_linkify_settings = [
         'HTML.Allowed' => 'p,a[href]',
-        'AutoFormat.Linkify' => true
+        'AutoFormat.Linkify' => true,
+        'HTML.TargetBlank' => true,
     ];
 
     /**
@@ -53,6 +63,7 @@ class ParsedownPurifierParserDriver implements ParserDriver
     public function parseTrusted($input)
     {
         $input = $this->parsedown->text($input);
+        $input = $this->purifier->clean($input, $this->trusted_settings);
         return $input;
     }
 
