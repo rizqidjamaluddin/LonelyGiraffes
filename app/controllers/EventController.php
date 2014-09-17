@@ -30,7 +30,9 @@ class EventController extends Controller
     }
 
     public function store() {
-        $new = $this->eventService->createEvent($this->gatekeeper->me(), Input::all());
+	$in = Input::all();
+	$in['body'] = Input::get('body');
+        $new = $this->eventService->createEvent($this->gatekeeper->me(), $in);
         return $this->returnEventModel($new);
     }
 
