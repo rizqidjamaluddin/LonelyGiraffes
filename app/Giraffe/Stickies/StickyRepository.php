@@ -10,11 +10,12 @@ class StickyRepository extends EloquentRepository
 
     public function all()
     {
-        return $this->model->all();
+        return $this->model->remember(100)->cacheTags('lg-sticky')->get();
     }
 
     public function cleanOld()
     {
+        $this->getCache()->tags(['lg-sticky'])->flush();
         $this->model->truncate();
     }
 } 

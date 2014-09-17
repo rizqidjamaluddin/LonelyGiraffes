@@ -68,7 +68,6 @@ class StickyTest extends AcceptanceCase
         $fetch = $this->callJson('GET', '/api/stickies');
         $this->assertResponseOk();
         $this->assertEquals('<p>Test <strong>bold</strong> sticky. With a <a href="http://google.com" target="_blank">link</a>.</p>', $fetch->stickies[0]->html_body);
-        dd($fetch);
     }
 
 } 
