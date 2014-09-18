@@ -100,6 +100,8 @@ Route::api(
              Route::delete('notifications/{notification}', ['uses' => 'NotificationController@destroy']);
              Route::post('notifications/clear', ['uses' => 'NotificationController@dismissAll']);
 
+             Route::get('stickies', ['uses' => 'StickiesController@index']);
+
              Route::get('locations', ['uses' => 'LocationController@search']);
 
              Route::post('images', ['uses' => 'ImageController@create']);
