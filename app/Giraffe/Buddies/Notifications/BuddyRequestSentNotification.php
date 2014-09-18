@@ -45,7 +45,6 @@ class BuddyRequestSentNotification extends \Eloquent implements Notifiable, Tran
 
         /** @var BuddyRequestRepository $buddyRequestRepository */
         $buddyRequestRepository = \App::make(BuddyRequestRepository::class);
-
         return $this->request = $buddyRequestRepository->getById($this->buddy_request_id);
     }
 

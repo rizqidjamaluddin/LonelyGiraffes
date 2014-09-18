@@ -1,9 +1,11 @@
 <?php  namespace Giraffe\Notifications;
 
 use Giraffe\Common\Internal\QueryFilter;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class NotificationService

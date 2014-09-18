@@ -19,16 +19,21 @@ class NotificationController extends Controller
 
     public function index()
     {
+try {
+    $options = new QueryFilter();
+    $options->set('only', Input::get('only'), '');
+    $options->set('except', Input::get('except'), '');
 
-        $options = new QueryFilter();
-        $options->set('only', Input::get('only'), '');
-        $options->set('except', Input::get('except'), '');
+    $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me(), $options);
+    if (count($notifications) == 0) {
+        $this->withCollection([], new NotificationTransformer(), 'notifications');
+    }
+    return $this->withCollection($notifications, new NotificationTransformer(), 'notifications');
 
-        $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me(), $options);
-        if (count($notifications) == 0) {
-            $this->withCollection([], new NotificationTransformer(), 'notifications');
-        }
-        return $this->withCollection($notifications, new NotificationTransformer(), 'notifications');
+} catch (Exception $e) {
+    var_dump(\Giraffe\Buddies\Requests\BuddyRequestModel::all()->toArray());
+//    var_dump($e->getTraceAsString());
+}
     }
 
     public function destroy($notification)
