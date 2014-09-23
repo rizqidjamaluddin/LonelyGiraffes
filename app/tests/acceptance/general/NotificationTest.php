@@ -2,7 +2,7 @@
 
 use Giraffe\Notifications\NotificationRepository;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotification;
 use Giraffe\Users\UserRepository;
 
 class NotificationTest extends AcceptanceCase
@@ -22,9 +22,6 @@ class NotificationTest extends AcceptanceCase
     public function setUp()
     {
         parent::setUp();
-        $this->userRepository = App::make('Giraffe\Users\UserRepository');
-        $this->service = App::make('Giraffe\Notifications\NotificationService');
-        $this->containerRepository = App::make(NotificationRepository::class);
     }
 
     /**

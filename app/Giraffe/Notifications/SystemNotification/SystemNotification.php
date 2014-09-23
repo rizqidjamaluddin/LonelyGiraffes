@@ -6,10 +6,8 @@ use Giraffe\Common\Transformable;
 use Giraffe\Notifications\Notifiable;
 use Giraffe\Notifications\SystemNotification\SystemNotificationTransformer;
 
-class SystemNotificationModel extends Eloquent implements Transformable, Notifiable
+class SystemNotification implements Notifiable
 {
-    protected $table = 'system_notifications';
-    protected $fillable = ['title', 'message'];
 
     /**
      * @param      $body
@@ -25,23 +23,9 @@ class SystemNotificationModel extends Eloquent implements Transformable, Notifia
         return $model;
     }
 
-    /**
-     * Get the transformer instance.
-     *
-     * @return mixed
-     */
-    public function getTransformer()
-    {
-        return new SystemNotificationTransformer();
-    }
-
     public static function getType()
     {
         return 'system_notification';
     }
 
-    public function getID()
-    {
-        return $this->id;
-    }
 }

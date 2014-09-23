@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
  * @property integer    $id
  * @property string     $hash
  * @property string     $notification_type
- * @property integer    $notification_id
  * @property integer    $user_id
  * @property UserModel  $destination
  */
@@ -22,7 +21,7 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
     use HasEloquentHash;
 
     protected $table = 'notification_containers';
-    protected $fillable = ['user_id', 'notification_type', 'notification_id', 'hash'];
+    protected $fillable = ['user_id', 'notification_type', 'hash', 'corpus'];
 
     /**
      * @param Notifiable $notifiable
@@ -33,7 +32,6 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
     {
         $instance = new static;
         $instance->notification_type = $notifiable->getType();
-        $instance->notification_id = $notifiable->getID();
         $instance->user_id = $user->id;
         $instance->hash = new Hash;
         return $instance;

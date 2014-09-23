@@ -7,7 +7,7 @@ use Giraffe\Geolocation\Providers\GeonamePostalCodeLocationProvider;
 use Giraffe\Notifications\Registry\NotifiableRegistry;
 use Giraffe\Notifications\NotificationRegistry;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotification;
 use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,14 +33,6 @@ class GiraffeServiceProvider extends ServiceProvider {
     public function boot()
     {
         $this->app->make('Giraffe\Logging\Log')->boot();
-
-        /*
-         * Notifications
-         */
-
-        /** @var NotifiableRegistry $notifiableRegistry */
-        $notifiableRegistry = \App::make(NotifiableRegistry::class);
-        $notifiableRegistry->register(SystemNotificationModel::class, $this->app->make(SystemNotificationRepository::class));
 
         /*
          * Geolocation

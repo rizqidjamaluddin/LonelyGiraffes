@@ -2,7 +2,7 @@
 
 use Giraffe\Notifications\NotificationRepository;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotification\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotification;
 use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
 use Giraffe\Users\UserService;
 
@@ -41,7 +41,7 @@ class NotificationServiceTest extends TestCase
     public function it_can_queue_a_notification()
     {
         $testUser = $this->generateTestUser();
-        $notification = new SystemNotificationModel(['title' => 'Test Notification', 'message' => 'foo']);
+        $notification = new SystemNotification(['title' => 'Test Notification', 'message' => 'foo']);
         $this->systemNotificationRepository->save($notification);
         $container = $this->service->issue($notification, $testUser);
 

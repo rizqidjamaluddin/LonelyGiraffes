@@ -3,5 +3,4 @@
 interface Notifiable
 {
     public static function getType();
-    public function getID();
 } 

@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class UpdateNotificationsTableWithCorpus extends Migration {
+class UpdateNotificationContainersToRemoveNotificationId extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,7 +14,7 @@ class UpdateNotificationsTableWithCorpus extends Migration {
 	{
 		Schema::table('notification_containers', function(Blueprint $table)
 		{
-			$table->string('corpus')->nullable();
+			$table->dropColumn('notification_id');
 		});
 	}
 
@@ -28,7 +28,7 @@ class UpdateNotificationsTableWithCorpus extends Migration {
 	{
 		Schema::table('notification_containers', function(Blueprint $table)
 		{
-			$table->dropColumn('corpus');
+			$table->integer('notification_id');
 		});
 	}
 

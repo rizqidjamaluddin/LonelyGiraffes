@@ -14,10 +14,6 @@ class BuddiesServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app[EventRelay::class]->listen($this->app[BuddyNotifier::class]);
-        $this->app[NotifiableRegistry::class]->register(
-            BuddyRequestSentNotification::class,
-            $this->app[BuddyRequestSentNotificationRepository::class]
-        );
     }
 
     /**
