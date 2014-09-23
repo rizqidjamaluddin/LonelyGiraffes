@@ -83,7 +83,6 @@ class NotificationService extends Service
         $this->gatekeeper->mayI('delete', $container)->please();
 
         // delete body and container
-        $container->deleteNotifiable();
         $this->repository->delete($container);
 
         return true;
@@ -102,7 +101,6 @@ class NotificationService extends Service
         $user = $this->userRepository->getByHash($user);
         $notifications = $this->repository->getForUser($user->id, new QueryFilter());
         foreach ($notifications as $notificationContainer) {
-            $notificationContainer->deleteNotifiable();
             $this->repository->delete($notificationContainer);
         }
 

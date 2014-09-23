@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
  * @property integer    $id
  * @property string     $hash
  * @property string     $notification_type
+ * @property string     $corpus
  * @property integer    $user_id
  * @property UserModel  $destination
  */
@@ -34,6 +35,7 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
         $instance->notification_type = $notifiable->getType();
         $instance->user_id = $user->id;
         $instance->hash = new Hash;
+        $instance->corpus = serialize($notifiable);
         return $instance;
     }
 
@@ -43,20 +45,7 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
      */
     public function notifiable()
     {
-        /** @var NotifiableRegistry $notifiableRegistry */
-        $notifiableRegistry = \App::make(NotifiableRegistry::class);
-
-        $repository = $notifiableRegistry->resolveRepository($this->notification_type);
-        return $repository->get($this->notification_id);
-    }
-
-    public function deleteNotifiable()
-    {
-        /** @var NotifiableRegistry $notifiableRegistry */
-        $notifiableRegistry = \App::make(NotifiableRegistry::class);
-
-        $repository = $notifiableRegistry->resolveRepository($this->notification_type);
-        return $repository->deleteById($this->notification_id);
+        return unserialize($this->corpus);
     }
 
     public function destination()

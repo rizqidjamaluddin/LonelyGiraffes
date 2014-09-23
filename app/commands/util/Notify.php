@@ -38,7 +38,7 @@ class Notify extends Command {
         $this->info("Issuing notification ...");
         $service->issue($notification, $user);
         $this->info("Sent.");
-        
+
         return 0;
 	}
 
