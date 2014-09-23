@@ -1,7 +1,7 @@
 <?php  namespace Giraffe\Buddies;
 
 use Giraffe\Buddies\Events\BuddyRequestSentEvent;
-use Giraffe\Buddies\Notifications\BuddyRequestSentNotification;
+use Giraffe\Buddies\Notifications\BuddyRequestReceivedNotification;
 use Giraffe\Buddies\Notifications\BuddyRequestSentNotificationRepository;
 use Giraffe\Buddies\Requests\BuddyRequestModel;
 use Giraffe\Common\EventListener;
@@ -24,11 +24,7 @@ class BuddyNotifier implements EventListener
 
     protected function issueBuddyRequestNotification(BuddyRequestModel $requestModel, UserModel $recipient)
     {
-        /** @var BuddyRequestSentNotificationRepository $repo */
-        $repo = \App::make(BuddyRequestSentNotificationRepository::class);
-
-        $notification = $repo->save(BuddyRequestSentNotification::upon($requestModel));
-        $this->notificationService->issue($notification, $recipient);
+        $this->notificationService->issue(BuddyRequestReceivedNotification::upon($requestModel), $recipient);
     }
 
     public function subscribe(EventRelay $relay)

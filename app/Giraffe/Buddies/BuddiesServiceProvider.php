@@ -1,7 +1,7 @@
 <?php  namespace Giraffe\Buddies;
 
 use Event;
-use Giraffe\Buddies\Notifications\BuddyRequestSentNotification;
+use Giraffe\Buddies\Notifications\BuddyRequestReceivedNotification;
 use Giraffe\Buddies\Notifications\BuddyRequestSentNotificationRepository;
 use Giraffe\Buddies\Requests\BuddyRequestService;
 use Giraffe\Common\EventRelay;

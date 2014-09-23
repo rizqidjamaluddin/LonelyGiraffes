@@ -21,10 +21,9 @@ class BuddyNotificationsTest extends AcceptanceCase
         $response = $notifications->notifications[0];
         // verify various aspects of the response
         $this->assertEquals('new_buddy_request', $response->type);
-        $this->assertEquals($this->mario['name'], $response->attached->request->recipient->name);
-        $this->assertEquals($this->mario['email'], $response->attached->request->recipient->email);
-        $this->assertEquals($this->luigi['name'], $response->attached->request->sender->name);
-        $this->assertEquals($this->luigi['email'], $response->attached->request->sender->email);
+        $this->assertEquals('Luigi sent you a buddy request!', $response->message);
+        $this->assertEquals($this->luigi['name'], $response->links->sender->name);
+        $this->assertEquals($this->luigi['email'], $response->links->sender->email);
 
 
         // and the type should be new_buddy_request, filterable
@@ -56,7 +55,6 @@ class BuddyNotificationsTest extends AcceptanceCase
 
         // mario shouldn't have a notification
         $notifications = $this->callJson('GET', '/api/notifications');
-        dd($notifications);
         $this->assertResponseOk();
         $this->assertEquals(0, count($notifications->notifications));
 
