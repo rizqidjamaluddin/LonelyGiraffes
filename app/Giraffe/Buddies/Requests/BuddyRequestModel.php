@@ -7,11 +7,19 @@ use Giraffe\Common\Transformable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 
-class BuddyRequestModel extends Eloquent implements ProtectedResource, Transformable {
+/**
+ * Class BuddyRequestModel
+ *
+ * @package Giraffe\Buddies\Requests
+ * @property string  $hash
+ * @property integer $id
+ */
+class BuddyRequestModel extends Eloquent implements ProtectedResource, Transformable
+{
     use HasEloquentHash;
 
     protected $table = 'buddy_requests';
-	protected $fillable = ['hash', 'from_user_id', 'to_user_id'];
+    protected $fillable = ['hash', 'from_user_id', 'to_user_id'];
 
     public function getResourceName()
     {
@@ -26,6 +34,9 @@ class BuddyRequestModel extends Eloquent implements ProtectedResource, Transform
         return $userRepository->getById($this->to_user_id);
     }
 
+    /**
+     * @return UserModel
+     */
     public function sender()
     {
         /** @var UserRepository $userRepository */

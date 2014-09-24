@@ -21,9 +21,11 @@ class BuddyNotificationsTest extends AcceptanceCase
         $response = $notifications->notifications[0];
         // verify various aspects of the response
         $this->assertEquals('new_buddy_request', $response->type);
-        $this->assertEquals('Luigi sent you a buddy request!', $response->message);
+        $this->assertEquals('Luigi sent you a buddy request!', $response->body);
         $this->assertEquals($this->luigi['name'], $response->links->sender->name);
         $this->assertEquals($this->luigi['email'], $response->links->sender->email);
+
+        // actions should be available to accept/deny the request
 
 
         // and the type should be new_buddy_request, filterable
@@ -57,6 +59,11 @@ class BuddyNotificationsTest extends AcceptanceCase
         $notifications = $this->callJson('GET', '/api/notifications');
         $this->assertResponseOk();
         $this->assertEquals(0, count($notifications->notifications));
+
+    }
+
+    public function a_buddy_request_notification_disappears_if_the_sender_account_is_deleted()
+    {
 
     }
 } 

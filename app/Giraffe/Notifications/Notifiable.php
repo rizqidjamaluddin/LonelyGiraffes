@@ -14,26 +14,19 @@ interface Notifiable
     /**
      * @return string
      */
-    public static function getMessage();
+    public function getMessage();
 
     /**
      * Associative array with transformable entities to attach as links.
      *
      * @return array
      */
-    public static function getLinks();
+    public function getLinks();
 
     /**
      * @return NotificationAction[]
      */
-    public static function getActions();
-
-    /**
-     * Determine phrasing to show to users their response for this notification. E.g. "Accepted", "Declined". Clients should hide action links/buttons if a status is given.
-     *
-     * @return string
-     */
-    public static function getStatus();
+    public function getActions();
 
     /**
      * Additional check to decide if this notification is "read". This works as an OR along with the notification
@@ -42,5 +35,5 @@ interface Notifiable
      *
      * @return boolean
      */
-    public static function getRead();
+    public function getRead();
 } 

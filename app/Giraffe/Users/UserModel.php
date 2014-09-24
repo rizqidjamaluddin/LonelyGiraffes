@@ -8,6 +8,7 @@ use Giraffe\Buddies\BuddyService;
 use Giraffe\Buddies\Requests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Common\Transformable;
 use Giraffe\Geolocation\Locatable;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\UnlocatableModelException;
@@ -30,7 +31,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  * @property string $country
  */
 class UserModel extends Eloquent implements UserInterface, Locatable,
-    RemindableInterface, ProtectedResource, TransformableInterface {
+    RemindableInterface, ProtectedResource, Transformable {
 
     use HasEloquentHash;
 

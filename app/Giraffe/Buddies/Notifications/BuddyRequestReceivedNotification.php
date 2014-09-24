@@ -2,8 +2,11 @@
 
 use Giraffe\Buddies\Requests\BuddyRequestModel;
 use Giraffe\Buddies\Requests\BuddyRequestRepository;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Transformable;
 use Giraffe\Notifications\Notifiable;
+use Giraffe\Users\UserModel;
+use Giraffe\Users\UserRepository;
 use NotificationAction;
 
 /**
@@ -13,11 +16,25 @@ use NotificationAction;
  */
 class BuddyRequestReceivedNotification  implements Notifiable
 {
-
     /**
      * @var string
      */
     protected static $type = 'new_buddy_request';
+
+    /**
+     * @var int
+     */
+    protected $buddy_request_id;
+
+    /**
+     * @var int
+     */
+    protected $sender_id;
+
+    /**
+     * @var
+     */
+    protected $timestamp;
 
     /**
      * @param BuddyRequestModel $requestModel
@@ -26,8 +43,9 @@ class BuddyRequestReceivedNotification  implements Notifiable
     public static function upon(BuddyRequestModel $requestModel)
     {
         $t = new static;
-        $t->request = $requestModel;
         $t->buddy_request_id = $requestModel->id;
+        $t->sender_id = $requestModel->sender()->id;
+        $t->timestamp = $requestModel->created_at;
         return $t;
     }
 
@@ -39,31 +57,54 @@ class BuddyRequestReceivedNotification  implements Notifiable
         return self::$type;
     }
 
+
+
     /**
      * @return string
      */
-    public static function getMessage()
+    public function getMessage()
     {
-        // TODO: Implement getMessage() method.
+        $sender = $this->getSender();
+
+        return "{$sender->name} sent you a buddy request!";
     }
     
-    public static function getLinks()
+    public function getLinks()
     {
-        // TODO: Implement getLinks() method.
+        $sender = $this->getSender();
+        if (!$sender) {
+            return [];
+        }
+
+        return [
+            'sender' => $sender
+        ];
     }
 
-    public static function getActions()
+    public function getActions()
     {
-        // TODO: Implement getActions() method.
+        return [];
     }
 
-    public static function getStatus()
+    public function getRead()
     {
-        // TODO: Implement getStatus() method.
+        return false;
     }
 
-    public static function getRead()
+    /**
+     * @return UserModel|null
+     */
+    protected function getSender()
     {
-        // TODO: Implement getRead() method.
+        /** @var UserRepository $userRepository */
+        $userRepository = \App::make(UserRepository::class);
+
+        try {
+            $sender = $userRepository->getById($this->sender_id);
+        } catch (NotFoundModelException $e) {
+            $sender = null;
+        }
+
+        return $sender;
     }
 }
