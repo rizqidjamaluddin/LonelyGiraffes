@@ -123,8 +123,34 @@ class CommentTest extends AcceptanceCase
         $this->assertEquals('Comment 41', $baseFetch->comments[9]->body);
     }
 
+    /**
+     * @test
+     */
     public function events_can_have_comment_streams()
     {
+        $genericEvent = [
+            'name'      => 'My Awesome Event',
+            'body'      => 'Details of my awesome event',
+            'url'       => 'http://www.google.com',
+            'location'  => 'My Awesome Location',
+            'timestamp' => '0000-00-00 00:00:00'
+        ];
 
+        $mario = $this->registerAndLoginAsMario();
+        $event = $this->callJson('POST', '/api/events/', $genericEvent);
+        $this->assertResponseOk();
+
+        $addComment = $this->callJson('POST', "/api/events/{$event->events[0]->hash}/comments", ['body' => "Comment 1"]);
+        $this->assertResponseOk();
+        $comments = $this->callJson('GET', "/api/events/{$event->events[0]->hash}/comments");
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($comments->comments));
+        $this->assertEquals($this->mario['name'], $comments->comments[0]->links->author->name);
+
+        // check comment data on the event endpoint
+        $event = $this->callJson('GET', "/api/events/{$event->events[0]->hash}");
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($event->events[0]->comment_count));
+        $this->assertEquals($this->mario['name'], $event->events[0]->commentators[0]->name);
     }
 } 
