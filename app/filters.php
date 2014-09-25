@@ -20,7 +20,11 @@ App::before(function($request)
 App::after(function($request, $response)
 {
 	//
+	$response->headers->set('Access-Control-Allow-Origin', '*');
+	$response->headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, DELETE, PUT');
+	$response->headers->set('Access-Control-Allow-Headers', 'Authorization,Content-Type,Accept,Origin,User-Agent,DNT,Cache-Control,X-Mx-ReqToken,Keep-Alive,X-Requested-With,If-Modified-Since');
 });
+
 
 /*
 |--------------------------------------------------------------------------
