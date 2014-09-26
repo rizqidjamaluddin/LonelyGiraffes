@@ -146,6 +146,16 @@ class CommentTest extends AcceptanceCase
         $this->assertResponseOk();
         $this->assertEquals(1, count($comments->comments));
         $this->assertEquals($this->mario['name'], $comments->comments[0]->links->author->name);
+        $hash = $comments->comments[0]->hash;
+
+        // make sure "before" and "after" works
+        $comments = $this->callJson('GET', "/api/events/{$event->events[0]->hash}/comments", ['before' => $hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($comments->comments));
+        $comments = $this->callJson('GET', "/api/events/{$event->events[0]->hash}/comments", ['after' => $hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($comments->comments));
+
 
         // check comment data on the event endpoint
         $event = $this->callJson('GET', "/api/events/{$event->events[0]->hash}");
