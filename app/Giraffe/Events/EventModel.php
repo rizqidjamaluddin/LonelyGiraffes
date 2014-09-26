@@ -3,11 +3,14 @@
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
+use Giraffe\Comments\Commentable;
+use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Feed\Postable;
 use Giraffe\Users\UserModel;
+use Illuminate\Support\Collection;
 
-class EventModel extends Eloquent implements Postable, ProtectedResource, TransformableInterface{
+class EventModel extends Eloquent implements Commentable, Postable, ProtectedResource, TransformableInterface{
     use HasEloquentHash;
 
     protected $table = 'events';
@@ -17,6 +20,39 @@ class EventModel extends Eloquent implements Postable, ProtectedResource, Transf
     public function owner()
     {
         return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
+    }
+
+    public function getComments($options = [])
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+        $stream = $commentStreamRepository->getFor($this);
+
+        if (!$stream) return new Collection();
+
+        return $stream->getComments($options);
+    }
+
+    public function getCommentCount()
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+        $stream = $commentStreamRepository->getFor($this);
+
+        if (!$stream) return 0;
+
+        return $stream->getCommentCount();
+    }
+
+    public function getCommentators()
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+        $stream = $commentStreamRepository->getFor($this);
+
+        if (!$stream) return new Collection();
+
+        return $stream->getParticipatingUsers();
     }
 
     /**
