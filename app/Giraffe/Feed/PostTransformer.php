@@ -19,9 +19,19 @@ class PostTransformer extends TransformerAbstract
         if ($body instanceof TransformableInterface) {
             $transformer = $body->getTransformer();
             $child = $transformer->transform($body);
+        } else {
+            if ($body) {
+                $child = (string) $body;
+            } else {
+                $child = [];
+            }
         };
 
+        if (!$body) {
+            $type = 'deleted';
+        } else {
             $type = $body->getType();
+        }
 
         return [
             'hash' => $post->hash,
