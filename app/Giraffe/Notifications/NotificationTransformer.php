@@ -18,12 +18,14 @@ class NotificationTransformer extends TransformerAbstract
         }
 
         $linkAttachments = $this->processLinks($model);
+        $actionAttachments = $this->processAttachments($model);
 
         return [
             'hash'      => $model->hash,
             'type'      => $model->notifiable()->getType(),
             'timestamp' => (string) $model->created_at,
             'links'  => $linkAttachments,
+            'actions' => $actionAttachments,
             'body'  => $model->notifiable()->getMessage(),
         ];
     }
@@ -44,6 +46,20 @@ class NotificationTransformer extends TransformerAbstract
             }
         }
         return $linkAttachments;
+    }
+
+    /**
+     * @param NotificationModel $model
+     * @return array
+     */
+    protected function processAttachments(NotificationModel $model)
+    {
+        $actionAttachments = [];
+        $actions = $model->notifiable()->getActions();
+        foreach ($actions as $name => $action) {
+            $actionAttachments[$name] = $action->toArray();
+        }
+        return $actionAttachments;
     }
 
 } 

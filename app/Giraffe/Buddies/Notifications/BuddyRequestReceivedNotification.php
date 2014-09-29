@@ -1,20 +1,21 @@
-<?php  namespace Giraffe\Buddies\Notifications; 
+<?php  namespace Giraffe\Buddies\Notifications;
 
+use Giraffe\Buddies\Notifications\Support\NotificationAction;
 use Giraffe\Buddies\Requests\BuddyRequestModel;
 use Giraffe\Buddies\Requests\BuddyRequestRepository;
+use Giraffe\Buddies\Requests\BuddyRequestTransformer;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Transformable;
 use Giraffe\Notifications\Notifiable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
-use NotificationAction;
 
 /**
  * Class BuddyRequestReceivedNotification
  *
  * @package Giraffe\Buddies\Notifications
  */
-class BuddyRequestReceivedNotification  implements Notifiable
+class BuddyRequestReceivedNotification implements Notifiable
 {
     /**
      * @var string
@@ -58,7 +59,6 @@ class BuddyRequestReceivedNotification  implements Notifiable
     }
 
 
-
     /**
      * @return string
      */
@@ -68,7 +68,7 @@ class BuddyRequestReceivedNotification  implements Notifiable
 
         return "{$sender->name} sent you a buddy request!";
     }
-    
+
     public function getLinks()
     {
         $sender = $this->getSender();
@@ -83,11 +83,34 @@ class BuddyRequestReceivedNotification  implements Notifiable
 
     public function getActions()
     {
-        return [];
+
+        /** @var BuddyRequestRepository $buddyRequestRepository */
+        $buddyRequestRepository = \App::make(BuddyRequestRepository::class);
+
+        try {
+            $actions = (new BuddyRequestTransformer())->generateActions(
+                $buddyRequestRepository->getById($this->buddy_request_id)
+            );
+        } catch (NotFoundModelException $e) {
+            // if the request is gone, then no more actions are applicable
+            return [];
+        }
+
+        return $actions;
     }
 
     public function getRead()
     {
+
+        /** @var BuddyRequestRepository $buddyRequestRepository */
+        $buddyRequestRepository = \App::make(BuddyRequestRepository::class);
+
+        try {
+            $buddyRequestRepository->getById($this->buddy_request_id);
+        } catch (NotFoundModelException $e) {
+            return true;
+        }
+
         return false;
     }
 

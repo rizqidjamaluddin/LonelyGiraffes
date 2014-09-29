@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Notifications;
 
+use Giraffe\Common\Value\ApiAction;
 use Illuminate\Support\Collection;
 use NotificationAction;
 
@@ -24,7 +25,7 @@ interface Notifiable
     public function getLinks();
 
     /**
-     * @return NotificationAction[]
+     * @return ApiAction[]
      */
     public function getActions();
 

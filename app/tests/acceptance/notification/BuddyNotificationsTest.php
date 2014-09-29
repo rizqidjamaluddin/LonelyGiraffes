@@ -11,7 +11,7 @@ class BuddyNotificationsTest extends AcceptanceCase
         $luigi = $this->registerAndLoginAsLuigi();
 
         // execute request
-        $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
+        $request = $this->callJson('POST', "/api/users/{$mario->hash}/buddy-requests");
 
         // check notification
         $this->asUser($mario->hash);
@@ -26,6 +26,13 @@ class BuddyNotificationsTest extends AcceptanceCase
         $this->assertEquals($this->luigi['email'], $response->links->sender->email);
 
         // actions should be available to accept/deny the request
+        $this->assertEquals(2, count((array) $response->actions));
+        $this->assertEquals("Accept", $response->actions->accept->label);
+        $this->assertTrue(strpos($response->actions->accept->url, "/api/users/{$mario->hash}/buddy-requests/{$request->buddy_requests[0]->hash}/accept") !== false);
+        $this->assertEquals("POST", $response->actions->accept->method);
+        $this->assertEquals("Deny", $response->actions->deny->label);
+        $this->assertTrue(strpos($response->actions->deny->url, "/api/users/{$mario->hash}/buddy-requests/{$request->buddy_requests[0]->hash}") !== false);
+        $this->assertEquals("DELETE", $response->actions->deny->method);
 
 
         // and the type should be new_buddy_request, filterable
