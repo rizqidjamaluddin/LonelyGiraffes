@@ -2,6 +2,7 @@
 
 use Giraffe\Common\Service;
 use Giraffe\Feed\PostGeneratorHelper;
+use Giraffe\Feed\PostRepository;
 use Giraffe\Geolocation\LocationService;
 use Giraffe\Parser\Parser;
 use Giraffe\Users\UserRepository;
@@ -43,6 +44,10 @@ class EventService extends Service
      * @var LocationService
      */
     private $locationService;
+    /**
+     * @var PostRepository
+     */
+    private $postRepository;
 
     public function __construct(
         EventRepository $eventRepository,
@@ -52,6 +57,7 @@ class EventService extends Service
         UserRepository $userRepository,
         Parser $parser,
         PostGeneratorHelper $postGeneratorHelper,
+        PostRepository $postRepository,
         LocationService $locationService
     ) {
         parent::__construct();
@@ -64,6 +70,7 @@ class EventService extends Service
         $this->parser = $parser;
         $this->postGeneratorHelper = $postGeneratorHelper;
         $this->locationService = $locationService;
+        $this->postRepository = $postRepository;
     }
 
     public function createEvent($user, $data)
@@ -94,6 +101,7 @@ class EventService extends Service
     {
         $event = $this->eventRepository->getByHash($hash);
         $this->gatekeeper->mayI('delete', $event)->please();
+        $this->postRepository->deleteForPostable($event);
         $this->eventRepository->deleteByHash($hash);
         return $event;
     }
