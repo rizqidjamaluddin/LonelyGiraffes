@@ -79,7 +79,7 @@ class EventService extends Service
 
         $data = array_only($data, ['name', 'body', 'url', 'location', 'city', 'state', 'country', 'timestamp']);
         $data['hash'] = Str::random(32);
-        $data['html_body'] = $this->parser->parseComment($data['body']);
+        $data['html_body'] = $this->parser->parseRich($data['body']);
         $user = $this->userRepository->getByHash($user);
         $data['user_id'] = $user->id;
 
@@ -113,7 +113,7 @@ class EventService extends Service
 
         $data = array_only($data, ['name', 'body', 'url', 'location', 'city', 'state', 'country', 'timestamp']);
         if (array_key_exists('body', $data)) {
-            $data['html_body'] = $this->parser->parseComment($data['body']);
+            $data['html_body'] = $this->parser->parseRich($data['body']);
         }
         return $this->eventRepository->update($hash, $data);
     }

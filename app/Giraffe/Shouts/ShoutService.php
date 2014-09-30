@@ -60,7 +60,7 @@ class ShoutService extends Service
         $this->gatekeeper->mayI('create', 'shout')->please();
 
         $body = trim($body);
-        $parsed = $this->parser->parseComment($body);
+        $parsed = $this->parser->parseRich($body);
         $hash = Str::random(32);
 
         $this->creationValidator->validate(['body' => $body]);
