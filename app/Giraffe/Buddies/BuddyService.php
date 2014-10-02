@@ -1,6 +1,6 @@
 <?php  namespace Giraffe\Buddies;
 
-use Giraffe\BuddyRequests\BuddyRequestModel;
+use Giraffe\Buddies\BuddyRequests\BuddyRequestModel;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserRepository;

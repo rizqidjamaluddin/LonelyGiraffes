@@ -129,7 +129,8 @@ abstract class EloquentRepository implements Repository
 
     public function save(Model $model)
     {
-        return $model->save();
+        $model->save();
+        return $model;
     }
 
     public function delete($identifier)

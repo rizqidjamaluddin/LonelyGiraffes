@@ -123,6 +123,7 @@ return array(
 
         // LG-specific
         'Giraffe\GiraffeServiceProvider',
+        'Giraffe\Buddies\BuddiesServiceProvider',
 	),
 
 	/*

@@ -1,8 +1,14 @@
-<?php  namespace Giraffe\BuddyRequests;
+<?php  namespace Giraffe\Buddies\Requests;
 
 
+use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Buddies\BuddyRepository;
+use Giraffe\Buddies\Events\BuddyRequestSentEvent;
+use Giraffe\Buddies\Exceptions\AlreadyBuddiesException;
+use Giraffe\Buddies\Requests\BuddyRequestCreationValidator;
+use Giraffe\Buddies\Requests\BuddyRequestRepository;
 use Giraffe\Buddies\BuddyService;
+use Giraffe\Buddies\Exceptions\ExistingBuddyRequestException;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\NotImplementedException;
 use Giraffe\Common\Service;
@@ -21,11 +27,11 @@ class BuddyRequestService extends Service
      */
     private $buddyRepository;
     /**
-     * @var \Giraffe\BuddyRequests\BuddyRequestService
+     * @var \Giraffe\Buddies\Requests\BuddyRequestService
      */
     private $buddyRequestService;
     /**
-     * @var \Giraffe\BuddyRequests\BuddyRequestCreationValidator
+     * @var \Giraffe\Buddies\Requests\BuddyRequestCreationValidator
      */
     private $creationValidator;
 
@@ -42,6 +48,11 @@ class BuddyRequestService extends Service
         $this->creationValidator = $creationValidator;
     }
 
+    /**
+     * @param $user1
+     * @param $user2
+     * @return BuddyRequestModel
+     */
     public function check($user1, $user2)
     {
         // $this->gatekeeper->mayI
@@ -79,8 +90,9 @@ class BuddyRequestService extends Service
         $this->creationValidator->validate($data);
 
         $buddyRequest = $this->buddyRequestRepository->create($data);
+        $this->relay->dispatch(new BuddyRequestSentEvent($buddyRequest));
         $this->log->info($this, 'Buddy Request created', $buddyRequest->toArray());
-        return $buddyRequest->load(array('sender', 'recipient'));
+        return $buddyRequest;
     }
 
     public function getBuddyRequests($userHash)
@@ -120,10 +132,16 @@ class BuddyRequestService extends Service
 
     public function acceptBuddyRequest($me, $targetHash)
     {
+        /** @var BuddyRequestModel $request */
         $request = $this->buddyRequestRepository->getByHash($targetHash);
-        $user = $this->userRepository->get($me);
         $this->gatekeeper->mayI('accept', $request)->please();
+        $user = $this->userRepository->get($me);
         $this->gatekeeper->mayI('add_buddy', $user)->please();
+
+        // extra check - only the owning user can accept a request
+        if ($request->recipient()->hash != $user->hash) {
+            throw new GatekeeperException;
+        }
 
         $this->buddyRequestRepository->delete($request);
         return $this->buddyService->createBuddy($request);
@@ -141,7 +159,6 @@ class BuddyRequestService extends Service
     {
         $receiver = $this->userRepository->getByHash($userHash);
         $sender = $this->userRepository->getByHash($userFilter);
-
 
         try {
             $request = $this->buddyRequestRepository->getBySenderAndReceiver($sender, $receiver);

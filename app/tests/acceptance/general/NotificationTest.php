@@ -1,15 +1,15 @@
 <?php
 
-use Giraffe\Notifications\NotificationContainerRepository;
+use Giraffe\Notifications\NotificationRepository;
 use Giraffe\Notifications\NotificationService;
-use Giraffe\Notifications\SystemNotificationModel;
+use Giraffe\Notifications\SystemNotification\SystemNotification;
 use Giraffe\Users\UserRepository;
 
 class NotificationTest extends AcceptanceCase
 {
 
     /**
-     * @var NotificationContainerRepository
+     * @var NotificationRepository
      */
     protected $containerRepository;
 
@@ -22,9 +22,6 @@ class NotificationTest extends AcceptanceCase
     public function setUp()
     {
         parent::setUp();
-        $this->userRepository = App::make('Giraffe\Users\UserRepository');
-        $this->service = App::make('Giraffe\Notifications\NotificationService');
-        $this->containerRepository = App::make('Giraffe\Notifications\NotificationContainerRepository');
     }
 
     /**
@@ -56,16 +53,15 @@ class NotificationTest extends AcceptanceCase
      */
     public function a_user_can_see_a_notification()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test notification'), $model->users[0]->hash);
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification']);
 
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
 
         $this->assertResponseStatus(200);
         $this->assertEquals(count($notifications->notifications), 1);
-        $this->assertEquals($notifications->notifications[0]->type, 'SystemNotificationModel');
-        $this->assertEquals($notifications->notifications[0]->body->message, 'Test notification');
+        $this->assertEquals($notifications->notifications[0]->type, 'system_notification');
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification');
     }
 
     /**
@@ -73,18 +69,18 @@ class NotificationTest extends AcceptanceCase
      */
     public function a_user_can_see_a_collection_of_notifications()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->users[0]->hash);
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 3']);
+
 
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertResponseStatus(200);
         $this->assertEquals(count($notifications->notifications), 3);
-        $this->assertEquals($notifications->notifications[0]->body->message, 'Test Notification 1');
-        $this->assertEquals($notifications->notifications[1]->body->message, 'Test Notification 2');
-        $this->assertEquals($notifications->notifications[2]->body->message, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 2');
+        $this->assertEquals($notifications->notifications[2]->body, 'Test Notification 1');
     }
 
     /**
@@ -92,21 +88,23 @@ class NotificationTest extends AcceptanceCase
      */
     public function a_client_can_dismiss_a_notification()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
-        $generated = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->users[0]->hash);
-        $generated2 = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->users[0]->hash);
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
 
-        $this->call('DELETE', '/api/notifications/' . $generated->hash);
+        $fetch = $this->callJson('GET', '/api/notifications');
+        list($generated, $generated2) = [$fetch->notifications[0], $fetch->notifications[1]];
+
+        $this->call('POST', "/api/notifications/{$generated->hash}/dismiss");
         $this->assertResponseStatus(200);
 
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 1);
 
-        $this->call('DELETE', '/api/notifications/' . $generated2->hash);
+        $this->call('POST', "/api/notifications/{$generated2->hash}/dismiss");
         $this->assertResponseStatus(200);
 
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 0);
     }
 
@@ -115,23 +113,27 @@ class NotificationTest extends AcceptanceCase
      */
     public function a_client_can_dismiss_one_out_of_many_notifications()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->users[0]->hash);
-        $generated = $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->users[0]->hash);
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 3']);
 
-        $this->call('DELETE', '/api/notifications/' . $generated->hash);
+        $generated = $this->callJson('GET', '/api/notifications')->notifications[1];
+
+        $this->call('POST', "/api/notifications/{$generated->hash}/dismiss");
         $this->assertResponseStatus(200);
 
         // double check to ensure notification is dismissed, but not others
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 2);
 
-        // these are NotificationContainerModel objects, so the property is ->notification to get the body
-        $this->assertEquals($notifications->notifications[0]->body->message, 'Test Notification 1');
-        $this->assertEquals($notifications->notifications[1]->body->message, 'Test Notification 3');
+        // these are NotificationModel objects, so the property is ->notification to get the body
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 1');
 
+        // a full fetch would still show all notifications, including unread
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $this->assertEquals(count($notifications->notifications), 3);
     }
 
     /**
@@ -139,14 +141,12 @@ class NotificationTest extends AcceptanceCase
      */
     public function a_client_can_dismiss_all_notifications()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $this->asUser($model->users[0]->hash);
-        $m1 = $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->users[0]->hash);
-        $m2 = $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->users[0]->hash);
-        $m3 = $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->users[0]->hash);
-        $internalCheck = $m1->notification;
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 3']);
 
-         // make sure the notifications were inserted as expected; test would dud if this failed
+        // make sure the notifications were inserted as expected; test would dud if this failed
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(count($notifications->notifications), 3);
 
@@ -154,12 +154,8 @@ class NotificationTest extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         // double-check notifications to ensure no undismissed ones are around
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 0);
-
-        // internal check to make sure the actual sub-children are gone too
-        $check = SystemNotificationModel::find($internalCheck->id);
-        $this->assertEquals($check, null);
 
     }
 
@@ -169,21 +165,19 @@ class NotificationTest extends AcceptanceCase
      */
     public function a_user_cannot_see_the_notifications_for_another_user()
     {
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->asUser($anotherModel->users[0]->hash);
+        $mario = $this->registerMario();
+        $bowser = $this->registerAndLoginAsBowser();
 
-        $this->service->queue(SystemNotificationModel::make('Test Notification 1'), $model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test Notification 2'), $model->users[0]->hash);
-        $this->service->queue(SystemNotificationModel::make('Test Notification 3'), $model->users[0]->hash);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 3']);
 
-        $this->service->queue(SystemNotificationModel::make('My Notification'), $anotherModel->users[0]->hash);
+        Artisan::call('lg:util:notify', ['hash' => $bowser->hash, 'body' => 'My Notification']);
 
-        $request = $this->call('GET', '/api/notifications');
+        $request = $this->callJson('GET', '/api/notifications');
         $this->assertResponseStatus(200);
-        $notifications = json_decode($request->getContent())->notifications;
-        $this->assertEquals(1, count($notifications));
-        $this->assertEquals('My Notification', $notifications[0]->body->message);
+        $this->assertEquals(1, count($request->notifications));
+        $this->assertEquals('My Notification', $request->notifications[0]->body);
 
     }
 
@@ -192,20 +186,90 @@ class NotificationTest extends AcceptanceCase
      */
     public function a_user_cannot_dismiss_other_user_notifications()
     {
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification']);
+        $hash = $this->callJson('GET', '/api/notifications')->notifications[0]->hash;
 
-        $model = $this->toJson($this->call('POST', '/api/users/', $this->genericUser));
-        $anotherModel = $this->toJson($this->call('POST', '/api/users/', $this->anotherGenericUser));
-        $this->asUser($anotherModel->users[0]->hash);
-        $container = $this->service->queue(SystemNotificationModel::make('Test Notification'), $model->users[0]->hash);
+        $this->registerAndLoginAsBowser();
 
-        $this->call('DELETE', '/api/notifications/' . $container->hash);
+        $this->call('POST', "/api/notifications/{$hash}/dismiss");
         $this->assertResponseStatus(403);
 
-
         // switch back to the owning user to test
-        $this->asUser($model->users[0]->hash);
+        $this->asUser($mario->hash);
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(1, count($notifications->notifications));
-        $this->assertEquals('Test Notification', $notifications->notifications[0]->body->message);
+        $this->assertEquals('Test Notification', $notifications->notifications[0]->body);
+    }
+
+    /**
+     * @test
+     */
+    public function a_client_can_filter_notifications_by_type()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification']);
+
+        $fetch = $this->callJson('GET', '/api/notifications');
+        $this->assertEquals(1, count($fetch->notifications));
+        $this->assertEquals('Test Notification', $fetch->notifications[0]->body);
+
+        $fetch = $this->callJson('GET', '/api/notifications', ['only' => 'nonexistent_notification']);
+        $this->assertEquals(0, count($fetch->notifications));
+
+        $fetch = $this->callJson('GET', '/api/notifications', ['only' => 'system_notification']);
+        $this->assertEquals(1, count($fetch->notifications));
+        $this->assertEquals('Test Notification', $fetch->notifications[0]->body);
+
+        $fetch = $this->callJson('GET', '/api/notifications', ['except' => 'system_notification']);
+        $this->assertEquals(0, count($fetch->notifications));
+    }
+
+    /**
+     * @test
+     */
+    public function a_client_can_filter_notifications_with_before_after_and_take()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 3']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 4']);
+
+        $fetch = $this->callJson('GET', '/api/notifications');
+        $fourth = $fetch->notifications[0]->hash;
+
+        // check for new ones
+        $fetch = $this->callJson('GET', '/api/notifications', ['after' => $fourth]);
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($fetch->notifications));
+
+        // try getting the first 3
+        $fetch = $this->callJson('GET', '/api/notifications', ['before' => $fourth]);
+        $this->assertResponseOk();
+        $this->assertEquals(3, count($fetch->notifications));
+        $this->assertEquals('Test Notification 1', $fetch->notifications[2]->body);
+        $this->assertEquals('Test Notification 3', $fetch->notifications[0]->body);
+
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 5']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 6']);
+
+        // try getting all
+        $fetch = $this->callJson('GET', '/api/notifications');
+        $this->assertResponseOk();
+        $this->assertEquals(6, count($fetch->notifications));
+
+        // try getting new ones
+        $fetch = $this->callJson('GET', '/api/notifications', ['after' => $fourth]);
+        $this->assertResponseOk();
+        $this->assertEquals(2, count($fetch->notifications));
+        $this->assertEquals('Test Notification 5', $fetch->notifications[1]->body);
+        $this->assertEquals('Test Notification 6', $fetch->notifications[0]->body);
+
+        // test take
+        $fetch = $this->callJson('GET', '/api/notifications', ['after' => $fourth, 'take' => 1]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetch->notifications));
+        $this->assertEquals('Test Notification 6', $fetch->notifications[0]->body);
     }
 } 

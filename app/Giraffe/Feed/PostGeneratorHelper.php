@@ -1,5 +1,6 @@
 <?php  namespace Giraffe\Feed;
 
+use Giraffe\Common\Value\Hash;
 use Giraffe\Feed\Postable;
 use Illuminate\Support\Str;
 
@@ -35,7 +36,7 @@ class PostGeneratorHelper
                 'postable_type' => get_class($postable),
                 'postable_id' => $postable->getId(),
                 'user_id' => $postable->getOwnerId(),
-                'hash' => Str::random(32)
+                'hash' => new Hash()
             ]
         );
         $this->feedService->invalidateTopPostCache();

@@ -5,9 +5,10 @@ use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Buddies\BuddyService;
-use Giraffe\BuddyRequests\BuddyRequestService;
+use Giraffe\Buddies\Requests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Common\Transformable;
 use Giraffe\Geolocation\Locatable;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\UnlocatableModelException;
@@ -31,8 +32,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  * @property int    $tutorial_flag
  */
 class UserModel extends Eloquent implements UserInterface, Locatable,
-    RemindableInterface, ProtectedResource, TransformableInterface
-{
+    RemindableInterface, ProtectedResource, Transformable {
 
     use HasEloquentHash;
 
@@ -208,7 +208,7 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
         // check for 'outgoing' and 'pending'
         try {
             $request = $buddyRequestService->check($this, $user);
-            if ($request->sender->id == $user->id) {
+            if ($request->sender()->id == $user->id) {
                 $rel[] = 'outgoing';
             } else {
                 $rel[] = 'pending';
@@ -239,12 +239,12 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
 
     public function receivedBuddyRequests()
     {
-        return $this->belongsTo('Giraffe\BuddyRequests\BuddyRequestModel', 'to_user_id');
+        return $this->belongsTo('Giraffe\Buddies\BuddyRequests\BuddyRequestModel', 'to_user_id');
     }
 
     public function sentBuddyRequests()
     {
-        return $this->hasMany('Giraffe\BuddyRequests\BuddyRequestModel', 'from_user_id');
+        return $this->hasMany('Giraffe\Buddies\BuddyRequests\BuddyRequestModel', 'from_user_id');
     }
 
     public function images()

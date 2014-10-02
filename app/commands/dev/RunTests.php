@@ -16,6 +16,7 @@ class RunTests extends Command
         'acceptance.general' => 'phpunit --testsuite=acceptance-general',
         'acceptance.chat' => 'phpunit --testsuite=acceptance-chat',
         'acceptance.geolocation' => 'phpunit --testsuite=acceptance-geolocation',
+        'acceptance.notification' => 'phpunit --testsuite=acceptance-notification',
         'component'  => 'phpunit --testsuite=component',
     ];
 

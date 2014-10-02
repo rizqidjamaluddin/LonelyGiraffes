@@ -27,7 +27,6 @@ Getting Up & Running
   * Access the database with `mysql -u root`.
 7. Access the app by navigating to `192.168.33.10` in your favorite browser.
   * You should see the application homepage.
-8. ???
 9. Profit.
 
 

@@ -29,6 +29,9 @@
         <testsuite name="acceptance-geolocation">
             <directory>./app/tests/acceptance/geolocation/</directory>
         </testsuite>
+        <testsuite name="acceptance-notification">
+            <directory>./app/tests/acceptance/notification/</directory>
+        </testsuite>
         <testsuite name="component">
             <directory>./app/tests/component/</directory>
         </testsuite>

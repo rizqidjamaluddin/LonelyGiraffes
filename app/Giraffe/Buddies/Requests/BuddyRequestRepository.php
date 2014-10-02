@@ -1,5 +1,6 @@
-<?php  namespace Giraffe\BuddyRequests;
+<?php  namespace Giraffe\Buddies\Requests;
 
+use Giraffe\Buddies\Requests\BuddyRequestModel;
 use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Users\UserModel;
@@ -50,14 +51,14 @@ class BuddyRequestRepository extends EloquentRepository
             return $user;
         }
 
-        $buddyRequests = $this->model->with('sender')->with('recipient')->where('from_user_id', '=', $user->id)->get();
+        $buddyRequests = $this->model->where('from_user_id', '=', $user->id)->get();
 
         return $buddyRequests;
     }
 
     public function getBySenderAndReceiver(UserModel $sender, UserModel $receiver)
     {
-        $result = $this->model->with(['sender', 'recipient'])->where('from_user_id', $sender->id)
+        $result = $this->model->where('from_user_id', $sender->id)
                               ->where('to_user_id', $receiver->id)->first();
 
         if (!$result) {
@@ -80,7 +81,7 @@ class BuddyRequestRepository extends EloquentRepository
             return $user;
         }
 
-        $buddyRequests = $this->model->with('sender')->with('recipient')->where('to_user_id', '=', $user->id)->get();
+        $buddyRequests = $this->model->where('to_user_id', '=', $user->id)->get();
 
         return $buddyRequests;
     }

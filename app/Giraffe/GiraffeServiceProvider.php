@@ -1,8 +1,14 @@
 <?php namespace Giraffe;
+use Giraffe\Common\EventRelay;
 use Giraffe\Geolocation\LocationService;
 use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchStrategy;
 use Giraffe\Geolocation\Providers\GeonameLocationProvider;
 use Giraffe\Geolocation\Providers\GeonamePostalCodeLocationProvider;
+use Giraffe\Notifications\Registry\NotifiableRegistry;
+use Giraffe\Notifications\NotificationRegistry;
+use Giraffe\Notifications\NotificationService;
+use Giraffe\Notifications\SystemNotification\SystemNotification;
+use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
 use Illuminate\Support\ServiceProvider;
 
 class GiraffeServiceProvider extends ServiceProvider {
@@ -19,13 +25,18 @@ class GiraffeServiceProvider extends ServiceProvider {
         $this->app->singleton('Giraffe\Geolocation\Providers\GeonameLocationProvider');
 
         $this->app->singleton('Giraffe\Users\UserService');
-        $this->app->singleton('Giraffe\Buddies\BuddyService');
-        $this->app->singleton('Giraffe\BuddyRequests\BuddyRequestService');
+
+        $this->app->singleton(EventRelay::class);
+        $this->app->singleton(NotifiableRegistry::class);
     }
 
     public function boot()
     {
         $this->app->make('Giraffe\Logging\Log')->boot();
+
+        /*
+         * Geolocation
+         */
 
         /** @var LocationService $locationService */
         $locationService = $this->app->make('Giraffe\Geolocation\LocationService');

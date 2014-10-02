@@ -1,29 +1,44 @@
 <?php  namespace Giraffe\Notifications;
 
-use Giraffe\Common\NotImplementedException;
+use Giraffe\Common\Internal\QueryFilter;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
-use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * Class NotificationService
+ *
+ * To issue a notification, instantiate and persist a notifiable class (e.g. NewMessageNotification) in its own
+ * repository or mechanism of your choice. Then invoke NotificationService::issue(Notifiable $n, User $u) to
+ * generate a wrapper and issue it to the desired user.
+ *
+ * @package Giraffe\Notifications
+ */
 class NotificationService extends Service
 {
 
     /**
-     * @var NotificationContainerRepository
+     * @var NotificationRepository
      */
-    private $containerRepository;
+    private $repository;
     /**
      * @var \Giraffe\Users\UserRepository
      */
     private $userRepository;
 
+    /**
+     * @var Array
+     */
+    protected $registry = [];
+
     public function __construct(
-        NotificationContainerRepository $containerRepository,
+        NotificationRepository $repository,
         UserRepository $userRepository
     ) {
         parent::__construct();
-        $this->containerRepository = $containerRepository;
+        $this->repository = $repository;
         $this->userRepository = $userRepository;
     }
 
@@ -31,56 +46,60 @@ class NotificationService extends Service
      * Get notification containers for a particular user.
      *
      * @param UserModel|string $user
+     * @param QueryFilter      $filter
      *
-     * @return \Giraffe\Notifications\NotificationContainerModel[]
+     * @return \Giraffe\Notifications\NotificationModel[]
      */
-    public function getUserNotifications($user)
+    public function getUserNotifications($user, QueryFilter $filter)
     {
-        $this->gatekeeper->mayI('read', 'notification_container')->please();
+        $this->gatekeeper->mayI('read', 'notification')->please();
         $user = $this->userRepository->getByHash($user);
-        $notifications = $this->containerRepository->getForUser($user->id);
+        $notifications = $this->repository->getForUser($user->id, $filter);
         return $notifications;
     }
 
     /**
-     * Send a notification to a user. Build a class that extends Notification, with all the context relevant to that
-     * notification, and queue it using this method.
-     *
-     * @param Notification $notification
-     * @param              $destinationUser
-     *
-     * @return NotificationContainerModel
+     * @param             $user
+     * @param QueryFilter $filter
+     * @return mixed
+     * @throws \Giraffe\Common\ConfigurationException
      */
-    public function queue(Notification $notification, $destinationUser)
+    public function getUnreadUserNotifications($user, QueryFilter $filter)
     {
-        $destinationUser = $this->userRepository->getByHash($destinationUser);
-        $notification->save();
-        $container = new NotificationContainerModel(
-            [
-                'user_id' => $destinationUser->id,
-                'hash'    => Str::random(32)
-            ]
-        );
-        $notification->container()->save($container);
+        $this->gatekeeper->mayI('read', 'notification')->please();
+        $user = $this->userRepository->getByHash($user);
+        $notifications = $this->repository->getUnreadForUser($user->id, $filter);
+        return $notifications;
+    }
 
-        return $container;
+    /**
+     * @param Notifiable $notifiable
+     * @param UserModel  $destinationUser
+     * @return NotificationModel
+     */
+    public function issue(Notifiable $notifiable, UserModel $destinationUser)
+    {
+        $notification = NotificationModel::generate($notifiable, $destinationUser);
+        $this->repository->save($notification);
+        return $notification;
     }
 
     /**
      * Dismiss a notification container as well as the embedded notification.
      *
-     * @param NotificationContainerModel|string $container
+     * @param NotificationModel|string $notification
      * @return bool
      */
-    public function dismiss($container)
+    public function dismiss($notification)
     {
-        /** @var NotificationContainerModel $container */
-        $container = $this->containerRepository->getByHash($container);
-        $this->gatekeeper->mayI('delete', $container)->please();
+        /** @var NotificationModel $notification */
+        $notification = $this->repository->getByHash($notification);
+        $this->gatekeeper->mayI('delete', $notification)->please();
+
+        $notification->markRead();
 
         // delete body and container
-        $container->notification->delete();
-        $container->delete();
+        $this->repository->save($notification);
 
         return true;
     }
@@ -93,13 +112,13 @@ class NotificationService extends Service
      */
     public function dismissAll($user)
     {
-        $this->gatekeeper->mayI('dismiss_all', 'notification_container')->please();
+        $this->gatekeeper->mayI('dismiss_all', 'notification')->please();
 
         $user = $this->userRepository->getByHash($user);
-        $notifications = $this->containerRepository->getForUser($user->id);
+        $notifications = $this->repository->getForUser($user->id, new QueryFilter());
         foreach ($notifications as $notificationContainer) {
-            $notificationContainer->notification->delete();
-            $notificationContainer->delete();
+            $notificationContainer->markRead();
+            $this->repository->save($notificationContainer);
         }
 
         return true;

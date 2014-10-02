@@ -1,6 +1,8 @@
 <?php
 use Giraffe\Common\Controller;
-use Giraffe\Notifications\NotificationContainerTransformer;
+use Giraffe\Common\Internal\QueryFilter;
+use Giraffe\Notifications\NotificationRepository;
+use Giraffe\Notifications\NotificationTransformer;
 use Giraffe\Notifications\NotificationService;
 
 class NotificationController extends Controller
@@ -9,23 +11,41 @@ class NotificationController extends Controller
      * @var Giraffe\Notifications\NotificationService
      */
     private $notificationService;
+    /**
+     * @var NotificationRepository
+     */
+    private $notificationRepository;
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, NotificationRepository $notificationRepository)
     {
         parent::__construct();
         $this->notificationService = $notificationService;
+        $this->notificationRepository = $notificationRepository;
     }
 
     public function index()
     {
-        $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me());
-        if (count($notifications) == 0) {
-            $this->withCollection([], new NotificationContainerTransformer(), 'notifications');
+
+        $options = new QueryFilter();
+        $options->set('only', Input::get('only'), '');
+        $options->set('except', Input::get('except'), '');
+        $options->set('after', Input::get('after'), null, $this->notificationRepository);
+        $options->set('before', Input::get('before'), null, $this->notificationRepository);
+        $options->set('take', (int) Input::get('take'), 10, null, [1, 20]);
+
+        if (Input::exists('unread')) {
+            $notifications = $this->notificationService->getUnreadUserNotifications($this->gatekeeper->me(), $options);
+        } else {
+            $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me(), $options);
         }
-        return $this->withCollection($notifications, new NotificationContainerTransformer(), 'notifications');
+
+        if (count($notifications) == 0) {
+            return $this->withCollection([], new NotificationTransformer(), 'notifications');
+        }
+        return $this->withCollection($notifications, new NotificationTransformer(), 'notifications');
     }
 
-    public function destroy($notification)
+    public function dismiss($notification)
     {
         $result = $this->notificationService->dismiss($notification, $this->gatekeeper->me());
         return ['message' => 'Notification dismissed'];
