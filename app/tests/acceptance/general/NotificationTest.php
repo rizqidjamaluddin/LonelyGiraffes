@@ -265,5 +265,11 @@ class NotificationTest extends AcceptanceCase
         $this->assertEquals(2, count($fetch->notifications));
         $this->assertEquals('Test Notification 5', $fetch->notifications[1]->body);
         $this->assertEquals('Test Notification 6', $fetch->notifications[0]->body);
+
+        // test take
+        $fetch = $this->callJson('GET', '/api/notifications', ['after' => $fourth, 'take' => 1]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetch->notifications));
+        $this->assertEquals('Test Notification 6', $fetch->notifications[0]->body);
     }
 } 
