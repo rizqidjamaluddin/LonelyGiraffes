@@ -61,7 +61,7 @@ class NotificationTest extends AcceptanceCase
         $this->assertResponseStatus(200);
         $this->assertEquals(count($notifications->notifications), 1);
         $this->assertEquals($notifications->notifications[0]->type, 'system_notification');
-        $this->assertEquals($notifications->notifications[0]->attached->message, 'Test Notification');
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification');
     }
 
     /**
@@ -78,9 +78,9 @@ class NotificationTest extends AcceptanceCase
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertResponseStatus(200);
         $this->assertEquals(count($notifications->notifications), 3);
-        $this->assertEquals($notifications->notifications[0]->attached->message, 'Test Notification 1');
-        $this->assertEquals($notifications->notifications[1]->attached->message, 'Test Notification 2');
-        $this->assertEquals($notifications->notifications[2]->attached->message, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 1');
+        $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 2');
+        $this->assertEquals($notifications->notifications[2]->body, 'Test Notification 3');
     }
 
     /**
@@ -128,8 +128,8 @@ class NotificationTest extends AcceptanceCase
         $this->assertEquals(count($notifications->notifications), 2);
 
         // these are NotificationModel objects, so the property is ->notification to get the body
-        $this->assertEquals($notifications->notifications[0]->attached->message, 'Test Notification 1');
-        $this->assertEquals($notifications->notifications[1]->attached->message, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 1');
+        $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 3');
 
     }
 
@@ -175,7 +175,7 @@ class NotificationTest extends AcceptanceCase
         $this->assertResponseStatus(200);
         $notifications = json_decode($request->getContent())->notifications;
         $this->assertEquals(1, count($notifications));
-        $this->assertEquals('My Notification', $notifications[0]->attached->message);
+        $this->assertEquals('My Notification', $notifications[0]->body);
 
     }
 
@@ -197,7 +197,7 @@ class NotificationTest extends AcceptanceCase
         $this->asUser($mario->hash);
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(1, count($notifications->notifications));
-        $this->assertEquals('Test Notification', $notifications->notifications[0]->attached->message);
+        $this->assertEquals('Test Notification', $notifications->notifications[0]->body);
     }
 
     /**
@@ -210,14 +210,14 @@ class NotificationTest extends AcceptanceCase
 
         $fetch = $this->callJson('GET', '/api/notifications');
         $this->assertEquals(1, count($fetch->notifications));
-        $this->assertEquals('Test Notification', $fetch->notifications[0]->attached->message);
+        $this->assertEquals('Test Notification', $fetch->notifications[0]->body);
 
         $fetch = $this->callJson('GET', '/api/notifications', ['only' => 'nonexistent_notification']);
         $this->assertEquals(0, count($fetch->notifications));
 
         $fetch = $this->callJson('GET', '/api/notifications', ['only' => 'system_notification']);
         $this->assertEquals(1, count($fetch->notifications));
-        $this->assertEquals('Test Notification', $fetch->notifications[0]->attached->message);
+        $this->assertEquals('Test Notification', $fetch->notifications[0]->body);
 
         $fetch = $this->callJson('GET', '/api/notifications', ['except' => 'system_notification']);
         $this->assertEquals(0, count($fetch->notifications));
