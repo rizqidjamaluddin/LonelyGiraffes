@@ -72,7 +72,8 @@ Route::api(
              Route::delete('users/{resource}', ['uses' => 'UserController@destroy']);
              Route::get('users/{resource}', ['uses' => 'UserController@show']);
              Route::put('users/{resource}', ['uses' => 'UserController@update']);
-             Route::post('users/{resource}/promote', ['uses' => 'UserController@promote']);
+             Route::post('users/{r}/tutorial-mode', ['uses' => 'UserController@enterTutorialMode']);
+             Route::post('users/{r}/end-tutorial-mode', ['uses' => 'UserController@endTutorialMode']);
              Route::get('users', ['uses' => 'UserController@index']);
 
              Route::get('users/{resource}/profile', ['uses' => 'UserProfileController@show']);

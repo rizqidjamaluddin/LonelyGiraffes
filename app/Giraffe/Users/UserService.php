@@ -112,13 +112,18 @@ class UserService extends Service
     }
 
     /**
-     * @param $id
+     * @param $hash
      *
      * @return UserModel
      */
-    public function getUser($id)
+    public function getUser($hash)
     {
-        return $this->userRepository->getByHash($id);
+        // if a user model is given, we refresh it to make sure we get the newest one
+        if ($hash instanceof UserModel) {
+            return $this->userRepository->getByHash($hash->hash);
+        } else {
+            return $this->userRepository->getByHash($hash);
+        }
     }
 
     /**
@@ -220,6 +225,22 @@ class UserService extends Service
     {
         $this->userRepository->update($user_hash, ['role' => $role]);
         return true;
+    }
+
+    public function enableTutorialMode($user)
+    {
+        $user = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI('change-tutorial-flag', $user)->please();
+        $user->enableTutorialFlag();
+        $this->userRepository->save($user);
+    }
+
+    public function disableTutorialMode($user)
+    {
+        $user = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI('change-tutorial-flag', $user)->please();
+        $user->disableTutorialFlag();
+        $this->userRepository->save($user);
     }
 
 }

@@ -81,6 +81,18 @@ class UserController extends Controller
         return $this->returnUserModel($model);
     }
 
+    public function enterTutorialMode($user)
+    {
+        $this->userService->enableTutorialMode($user);
+        return ['message' => 'Tutorial mode enabled.'];
+    }
+
+    public function endTutorialMode($user)
+    {
+        $this->userService->disableTutorialMode($user);
+        return ['message' => 'Tutorial mode disabled.'];
+    }
+
     /**
      * @param UserModel $model
      *

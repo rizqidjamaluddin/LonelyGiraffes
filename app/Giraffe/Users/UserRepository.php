@@ -179,6 +179,13 @@ class UserRepository extends EloquentRepository implements TwoDegreeCellSearchab
         }
     }
 
+    public function save(Model $model)
+    {
+        $this->flushForUser($model);
+        return parent::save($model);
+    }
+
+
     /**
      * @param $identifier
      * @return mixed

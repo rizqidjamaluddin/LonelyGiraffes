@@ -14,6 +14,10 @@ class UserTransformer extends TransformerAbstract
         if ($userModel->gender)
             $optionals['gender'] = $userModel->gender;
 
+        if ($actingUser && $userModel->hash == $actingUser->hash) {
+            $optionals['tutorial_flag'] = $userModel->tutorial_flag;
+        }
+
         $pic = $userModel->profilePic();
         if ($pic) {
             $transformer = new ImageTransformer();
