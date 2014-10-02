@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Feed; 
 
 use Dingo\Api\Transformer\TransformableInterface;
+use Giraffe\Common\Transformable;
 use League\Fractal\TransformerAbstract;
 
 class PostTransformer extends TransformerAbstract
@@ -9,14 +10,14 @@ class PostTransformer extends TransformerAbstract
     {
         $author = $post->fetchAuthor();
 
-        if ($author instanceof TransformableInterface) {
+        if ($author instanceof TransformableInterface || $author instanceof Transformable) {
             $transformer = $author->getTransformer();
             $author = $transformer->transform($author);
         };
 
         $body = $post->postable;
 
-        if ($body instanceof TransformableInterface) {
+        if ($body instanceof TransformableInterface || $body instanceof Transformable) {
             $transformer = $body->getTransformer();
             $child = $transformer->transform($body);
         } else {
