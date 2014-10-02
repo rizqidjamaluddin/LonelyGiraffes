@@ -98,6 +98,25 @@ class EventCase extends AcceptanceCase
     /**
      * @test
      */
+    public function deleting_an_event_also_deletes_the_post()
+    {
+        $this->registerAndLoginAsMario();
+        $event = $this->toJson($this->call('POST', '/api/events/', $this->genericEvent))->events[0];
+        $post = $results = $this->toJson($this->call('GET', '/api/posts'));
+        $target = $post->posts[0]->hash;
+
+        $this->callJson('GET', "/api/posts/{$target}");
+        $this->assertResponseOk();
+
+        $this->call('DELETE', '/api/events/' . $event->hash);
+
+        $this->callJson('GET', "/api/posts/{$target}");
+        $this->assertResponseStatus(404);
+    }
+
+    /**
+     * @test
+     */
     public function other_users_cannot_delete_an_event()
     {
 

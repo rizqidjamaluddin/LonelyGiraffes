@@ -1,5 +1,6 @@
 <?php
 
+use Giraffe\Comments\CommentRepository;
 use Giraffe\Comments\CommentTransformer;
 use Giraffe\Common\Controller;
 use Giraffe\Events\EventCommentingService;
@@ -16,14 +17,20 @@ class EventCommentController extends Controller
      * @var EventCommentingService
      */
     private $eventCommentingService;
+    /**
+     * @var CommentRepository
+     */
+    private $commentRepository;
 
     public function __construct(
         EventRepository $eventRepository,
-        EventCommentingService $eventCommentingService
+        EventCommentingService $eventCommentingService,
+    CommentRepository $commentRepository
     ) {
         $this->eventRepository = $eventRepository;
         $this->eventCommentingService = $eventCommentingService;
         parent::__construct();
+        $this->commentRepository = $commentRepository;
     }
 
     public function index($event)
@@ -67,10 +74,10 @@ class EventCommentController extends Controller
             $options['take'] = 20;
         }
         if ($before = array_get($options, 'before')) {
-            $options['before'] = $this->eventRepository->getByHash($before)->id;
+            $options['before'] = $this->commentRepository->getByHash($before)->id;
         }
         if ($after = array_get($options, 'after')) {
-            $options['after'] = $this->eventRepository->getByHash($after)->id;
+            $options['after'] = $this->commentRepository->getByHash($after)->id;
         }
         return $options;
     }
