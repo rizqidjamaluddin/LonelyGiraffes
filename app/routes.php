@@ -100,9 +100,9 @@ Route::api(
              Route::get('chatrooms/{room}/messages', ['uses' => 'ChatroomMessageController@recent']);
              Route::post('chatrooms/{room}/messages', ['uses' => 'ChatroomMessageController@add']);
 
-             Route::get('notifications', ['uses' => 'NotificationController@index']);
-             Route::post('notifications/{notification}/dismiss', ['uses' => 'NotificationController@dismiss']);
-             Route::post('notifications/clear', ['uses' => 'NotificationController@dismissAll']);
+             Route::get('users/{u}/notifications', ['uses' => 'NotificationController@index']);
+             Route::post('users/{u}/notifications/{notification}/dismiss', ['uses' => 'NotificationController@dismiss']);
+             Route::post('users/{u}/notifications/clear', ['uses' => 'NotificationController@dismissAll']);
 
              Route::get('stickies', ['uses' => 'StickiesController@index']);
 

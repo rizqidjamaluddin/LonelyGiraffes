@@ -52,8 +52,8 @@ class NotificationService extends Service
      */
     public function getUserNotifications($user, QueryFilter $filter)
     {
-        $this->gatekeeper->mayI('read', 'notification')->please();
         $user = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI('read_notifications', $user)->please();
         $notifications = $this->repository->getForUser($user->id, $filter);
         return $notifications;
     }
@@ -66,8 +66,8 @@ class NotificationService extends Service
      */
     public function getUnreadUserNotifications($user, QueryFilter $filter)
     {
-        $this->gatekeeper->mayI('read', 'notification')->please();
         $user = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI('read_notifications', $user)->please();
         $notifications = $this->repository->getUnreadForUser($user->id, $filter);
         return $notifications;
     }

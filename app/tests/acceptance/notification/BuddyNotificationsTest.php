@@ -15,7 +15,7 @@ class BuddyNotificationsTest extends AcceptanceCase
 
         // check notification
         $this->asUser($mario->hash);
-        $notifications = $this->callJson('GET', '/api/notifications');
+        $notifications = $this->callJson('GET', "/api/users/{$mario->hash}/notifications");
         $this->assertResponseOk();
         $this->assertEquals(1, count($notifications->notifications));
         $response = $notifications->notifications[0];
@@ -36,13 +36,13 @@ class BuddyNotificationsTest extends AcceptanceCase
 
 
         // and the type should be new_buddy_request, filterable
-        $notifications = $this->callJson('GET', '/api/notifications', ['only' => 'new_buddy_request']);
+        $notifications = $this->callJson('GET', "/api/users/{$mario->hash}/notifications", ['only' => 'new_buddy_request']);
         $this->assertResponseOk();
         $this->assertEquals(1, count($notifications->notifications));
 
         // luigi shouldn't have a notification
         $this->asUser($luigi->hash);
-        $notifications = $this->callJson('GET', '/api/notifications');
+        $notifications = $this->callJson('GET', "/api/users/{$luigi->hash}/notifications");
         $this->assertResponseOk();
         $this->assertEquals(0, count($notifications->notifications));
     }

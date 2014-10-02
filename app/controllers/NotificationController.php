@@ -23,7 +23,7 @@ class NotificationController extends Controller
         $this->notificationRepository = $notificationRepository;
     }
 
-    public function index()
+    public function index($user)
     {
 
         $options = new QueryFilter();
@@ -34,9 +34,9 @@ class NotificationController extends Controller
         $options->set('take', (int) Input::get('take'), 10, null, [1, 20]);
 
         if (Input::exists('unread')) {
-            $notifications = $this->notificationService->getUnreadUserNotifications($this->gatekeeper->me(), $options);
+            $notifications = $this->notificationService->getUnreadUserNotifications($user, $options);
         } else {
-            $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me(), $options);
+            $notifications = $this->notificationService->getUserNotifications($user, $options);
         }
 
         if (count($notifications) == 0) {
@@ -45,15 +45,15 @@ class NotificationController extends Controller
         return $this->withCollection($notifications, new NotificationTransformer(), 'notifications');
     }
 
-    public function dismiss($notification)
+    public function dismiss($user, $notification)
     {
-        $result = $this->notificationService->dismiss($notification, $this->gatekeeper->me());
+        $result = $this->notificationService->dismiss($notification, $user);
         return ['message' => 'Notification dismissed'];
     }
 
-    public function dismissAll()
+    public function dismissAll($user)
     {
-        $this->notificationService->dismissAll($this->gatekeeper->me());
+        $this->notificationService->dismissAll($user);
         return ['message' => 'Notifications dismissed'];
     }
 } 
