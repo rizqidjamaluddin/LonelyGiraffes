@@ -59,6 +59,20 @@ class NotificationService extends Service
     }
 
     /**
+     * @param             $user
+     * @param QueryFilter $filter
+     * @return mixed
+     * @throws \Giraffe\Common\ConfigurationException
+     */
+    public function getUnreadUserNotifications($user, QueryFilter $filter)
+    {
+        $this->gatekeeper->mayI('read', 'notification')->please();
+        $user = $this->userRepository->getByHash($user);
+        $notifications = $this->repository->getUnreadForUser($user->id, $filter);
+        return $notifications;
+    }
+
+    /**
      * @param Notifiable $notifiable
      * @param UserModel  $destinationUser
      * @return NotificationModel
@@ -82,6 +96,8 @@ class NotificationService extends Service
         $notification = $this->repository->getByHash($notification);
         $this->gatekeeper->mayI('delete', $notification)->please();
 
+        $notification->markRead();
+
         // delete body and container
         $this->repository->save($notification);
 
@@ -101,7 +117,8 @@ class NotificationService extends Service
         $user = $this->userRepository->getByHash($user);
         $notifications = $this->repository->getForUser($user->id, new QueryFilter());
         foreach ($notifications as $notificationContainer) {
-            $this->repository->delete($notificationContainer);
+            $notificationContainer->markRead();
+            $this->repository->save($notificationContainer);
         }
 
         return true;

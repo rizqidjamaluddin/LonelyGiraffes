@@ -98,13 +98,13 @@ class NotificationTest extends AcceptanceCase
         $this->call('POST', "/api/notifications/{$generated->hash}/dismiss");
         $this->assertResponseStatus(200);
 
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 1);
 
         $this->call('POST', "/api/notifications/{$generated2->hash}/dismiss");
         $this->assertResponseStatus(200);
 
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 0);
     }
 
@@ -124,13 +124,16 @@ class NotificationTest extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         // double check to ensure notification is dismissed, but not others
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 2);
 
         // these are NotificationModel objects, so the property is ->notification to get the body
         $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 1');
         $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 3');
 
+        // a full fetch would still show all notifications, including unread
+        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $this->assertEquals(count($notifications->notifications), 3);
     }
 
     /**
@@ -151,7 +154,7 @@ class NotificationTest extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         // double-check notifications to ensure no undismissed ones are around
-        $notifications = $this->toJson($this->call('GET', '/api/notifications'));
+        $notifications = $this->toJson($this->call('GET', '/api/notifications?unread'));
         $this->assertEquals(count($notifications->notifications), 0);
 
     }
@@ -171,11 +174,10 @@ class NotificationTest extends AcceptanceCase
 
         Artisan::call('lg:util:notify', ['hash' => $bowser->hash, 'body' => 'My Notification']);
 
-        $request = $this->call('GET', '/api/notifications');
+        $request = $this->callJson('GET', '/api/notifications');
         $this->assertResponseStatus(200);
-        $notifications = json_decode($request->getContent())->notifications;
-        $this->assertEquals(1, count($notifications));
-        $this->assertEquals('My Notification', $notifications[0]->body);
+        $this->assertEquals(1, count($request->notifications));
+        $this->assertEquals('My Notification', $request->notifications[0]->body);
 
     }
 

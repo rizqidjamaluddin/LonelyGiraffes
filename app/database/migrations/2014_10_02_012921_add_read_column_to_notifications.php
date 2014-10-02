@@ -14,7 +14,7 @@ class AddReadColumnToNotifications extends Migration {
 	{
 		Schema::table('notification_containers', function(Blueprint $table)
 		{
-			$table->boolean('read');
+			$table->boolean('read')->default(0);
 		});
 	}
 

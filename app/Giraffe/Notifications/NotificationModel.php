@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
  * @property string     $corpus
  * @property integer    $user_id
  * @property UserModel  $destination
+ * @property integer    $read
  */
 class NotificationModel extends Eloquent implements TransformableInterface, ProtectedResource
 {
@@ -78,8 +79,9 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
         return $this->destination->id == $user->id;
     }
 
-    public function dismiss()
-    {
 
+    public function markRead()
+    {
+        $this->read = 1;
     }
 }

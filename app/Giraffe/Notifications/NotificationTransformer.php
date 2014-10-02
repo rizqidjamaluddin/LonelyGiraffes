@@ -23,10 +23,11 @@ class NotificationTransformer extends TransformerAbstract
         return [
             'hash'      => $model->hash,
             'type'      => $model->notifiable()->getType(),
-            'timestamp' => (string) $model->created_at,
-            'links'  => $linkAttachments,
-            'actions' => $actionAttachments,
-            'body'  => $model->notifiable()->getMessage(),
+            'read'      => $model->read,
+            'timestamp' => (string)$model->created_at,
+            'links'     => $linkAttachments,
+            'actions'   => $actionAttachments,
+            'body'      => $model->notifiable()->getMessage(),
         ];
     }
 

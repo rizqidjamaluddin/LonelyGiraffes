@@ -24,6 +24,15 @@ class NotificationRepository extends EloquentRepository
         return $q->where('user_id', $userId)->get();
     }
 
+
+    public function getUnreadForUser($userId, QueryFilter $filter)
+    {
+        $q = $this->model;
+        $q = $this->appendLimitingOptions($q, $filter);
+
+        return $q->where('user_id', $userId)->where('read', 0)->get();
+    }
+
     protected function appendLimitingOptions($q, QueryFilter $filter)
     {
 

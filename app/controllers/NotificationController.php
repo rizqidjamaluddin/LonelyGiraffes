@@ -23,7 +23,13 @@ class NotificationController extends Controller
         $options = new QueryFilter();
         $options->set('only', Input::get('only'), '');
         $options->set('except', Input::get('except'), '');
-        $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me(), $options);
+
+        if (Input::exists('unread')) {
+            $notifications = $this->notificationService->getUnreadUserNotifications($this->gatekeeper->me(), $options);
+        } else {
+            $notifications = $this->notificationService->getUserNotifications($this->gatekeeper->me(), $options);
+        }
+
         if (count($notifications) == 0) {
             return $this->withCollection([], new NotificationTransformer(), 'notifications');
         }
