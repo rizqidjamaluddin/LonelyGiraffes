@@ -422,4 +422,89 @@ class UserAccountCase extends AcceptanceCase
         $this->callJson('GET', "/api/users/?me");
         $this->assertResponseStatus(401);
     }
+
+    /**
+     * @test
+     */
+    public function users_can_have_tutorial_flags()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $endpoint = $this->callJson('GET', "/api/users/?me");
+        $this->assertEquals(1, $endpoint->users[0]->tutorial_flag);
+
+        $this->callJson('POST', "/api/users/{$mario->hash}/end-tutorial-mode");
+        $this->assertResponseOk();
+
+        $e2 = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertEquals(0, $e2->users[0]->tutorial_flag);
+        // this should also work
+        $e2 = $this->callJson('GET', "/api/users/?me");
+        $this->assertEquals(0, $e2->users[0]->tutorial_flag);
+
+        $this->callJson('POST', "/api/users/{$mario->hash}/tutorial-mode");
+        $this->assertResponseOk();
+
+        $endpoint = $this->callJson('GET', "/api/users/?me");
+        $this->assertEquals(1, $endpoint->users[0]->tutorial_flag);
+
+    }
+
+    /**
+     * @test
+     */
+    public function users_cannot_change_other_users_tutorial_flags()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertEquals(1, $endpoint->users[0]->tutorial_flag);
+
+        // try to disable it as bowser
+        $bowser = $this->registerAndLoginAsBowser();
+        $this->callJson('POST', "/api/users/{$mario->hash}/end-tutorial-mode");
+        $this->assertResponseStatus(403);
+
+        // try to disable it as a guest
+        $this->asGuest();
+        $this->callJson('POST', "/api/users/{$mario->hash}/end-tutorial-mode");
+        $this->assertResponseStatus(401);
+
+        // check, should still be on
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertEquals(1, $endpoint->users[0]->tutorial_flag);
+
+        // end tutorial mode properly
+        $this->callJson('POST', "/api/users/{$mario->hash}/end-tutorial-mode");
+        $this->assertResponseOk();
+
+        // try to enable it as bowser
+        $this->asUser($bowser->hash);
+        $this->callJson('POST', "/api/users/{$mario->hash}/tutorial-mode");
+        $this->assertResponseStatus(403);
+
+        // try to enable it as a guest
+        $this->asGuest();
+        $this->callJson('POST', "/api/users/{$mario->hash}/tutorial-mode");
+        $this->assertResponseStatus(401);
+
+        // should still be off
+        $this->asUser($mario->hash);
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertEquals(0, $endpoint->users[0]->tutorial_flag);
+    }
+
+    /**
+     * @test
+     */
+    public function users_cannot_see_other_users_tutorial_flags()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $endpoint = $this->callJson('GET', "/api/users/?me");
+        $this->assertEquals(1, $endpoint->users[0]->tutorial_flag);
+
+        $this->registerAndLoginAsBowser();
+        $endpoint = $this->callJson('GET', "/api/users/{$mario->hash}");
+        $this->assertTrue(!array_key_exists('tutorial_flag', (array) $endpoint->users[0]));
+
+    }
 }

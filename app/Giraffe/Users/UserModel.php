@@ -18,7 +18,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
 /**
  * Class UserModel
  *
- * @property int $id
+ * @property int    $id
  * @property string $hash
  * @property string $name
  * @property string $password
@@ -28,31 +28,47 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  * @property string $city
  * @property string $state
  * @property string $country
+ * @property int    $tutorial_flag
  */
 class UserModel extends Eloquent implements UserInterface, Locatable,
-    RemindableInterface, ProtectedResource, TransformableInterface {
+    RemindableInterface, ProtectedResource, TransformableInterface
+{
 
     use HasEloquentHash;
 
     protected $softDelete = true;
 
-	/**
-	 * The database table used by the model.
-	 *
-	 * @var string
-	 */
-	protected $table = 'users';
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'users';
 
-	/**
-	 * The attributes excluded from the model's JSON form.
-	 *
-	 * @var array
-	 */
-	protected $hidden = ['id', 'password', 'created_at'];
+    /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = ['id', 'password', 'created_at'];
 
-    protected $fillable = ['hash', 'name', 'email', 'password', 'token', 'cell',
-        'country', 'state', 'city', 'lat', 'long',
-        'date_of_birth', 'gender', 'role'];
+    protected $fillable = [
+        'hash',
+        'name',
+        'email',
+        'password',
+        'token',
+        'cell',
+        'country',
+        'state',
+        'city',
+        'lat',
+        'long',
+        'date_of_birth',
+        'gender',
+        'role',
+        'tutorial_flag'
+    ];
 
     public function getDates()
     {
@@ -86,34 +102,34 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
      */
 
     /**
-	 * Get the unique identifier for the user.
-	 *
-	 * @return mixed
-	 */
-	public function getAuthIdentifier()
-	{
-		return $this->getKey();
-	}
+     * Get the unique identifier for the user.
+     *
+     * @return mixed
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->getKey();
+    }
 
-	/**
-	 * Get the password for the user.
-	 *
-	 * @return string
-	 */
-	public function getAuthPassword()
-	{
-		return $this->password;
-	}
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
+    public function getAuthPassword()
+    {
+        return $this->password;
+    }
 
-	/**
-	 * Get the e-mail address where password reminders are sent.
-	 *
-	 * @return string
-	 */
-	public function getReminderEmail()
-	{
-		return $this->email;
-	}
+    /**
+     * Get the e-mail address where password reminders are sent.
+     *
+     * @return string
+     */
+    public function getReminderEmail()
+    {
+        return $this->email;
+    }
 
     /**
      * Get the token value for the "remember me" session.
@@ -198,7 +214,7 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
                 $rel[] = 'pending';
             }
         } catch (NotFoundModelException $e) {
-             // continue
+            // continue
         }
 
         return $rel;
@@ -215,7 +231,9 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
 
         $location = new Location();
         $location->provideCity($this->city, $this->state, $this->country);
-        if ($this->cell) $location->provideCacheMetadata($this->cell);
+        if ($this->cell) {
+            $location->provideCacheMetadata($this->cell);
+        }
         return $location;
     }
 
@@ -238,5 +256,15 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
     {
         $profile_pic = ImageTypeModel::where('name', '=', 'profile_pic')->first();;
         return $this->images()->where('image_type_id', '=', $profile_pic->id)->first();
+    }
+
+    public function enableTutorialFlag()
+    {
+        $this->tutorial_flag = 1;
+    }
+
+    public function disableTutorialFlag()
+    {
+        $this->tutorial_flag = 0;
     }
 }

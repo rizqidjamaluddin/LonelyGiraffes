@@ -37,7 +37,7 @@ class GiraffePermissionsLookup
                     'profile'                => ['create', 'update'],
                     'shout'                  => ['create', 'delete'],
                     'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddy', 'delete_buddy',
-                                                'read_buddy_request'],
+                                                'read_buddy_request', 'change-tutorial-flag'],
                     'test'                   => ['test'],
 
                 ],
