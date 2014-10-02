@@ -32,7 +32,7 @@ class GiraffePermissionsLookup
                     'comment'             => ['create', 'read', 'update'],
                     'event'               => ['create', 'edit', 'update', 'delete'],
                     'image'               => ['create', 'delete'],
-                    'notification'        => ['read', 'delete', 'dismiss_all'],
+                    'notification'        => ['read', 'delete', 'dismiss', 'dismiss_all'],
                     'post'                => ['delete'],
                     'profile'             => ['create', 'update'],
                     'shout'               => ['create', 'delete'],

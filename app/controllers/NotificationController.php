@@ -30,7 +30,7 @@ class NotificationController extends Controller
         return $this->withCollection($notifications, new NotificationTransformer(), 'notifications');
     }
 
-    public function destroy($notification)
+    public function dismiss($notification)
     {
         $result = $this->notificationService->dismiss($notification, $this->gatekeeper->me());
         return ['message' => 'Notification dismissed'];

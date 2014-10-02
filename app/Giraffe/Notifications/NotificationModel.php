@@ -22,7 +22,7 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
     use HasEloquentHash;
 
     protected $table = 'notification_containers';
-    protected $fillable = ['user_id', 'notification_type', 'hash', 'corpus'];
+    protected $fillable = ['user_id', 'notification_type', 'hash', 'corpus', 'read'];
 
     /**
      * @param Notifiable $notifiable
@@ -76,5 +76,10 @@ class NotificationModel extends Eloquent implements TransformableInterface, Prot
     public function checkOwnership(UserModel $user)
     {
         return $this->destination->id == $user->id;
+    }
+
+    public function dismiss()
+    {
+
     }
 }

@@ -95,13 +95,13 @@ class NotificationTest extends AcceptanceCase
         $fetch = $this->callJson('GET', '/api/notifications');
         list($generated, $generated2) = [$fetch->notifications[0], $fetch->notifications[1]];
 
-        $this->call('DELETE', '/api/notifications/' . $generated->hash);
+        $this->call('POST', "/api/notifications/{$generated->hash}/dismiss");
         $this->assertResponseStatus(200);
 
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertEquals(count($notifications->notifications), 1);
 
-        $this->call('DELETE', '/api/notifications/' . $generated2->hash);
+        $this->call('POST', "/api/notifications/{$generated2->hash}/dismiss");
         $this->assertResponseStatus(200);
 
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
@@ -120,7 +120,7 @@ class NotificationTest extends AcceptanceCase
 
         $generated = $this->callJson('GET', '/api/notifications')->notifications[1];
 
-        $this->call('DELETE', '/api/notifications/' . $generated->hash);
+        $this->call('POST', "/api/notifications/{$generated->hash}/dismiss");
         $this->assertResponseStatus(200);
 
         // double check to ensure notification is dismissed, but not others
@@ -190,7 +190,7 @@ class NotificationTest extends AcceptanceCase
 
         $this->registerAndLoginAsBowser();
 
-        $this->call('DELETE', "/api/notifications/$hash");
+        $this->call('POST', "/api/notifications/{$hash}/dismiss");
         $this->assertResponseStatus(403);
 
         // switch back to the owning user to test
@@ -221,7 +221,5 @@ class NotificationTest extends AcceptanceCase
 
         $fetch = $this->callJson('GET', '/api/notifications', ['except' => 'system_notification']);
         $this->assertEquals(0, count($fetch->notifications));
-
-
     }
 } 

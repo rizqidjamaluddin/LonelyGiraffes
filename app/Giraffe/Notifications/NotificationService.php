@@ -73,17 +73,17 @@ class NotificationService extends Service
     /**
      * Dismiss a notification container as well as the embedded notification.
      *
-     * @param NotificationModel|string $container
+     * @param NotificationModel|string $notification
      * @return bool
      */
-    public function dismiss($container)
+    public function dismiss($notification)
     {
-        /** @var NotificationModel $container */
-        $container = $this->repository->getByHash($container);
-        $this->gatekeeper->mayI('delete', $container)->please();
+        /** @var NotificationModel $notification */
+        $notification = $this->repository->getByHash($notification);
+        $this->gatekeeper->mayI('delete', $notification)->please();
 
         // delete body and container
-        $this->repository->delete($container);
+        $this->repository->save($notification);
 
         return true;
     }

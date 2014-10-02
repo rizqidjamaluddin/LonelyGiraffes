@@ -65,10 +65,14 @@ class BuddyNotificationsTest extends AcceptanceCase
         // mario shouldn't have a notification
         $notifications = $this->callJson('GET', '/api/notifications');
         $this->assertResponseOk();
+        dd($notifications);
         $this->assertEquals(0, count($notifications->notifications));
 
     }
 
+    /**
+     * @test
+     */
     public function a_buddy_request_notification_disappears_if_the_sender_account_is_deleted()
     {
 
