@@ -25,7 +25,7 @@ class ImageService extends Service
     private $userService;
 
     private $valid_exts = array('jpeg', 'jpg', 'png', 'gif');
-    private $max_size = 200000; // max file size (200kb)
+    private $max_size = 5000000;
     private $max_res = 400, $thumb_res = 100;
 
     public function __construct(
