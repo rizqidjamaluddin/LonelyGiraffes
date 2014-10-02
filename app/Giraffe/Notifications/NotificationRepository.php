@@ -21,7 +21,7 @@ class NotificationRepository extends EloquentRepository
         $q = $this->model;
         $q = $this->appendLimitingOptions($q, $filter);
 
-        return $q->where('user_id', $userId)->get();
+        return $q->where('user_id', $userId)->orderBy('id', 'desc')->get();
     }
 
 
@@ -30,11 +30,19 @@ class NotificationRepository extends EloquentRepository
         $q = $this->model;
         $q = $this->appendLimitingOptions($q, $filter);
 
-        return $q->where('user_id', $userId)->where('read', 0)->get();
+        return $q->where('user_id', $userId)->where('read', 0)->orderBy('id', 'desc')->get();
     }
 
     protected function appendLimitingOptions($q, QueryFilter $filter)
     {
+
+        $q = $q->take($filter->get('take'));
+        if ($after = $filter->get('after')) {
+            $q = $q->where('id', '>', $after->id);
+        }
+        if ($before = $filter->get('before')) {
+            $q = $q->where('id', '<', $before->id);
+        }
 
         if ($only = $filter->get('only')) {
             $onlyFilter = new Collection(explode(',', $only));

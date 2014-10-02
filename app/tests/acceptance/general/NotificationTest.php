@@ -78,9 +78,9 @@ class NotificationTest extends AcceptanceCase
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
         $this->assertResponseStatus(200);
         $this->assertEquals(count($notifications->notifications), 3);
-        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 1');
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 3');
         $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 2');
-        $this->assertEquals($notifications->notifications[2]->body, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[2]->body, 'Test Notification 1');
     }
 
     /**
@@ -128,8 +128,8 @@ class NotificationTest extends AcceptanceCase
         $this->assertEquals(count($notifications->notifications), 2);
 
         // these are NotificationModel objects, so the property is ->notification to get the body
-        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 1');
-        $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[0]->body, 'Test Notification 3');
+        $this->assertEquals($notifications->notifications[1]->body, 'Test Notification 1');
 
         // a full fetch would still show all notifications, including unread
         $notifications = $this->toJson($this->call('GET', '/api/notifications'));
@@ -223,5 +223,47 @@ class NotificationTest extends AcceptanceCase
 
         $fetch = $this->callJson('GET', '/api/notifications', ['except' => 'system_notification']);
         $this->assertEquals(0, count($fetch->notifications));
+    }
+
+    /**
+     * @test
+     */
+    public function a_client_can_filter_notifications_with_before_after_and_take()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 3']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 4']);
+
+        $fetch = $this->callJson('GET', '/api/notifications');
+        $fourth = $fetch->notifications[0]->hash;
+
+        // check for new ones
+        $fetch = $this->callJson('GET', '/api/notifications', ['after' => $fourth]);
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($fetch->notifications));
+
+        // try getting the first 3
+        $fetch = $this->callJson('GET', '/api/notifications', ['before' => $fourth]);
+        $this->assertResponseOk();
+        $this->assertEquals(3, count($fetch->notifications));
+        $this->assertEquals('Test Notification 1', $fetch->notifications[2]->body);
+        $this->assertEquals('Test Notification 3', $fetch->notifications[0]->body);
+
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 5']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 6']);
+
+        // try getting all
+        $fetch = $this->callJson('GET', '/api/notifications');
+        $this->assertResponseOk();
+        $this->assertEquals(6, count($fetch->notifications));
+
+        // try getting new ones
+        $fetch = $this->callJson('GET', '/api/notifications', ['after' => $fourth]);
+        $this->assertResponseOk();
+        $this->assertEquals(2, count($fetch->notifications));
+        $this->assertEquals('Test Notification 5', $fetch->notifications[1]->body);
+        $this->assertEquals('Test Notification 6', $fetch->notifications[0]->body);
     }
 } 
