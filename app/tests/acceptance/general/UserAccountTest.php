@@ -42,7 +42,6 @@ class UserAccountCase extends AcceptanceCase
         $response = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
         $this->assertResponseStatus(200);
 
-        $this->assertEquals('hello@lonelygiraffes.com', $response->users[0]->email);
         $this->assertEquals('Lonely Giraffe', $response->users[0]->name);
         $this->assertEquals('M', $response->users[0]->gender);
     }
@@ -100,9 +99,23 @@ class UserAccountCase extends AcceptanceCase
         $getModel = $this->toJson($this->call("GET", "/api/users/" . $model->users[0]->hash));
 
         $this->assertResponseStatus(200);
-        $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
         $this->assertEquals('Lonely Giraffe', $getModel->users[0]->name);
         $this->assertEquals('M', $getModel->users[0]->gender);
+    }
+
+    /**
+     * @test
+     */
+    public function a_users_email_is_only_visible_when_logged_in_as_them()
+    {
+        $mario = $this->registerMario()->hash;
+
+        $fetchPublic = $this->callJson('GET', "/api/users/$mario");
+        $this->assertTrue(!array_key_exists('email', (array) $fetchPublic->users[0]));
+
+        $this->asUser($mario);
+        $fetchPrivate = $this->callJson('GET', "/api/users/$mario");
+        $this->assertEquals($this->mario['email'], $fetchPrivate->users[0]->email);
     }
 
     /**
@@ -113,10 +126,9 @@ class UserAccountCase extends AcceptanceCase
     public function it_can_find_a_user_by_email()
     {
         $model = $this->toJson($this->call("POST", "/api/users/", $this->genericUser));
-        $getModel = $this->toJson($this->call("GET", "/api/users", array('email' => $model->users[0]->email)));
+        $getModel = $this->callJson("GET", "/api/users", ['email' => $this->genericUser['email']]);
 
         $this->assertResponseStatus(200);
-        $this->assertEquals('hello@lonelygiraffes.com', $getModel->users[0]->email);
         $this->assertEquals('Lonely Giraffe', $getModel->users[0]->name);
         $this->assertEquals('M', $getModel->users[0]->gender);
 
@@ -142,7 +154,6 @@ class UserAccountCase extends AcceptanceCase
         $getModels = $this->toJson($this->call("GET", "/api/users", array('name' => $model1->users[0]->name)));
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($getModels->users));
-        $this->assertEquals('hello@lonelygiraffes.com', $getModels->users[0]->email);
         $this->assertEquals('Lonely Giraffe', $getModels->users[0]->name);
         $this->assertEquals('M', $getModels->users[0]->gender);
 
@@ -151,10 +162,8 @@ class UserAccountCase extends AcceptanceCase
         $getModels = $this->toJson($this->call("GET", "/api/users", array('name' => $model2->users[0]->name)));
         $this->assertResponseStatus(200);
         $this->assertEquals(2, count($getModels->users));
-        $this->assertEquals('anotherHello@lonelygiraffes.com', $getModels->users[0]->email);
         $this->assertEquals('Lonesome Penguin', $getModels->users[0]->name);
         $this->assertEquals('F', $getModels->users[0]->gender);
-        $this->assertEquals('similarHello@lonelygiraffes.com', $getModels->users[1]->email);
         $this->assertEquals('Lonesome Penguin', $getModels->users[1]->name);
         $this->assertEquals('M', $getModels->users[1]->gender);
 
@@ -210,7 +219,6 @@ class UserAccountCase extends AcceptanceCase
         );
 
         $this->assertResponseStatus(200);
-        $this->assertEquals('hello@notlonelygiraffes.com', $response->users[0]->email);
         $this->assertEquals('Lonesome Penguin', $response->users[0]->name);
         $this->assertEquals('F', $response->users[0]->gender);
     }
@@ -277,9 +285,10 @@ class UserAccountCase extends AcceptanceCase
 
         $anotherModel = $this->toJson($this->call('POST', '/api/users', $this->anotherGenericUser));
 
+        $hash = $anotherModel->users[0]->hash;
         $response = $this->call(
             "PUT",
-            "/api/users/" . $anotherModel->users[0]->hash,
+            "/api/users/" . $hash,
             [
                 'email' => 'evil@example.com'
             ]
@@ -287,7 +296,8 @@ class UserAccountCase extends AcceptanceCase
 
         $this->assertResponseStatus(403);
 
-        $getModel = $this->toJson($this->call('GET', '/api/users/' . $anotherModel->users[0]->hash));
+        $this->asUser($hash);
+        $getModel = $this->toJson($this->call('GET', '/api/users/' . $hash));
         $this->assertEquals($getModel->users[0]->email, 'anotherHello@lonelygiraffes.com');
     }
 
@@ -302,16 +312,19 @@ class UserAccountCase extends AcceptanceCase
         Artisan::call('lgutil:promote', ['email' => $this->anotherGenericUser['email'], '--force' => true]);
         $this->asUser($anotherModel->users[0]->hash);
 
+        $hash = $model->users[0]->hash;
         $response = $this->call(
             'PUT',
-            '/api/users/' . $model->users[0]->hash,
+            '/api/users/' . $hash,
             [
                 'email' => 'new@lonelygiraffes.com'
             ]
         );
 
         $this->assertResponseStatus(200);
-        $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
+
+        $this->asUser($hash);
+        $getModel = $this->toJson($this->call('GET', '/api/users/' . $hash));
         $this->assertEquals($getModel->users[0]->email, 'new@lonelygiraffes.com');
     }
 
@@ -337,8 +350,10 @@ class UserAccountCase extends AcceptanceCase
         $this->assertResponseStatus(422);
 
         // make sure everything is intact
+        $this->asUser($model->users[0]->hash);
         $getModel = $this->toJson($this->call('GET', '/api/users/' . $model->users[0]->hash));
         $this->assertEquals($getModel->users[0]->email, 'hello@lonelygiraffes.com');
+        $this->asUser($anotherModel->users[0]->hash);
         $getAnotherModel = $this->toJson($this->call('GET', '/api/users/' . $anotherModel->users[0]->hash));
         $this->assertEquals($getAnotherModel->users[0]->email, 'anotherHello@lonelygiraffes.com');
     }
@@ -387,12 +402,10 @@ class UserAccountCase extends AcceptanceCase
         $insert = $this->toJson($this->call('POST', '/api/users', $data))->users[0];
         $this->assertResponseOk();
         $this->assertEquals($insert->name, $this->genericUser['name']);
-        $this->assertEquals($insert->email, $this->genericUser['email']);
 
         $check = $this->toJson($this->call('GET', '/api/users/' . $insert->hash))->users[0];
         $this->assertResponseOk();
         $this->assertEquals($check->name, $this->genericUser['name']);
-        $this->assertEquals($check->email, $this->genericUser['email']);
     }
 
     /**

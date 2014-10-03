@@ -31,15 +31,15 @@ class BuddyTest extends AcceptanceCase
         $buddyRequest1 = $this->callJson("POST", "/api/users/" . $luigi->hash . "/buddy-requests");
         $this->assertResponseStatus(200);
         $buddyRequest1 = $buddyRequest1->buddy_requests[0];
-        $this->assertEquals($this->mario['email'], $buddyRequest1->sender->email);
-        $this->assertEquals($this->luigi['email'], $buddyRequest1->recipient->email);
+        $this->assertEquals($this->mario['name'], $buddyRequest1->sender->name);
+        $this->assertEquals($this->luigi['name'], $buddyRequest1->recipient->name);
 
         // Create buddy request to yoshi
         $buddyRequest2 = $this->callJson("POST", "/api/users/" . $yoshi->hash . "/buddy-requests");
         $this->assertResponseStatus(200);
         $buddyRequest2 = $buddyRequest2->buddy_requests[0];
-        $this->assertEquals($this->mario['email'], $buddyRequest2->sender->email);
-        $this->assertEquals($this->yoshi['email'], $buddyRequest2->recipient->email);
+        $this->assertEquals($this->mario['name'], $buddyRequest2->sender->name);
+        $this->assertEquals($this->yoshi['name'], $buddyRequest2->recipient->name);
 
         //////// Check that they were sent ////////
 
@@ -47,11 +47,11 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(200);
         $this->assertEquals(2, count($luigiRequests->buddy_requests));
         $this->assertEquals($buddyRequest1->sent_timestamp, $luigiRequests->buddy_requests[0]->sent_timestamp);
-        $this->assertEquals($this->mario['email'], $luigiRequests->buddy_requests[0]->sender->email);
-        $this->assertEquals($this->luigi['email'], $luigiRequests->buddy_requests[0]->recipient->email);
+        $this->assertEquals($this->mario['name'], $luigiRequests->buddy_requests[0]->sender->name);
+        $this->assertEquals($this->luigi['name'], $luigiRequests->buddy_requests[0]->recipient->name);
         $this->assertEquals($buddyRequest2->sent_timestamp, $luigiRequests->buddy_requests[1]->sent_timestamp);
-        $this->assertEquals($this->mario['email'], $luigiRequests->buddy_requests[1]->sender->email);
-        $this->assertEquals($this->yoshi['email'], $luigiRequests->buddy_requests[1]->recipient->email);
+        $this->assertEquals($this->mario['name'], $luigiRequests->buddy_requests[1]->sender->name);
+        $this->assertEquals($this->yoshi['name'], $luigiRequests->buddy_requests[1]->recipient->name);
 
         //////// Check that they were received ////////
 
@@ -61,8 +61,8 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($luigiRequests->buddy_requests));
         $this->assertEquals($buddyRequest1->sent_timestamp, $luigiRequests->buddy_requests[0]->sent_timestamp);
-        $this->assertEquals($this->mario['email'], $luigiRequests->buddy_requests[0]->sender->email);
-        $this->assertEquals($this->luigi['email'], $luigiRequests->buddy_requests[0]->recipient->email);
+        $this->assertEquals($this->mario['name'], $luigiRequests->buddy_requests[0]->sender->name);
+        $this->assertEquals($this->luigi['name'], $luigiRequests->buddy_requests[0]->recipient->name);
 
         // By Yoshi
         $this->asUser($yoshi->hash);
@@ -70,8 +70,8 @@ class BuddyTest extends AcceptanceCase
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($yoshiRequests->buddy_requests));
         $this->assertEquals($buddyRequest2->sent_timestamp, $yoshiRequests->buddy_requests[0]->sent_timestamp);
-        $this->assertEquals($this->mario['email'], $yoshiRequests->buddy_requests[0]->sender->email);
-        $this->assertEquals($this->yoshi['email'], $yoshiRequests->buddy_requests[0]->recipient->email);
+        $this->assertEquals($this->mario['name'], $yoshiRequests->buddy_requests[0]->sender->name);
+        $this->assertEquals($this->yoshi['name'], $yoshiRequests->buddy_requests[0]->recipient->name);
 
         //////// Accept a request ////////
 
@@ -106,13 +106,13 @@ class BuddyTest extends AcceptanceCase
         $marioBuddies = $this->toJson($this->call('GET', '/api/users/' . $mario->hash . '/buddies'));
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($marioBuddies->buddies));
-        $this->assertEquals($this->luigi['email'], $marioBuddies->buddies[0]->email);
+        $this->assertEquals($this->luigi['name'], $marioBuddies->buddies[0]->name);
 
         $this->asUser($luigi->hash);
         $luigiBuddies = $this->toJson($this->call('GET', '/api/users/' . $luigi->hash . '/buddies'));
         $this->assertResponseStatus(200);
         $this->assertEquals(1, count($luigiBuddies->buddies));
-        $this->assertEquals($this->mario['email'], $luigiBuddies->buddies[0]->email);
+        $this->assertEquals($this->mario['name'], $luigiBuddies->buddies[0]->name);
 
         $this->asUser($yoshi->hash);
         $luigiBuddies = $this->toJson($this->call('GET', '/api/users/' . $yoshi->hash . '/buddies'));
@@ -515,8 +515,8 @@ class BuddyTest extends AcceptanceCase
         $check = $this->callJson('GET', "/api/users/{$mario->hash}/buddy-requests", ['user' => $luigi->hash]);
         $this->assertResponseOk();
         $this->assertEquals(1, count($check->buddy_requests));
-        $this->assertEquals($this->luigi['email'], $check->buddy_requests[0]->sender->email);
-        $this->assertEquals($this->mario['email'], $check->buddy_requests[0]->recipient->email);
+        $this->assertEquals($this->luigi['name'], $check->buddy_requests[0]->sender->name);
+        $this->assertEquals($this->mario['name'], $check->buddy_requests[0]->recipient->name);
 
         // check that yoshi can't try to use that same endpoint
         $this->asUser($yoshi->hash);

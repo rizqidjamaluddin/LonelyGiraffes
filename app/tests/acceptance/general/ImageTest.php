@@ -45,7 +45,6 @@ class ImageTest extends AcceptanceCase
         // Check that it is correctly associated with the user (Mario)
         $getUser = $this->toJson($this->call("GET", "/api/users/" . $mario->hash));
         $this->assertResponseStatus(200);
-        $this->assertEquals('mario@test.lonelygiraffes.com', $getUser->users[0]->email);
         $this->assertEquals('Mario', $getUser->users[0]->name);
         $this->assertEquals('M', $getUser->users[0]->gender);
         $this->assertEquals(url($image_location), $getUser->users[0]->pic->href);

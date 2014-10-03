@@ -23,7 +23,6 @@ class BuddyNotificationsTest extends AcceptanceCase
         $this->assertEquals('new_buddy_request', $response->type);
         $this->assertEquals('Luigi sent you a buddy request!', $response->body);
         $this->assertEquals($this->luigi['name'], $response->links->sender->name);
-        $this->assertEquals($this->luigi['email'], $response->links->sender->email);
 
         // actions should be available to accept/deny the request
         $this->assertEquals(2, count((array) $response->actions));

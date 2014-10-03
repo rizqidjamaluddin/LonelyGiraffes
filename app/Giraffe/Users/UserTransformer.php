@@ -16,6 +16,7 @@ class UserTransformer extends TransformerAbstract
 
         if ($actingUser && $userModel->hash == $actingUser->hash) {
             $optionals['tutorial_flag'] = $userModel->tutorial_flag;
+            $optionals['email'] = $userModel->email;
         }
 
         $pic = $userModel->profilePic();
@@ -29,7 +30,6 @@ class UserTransformer extends TransformerAbstract
         return array_merge([
             'hash' => $userModel->hash,
             'name' => $userModel->name,
-            'email' => $userModel->email,
             'city' => $userModel->city,
             'state' => $userModel->state,
             'country' => $userModel->country,
