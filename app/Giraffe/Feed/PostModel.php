@@ -27,7 +27,7 @@ class PostModel extends Eloquent implements ProtectedResource, TransformableInte
     {
         if (!$this->user_id) return null;
         /** @var UserRepository $userRepository */
-        $userRepository = $userRepository ?: \App::make('Giraffe\Users\UserRepository');
+        $userRepository = $userRepository ?: \App::make(UserRepository::class);
         return $userRepository->getById($this->user_id);
     }
 
