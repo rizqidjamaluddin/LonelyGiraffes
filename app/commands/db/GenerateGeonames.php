@@ -233,13 +233,17 @@ class GenerateGeonames extends Command
 
                 $jar[] = $d;
 
-                if (count($jar) > 200) {
+                if (count($jar) > 50) {
                     \DB::table('lookup_geoname_places')->insert($jar);
                     $jar = [];
                 }
             } catch (Exception $e) {
                 dd($e);
             }
+
+            // make sure any remaining content is saved
+            \DB::table('lookup_geoname_places')->insert($jar);
+            $jar = [];
 
             $counter++;
             if ($counter % 1000 == 0) {
