@@ -196,6 +196,8 @@ class GenerateGeonames extends Command
 
         $prepared = $pdo->prepare($sql);
 
+        $jar = [];
+
         // loop through file to get contents
         while (!$file->eof()) {
 
@@ -214,21 +216,27 @@ class GenerateGeonames extends Command
                     $composite_state_code = $state_list[$row[8] . '.' . $row[10]];
                 }
 
-                $prepared->execute(
+                $d =
                     [
-                        ':geoname_id'   => $row[0],
-                        ':city'         => $row[1],
-                        ':ascii_city'   => $row[2],
-                        ':lat'          => $row[4],
-                        ':long'         => $row[5],
-                        ':country_code' => $row[8],
-                        ':state_code'   => $row[10],
-                        ':country'      => $country_list[$row[8]],
-                        ':state'        => $composite_state_code,
-                        ':population'   => $row[14],
-                        ':timezone'     => $row[17]
-                    ]
-                );
+                        'geoname_id'   => $row[0],
+                        'city'         => $row[1],
+                        'ascii_city'   => $row[2],
+                        'lat'          => $row[4],
+                        'long'         => $row[5],
+                        'country_code' => $row[8],
+                        'state_code'   => $row[10],
+                        'country'      => $country_list[$row[8]],
+                        'state'        => $composite_state_code,
+                        'population'   => $row[14],
+                        'timezone'     => $row[17]
+                    ];
+
+                $jar[] = $d;
+
+                if (count($jar) > 200) {
+                    \DB::table('lookup_geoname_places')->insert($jar);
+                    $jar = [];
+                }
             } catch (Exception $e) {
                 dd($e);
             }
