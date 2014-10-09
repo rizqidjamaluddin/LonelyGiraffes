@@ -52,7 +52,11 @@ class Controller extends \Dingo\Api\Routing\Controller
      */
     public function withItem($item, TransformerAbstract $transformer, $key = 'data')
     {
-        $resource = new Item($item, $transformer, $key);
+        if ($item) {
+            $resource = new Collection([$item], $transformer, $key);
+        } else {
+            $resource = new Collection([], $transformer, $key);
+        }
 
         /** @var Manager $fractal */
         $fractal = App::make('dingo.api.transformer')->getFractal();
