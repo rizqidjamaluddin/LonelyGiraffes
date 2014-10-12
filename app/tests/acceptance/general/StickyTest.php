@@ -64,10 +64,16 @@ class StickyTest extends AcceptanceCase
      */
     public function stickies_can_contain_html_and_markdown()
     {
-        Artisan::call('lg:sticky:post', ['body' => 'Test **bold** sticky. With a <a href="http://google.com">link</a>.']);
+        Artisan::call(
+               'lg:sticky:post',
+               ['body' => 'Test **bold** sticky. With a <a href="http://google.com">link</a>.']
+        );
         $fetch = $this->callJson('GET', '/api/stickies');
         $this->assertResponseOk();
-        $this->assertEquals('<p>Test <strong>bold</strong> sticky. With a <a href="http://google.com" target="_blank">link</a>.</p>', $fetch->stickies[0]->html_body);
+        $this->assertEquals(
+             '<p>Test <strong>bold</strong> sticky. With a <a href="http://google.com" target="_blank">link</a>.</p>',
+             $fetch->stickies[0]->html_body
+        );
     }
 
 } 

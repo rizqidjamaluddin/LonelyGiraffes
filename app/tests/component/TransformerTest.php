@@ -107,4 +107,9 @@ class TransformerTest extends TestCase
         $this->assertTrue(5 === $normalized['two']['number']);
         $this->assertTrue("2010-01-01 12:00:00" === $normalized['two']['time']);
     }
+
+    public function it_can_use_the_always_collection_json_output_serializer()
+    {
+
+    }
 }
