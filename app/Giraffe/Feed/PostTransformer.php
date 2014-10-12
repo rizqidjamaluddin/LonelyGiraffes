@@ -1,7 +1,7 @@
 <?php  namespace Giraffe\Feed; 
 
 use Dingo\Api\Transformer\TransformableInterface;
-use Giraffe\Common\Transformable;
+use Giraffe\Support\Transformer\Transformable;
 use League\Fractal\TransformerAbstract;
 
 class PostTransformer extends TransformerAbstract

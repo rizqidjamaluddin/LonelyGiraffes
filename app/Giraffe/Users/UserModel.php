@@ -8,7 +8,7 @@ use Giraffe\Buddies\BuddyService;
 use Giraffe\Buddies\Requests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\NotFoundModelException;
-use Giraffe\Common\Transformable;
+use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Geolocation\Locatable;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\UnlocatableModelException;

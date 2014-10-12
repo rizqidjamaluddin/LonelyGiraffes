@@ -1,4 +1,6 @@
-<?php  namespace Giraffe\Common;
+<?php  namespace Giraffe\Support\Transformer;
+
+use Giraffe\Support\Transformer\Transformer;
 
 interface Transformable
 {

@@ -1,10 +1,9 @@
-<?php namespace Giraffe\Support\Transformer;
-
-abstract class Transformer
+<?php  namespace Giraffe\Support\Transformer;
+interface Transformer
 {
     /**
-     * @param $entity
+     * @param $transformable
      * @return array
      */
-    public abstract function transform($entity);
-}
+    public function transform($transformable);
+} 

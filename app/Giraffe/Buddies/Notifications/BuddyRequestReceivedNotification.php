@@ -5,7 +5,7 @@ use Giraffe\Buddies\Requests\BuddyRequestModel;
 use Giraffe\Buddies\Requests\BuddyRequestRepository;
 use Giraffe\Buddies\Requests\BuddyRequestTransformer;
 use Giraffe\Common\NotFoundModelException;
-use Giraffe\Common\Transformable;
+use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Notifications\Notifiable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;

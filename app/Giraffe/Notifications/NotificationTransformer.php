@@ -1,7 +1,7 @@
 <?php  namespace Giraffe\Notifications;
 
 use Dingo\Api\Transformer\TransformableInterface;
-use Giraffe\Common\Transformable;
+use Giraffe\Support\Transformer\Transformable;
 use League\Fractal\TransformerAbstract;
 use stdClass;
 
