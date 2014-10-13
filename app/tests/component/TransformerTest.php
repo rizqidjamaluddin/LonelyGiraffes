@@ -1,9 +1,16 @@
 <?php
 use Giraffe\Support\Transformer\Normalizers\CarbonNormalizer;
 use Giraffe\Support\Transformer\Normalizers\NativeNormalizer;
+use Giraffe\Support\Transformer\Presenter;
+use Giraffe\Support\Transformer\Serializers\AlwaysArrayKeyedSerializer;
 
 class TransformerTest extends TestCase
 {
+    protected function tearDown()
+    {
+        Mockery::close();
+    }
+
     /**
      * @test
      */
@@ -108,8 +115,46 @@ class TransformerTest extends TestCase
         $this->assertTrue("2010-01-01 12:00:00" === $normalized['two']['time']);
     }
 
+    /**
+     * @test
+     */
     public function it_can_use_the_always_collection_json_output_serializer()
     {
+        $transformed = [
+            'string' => 'foo',
+            'integer' => 10
+        ];
+
+        $transformed2 = [
+            'string' => 'bar',
+            'integer' => 50
+        ];
+
+        $entity = Mockery::mock(Giraffe\Support\Transformer\Transformable::class);
+        $transformer = Mockery::mock(Giraffe\Support\Transformer\Transformer::class);
+        $transformer->shouldReceive('canServe')->withAnyArgs()->andReturn(true);
+        $transformer->shouldReceive('transform')->withAnyArgs()->times(1)->andReturn($transformed);
+
+        $subject = new Presenter();
+        $subject->setSerializer(new AlwaysArrayKeyedSerializer());
+        $subject->setMeta('key', 'test');
+        $result = $subject->transform($entity, $transformer);
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue(isset($result['test']));
+        $this->assertEquals('foo', $result['test'][0]['string']);
+        $this->assertEquals(10, $result['test'][0]['integer']);
+
+        $transformer->shouldReceive('transform')->withAnyArgs()->times(2)->andReturn($transformed, $transformed2);
+
+        // test collection
+        $result = $subject->transform([$entity, $entity], $transformer);
+        $this->assertEquals(1, count($result));
+        $this->assertTrue(isset($result['test']));
+        $this->assertEquals('foo', $result['test'][0]['string']);
+        $this->assertEquals(10, $result['test'][0]['integer']);
+        $this->assertEquals('bar', $result['test'][1]['string']);
+        $this->assertEquals(50, $result['test'][1]['integer']);
 
     }
 }

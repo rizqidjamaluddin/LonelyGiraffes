@@ -8,12 +8,7 @@ use Giraffe\Support\Transformer\Serializer;
 class NullSerializer implements Serializer
 {
 
-    /**
-     * @param array $data
-     *
-     * @return mixed
-     */
-    public function process(Array $data)
+    public function process($data, Array $meta)
     {
         return $data;
     }

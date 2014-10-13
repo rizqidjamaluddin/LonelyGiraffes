@@ -2,8 +2,9 @@
 interface Serializer 
 {
     /**
-     * @param array $data
+     * @param array|TransformedEntity $data
+     * @param array $meta
      * @return mixed
      */
-    public function process(Array $data);
+    public function process($data, Array $meta);
 }

@@ -1,27 +1,29 @@
 <?php  namespace Giraffe\Support\Transformer\Serializers; 
 use Giraffe\Support\Transformer\Serializer;
+use Giraffe\Support\Transformer\TransformedEntity;
 
 class AlwaysArrayKeyedSerializer implements Serializer
 {
 
-    /**
-     * @var string
-     */
-    private $key;
-
-    public function __construct($key)
+    public function process($data, Array $meta)
     {
-        $this->key = $key;
+        $data = $this->wrapSingleEntity($data);
+
+        return [
+            $meta['key'] => $data
+        ];
     }
 
     /**
-     * @param array $data
-     *
-     * @return mixed
+     * @param $data
+     * @return array
      */
-    public function process(Array $data)
+    protected function wrapSingleEntity($data)
     {
-        return [
-            $this->key => $data
-        ];
-    }}
+        if ($data instanceof TransformedEntity) {
+            $data = [$data];
+            return $data;
+        }
+        return $data;
+    }
+}

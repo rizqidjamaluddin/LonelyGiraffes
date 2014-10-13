@@ -21,6 +21,11 @@ class Presenter
     protected $serializer;
 
     /**
+     * @var Array
+     */
+    protected $metadata = [];
+
+    /**
      * @param Normalizer $normalizer
      * @param Serializer $serializer
      */
@@ -50,7 +55,6 @@ class Presenter
      */
     public function transform($transformable, Transformer $transformer = null)
     {
-
         $transformer = $this->obtainDefaultTransformer($transformable, $transformer);
         $this->catchMissingTransformer($transformer);
         $this->catchUntransformable($transformable);
@@ -65,27 +69,35 @@ class Presenter
             $result = $this->handleEntity($transformable, $transformer);
         }
 
-        $serialized = $this->serializer->process($result);
-        return $serialized;
+        $serialized = $this->serializer->process($result, $this->metadata);
+        $finished = $this->normalizeTransformedEntities($serialized);
+
+        return $finished;
     }
 
     /**
      * @param             $entity
      * @param Transformer $transformer
      *
-     * @return mixed
+     * @return TransformedEntity
      */
     public function handleEntity($entity, Transformer $transformer)
     {
         $this->checkCompatibility($entity, $transformer);
         $transformed = $transformer->transform($entity);
         $normalized = $this->normalizer->normalize($transformed);
-        return $normalized;
+        return new TransformedEntity($normalized);
     }
 
     public function setSerializer(Serializer $serializer)
     {
         $this->serializer = $serializer;
+        return $this;
+    }
+
+    public function setMeta($key, $content)
+    {
+        $this->metadata[$key] = $content;
         return $this;
     }
 
@@ -162,6 +174,22 @@ class Presenter
             return $transformer;
         }
         return $transformer;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function normalizeTransformedEntities($serialized)
+    {
+        array_walk_recursive(
+            $serialized,
+            function (&$entity) {
+                if ($entity instanceof TransformedEntity) {
+                    $entity = $entity->getEntity();
+                }
+            }
+        );
+        return $serialized;
     }
 
 } 
