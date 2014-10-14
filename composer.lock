@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "91b9bf71ca598967cf56870804720ca6",
+    "hash": "f434bb611e9aa932787a8beff3fcd40b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -176,21 +176,21 @@
         },
         {
             "name": "dingo/api",
-            "version": "dev-master",
+            "version": "v0.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "87e16efbb64cddb81f9f292b89e21dc2f594aa83"
+                "reference": "87ce1b823941deddf266d2fcbf537145c0530716"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/87e16efbb64cddb81f9f292b89e21dc2f594aa83",
-                "reference": "87e16efbb64cddb81f9f292b89e21dc2f594aa83",
+                "url": "https://api.github.com/repos/dingo/api/zipball/87ce1b823941deddf266d2fcbf537145c0530716",
+                "reference": "87ce1b823941deddf266d2fcbf537145c0530716",
                 "shasum": ""
             },
             "require": {
                 "illuminate/support": "~4.1|~5.0",
-                "league/fractal": "0.9.*",
+                "league/fractal": "0.8.*",
                 "php": ">=5.4.0"
             },
             "require-dev": {
@@ -203,17 +203,16 @@
                 "lucadegasperi/oauth2-server-laravel": "1.0.*",
                 "mockery/mockery": "~0.9",
                 "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~1.5",
-                "tymon/jwt-auth": "0.3.*"
+                "squizlabs/php_codesniffer": "1.*"
             },
             "suggest": {
-                "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API.",
-                "tymon/jwt-auth": "Protect your API with JSON Web Tokens"
+                "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.7-dev"
+                    "dev-master": "0.6-dev",
+                    "dev-develop": "0.7-dev"
                 }
             },
             "autoload": {
@@ -238,7 +237,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-10-14 07:31:03"
+            "time": "2014-09-29 00:06:33"
         },
         {
             "name": "doctrine/annotations",
@@ -1107,16 +1106,16 @@
         },
         {
             "name": "league/fractal",
-            "version": "0.9.1",
+            "version": "0.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/fractal.git",
-                "reference": "a91cdcfe399a6d330a9285885a9a2a1a7855a915"
+                "reference": "9985eee7efc42ef472da07856cdd3fd29c57642c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/a91cdcfe399a6d330a9285885a9a2a1a7855a915",
-                "reference": "a91cdcfe399a6d330a9285885a9a2a1a7855a915",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/9985eee7efc42ef472da07856cdd3fd29c57642c",
+                "reference": "9985eee7efc42ef472da07856cdd3fd29c57642c",
                 "shasum": ""
             },
             "require": {
@@ -1134,7 +1133,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.9-dev"
+                    "dev-master": "0.8-dev"
                 }
             },
             "autoload": {
@@ -1162,7 +1161,7 @@
                 "league",
                 "rest"
             ],
-            "time": "2014-07-06 16:48:26"
+            "time": "2014-06-14 11:11:41"
         },
         {
             "name": "league/oauth2-server",
@@ -3132,7 +3131,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "dingo/api": 20,
         "mews/purifier": 20,
         "erusev/parsedown": 20,
         "respect/validation": 20,

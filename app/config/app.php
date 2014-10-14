@@ -115,7 +115,7 @@ return array(
         'Clockwork\Support\Laravel\ClockworkServiceProvider',
 
         // production-required packages
-        'Dingo\Api\Provider\ApiServiceProvider',
+        'Dingo\Api\ApiServiceProvider',
         'Mews\Purifier\PurifierServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
 //        'Barryvdh\Cors\CorsServiceProvider',

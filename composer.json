@@ -6,7 +6,7 @@
 	"require": {
 		"laravel/framework": "4.2.*",
         "doctrine/dbal": "~2.3",
-        "dingo/api": "dev-master",
+        "dingo/api": "0.6.*",
         "mews/purifier": "dev-master",
         "erusev/parsedown": "dev-master",
         "respect/validation": "dev-master",
