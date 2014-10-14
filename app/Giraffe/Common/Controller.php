@@ -9,12 +9,14 @@ use Illuminate\Http\Response;
 use League\Fractal\Resource\Collection;
 use League\Fractal\TransformerAbstract;
 
-class Controller extends \BaseController
+class Controller extends \Controller
 {
     /**
      * @var \Giraffe\Authorization\Gatekeeper
      */
     protected $gatekeeper;
+
+    protected $key = 'data';
 
 
     public function __construct()
@@ -22,21 +24,12 @@ class Controller extends \BaseController
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
     }
 
-    /**
-     *
-     * Wrapper for dingo/api's response builder class until feature is implemented. Returns one model, through a
-     * transformer, with a key.
-     *
-     * @see https://github.com/dingo/api/issues/94
-     *
-     * @param        $item
-     * @param        $transformer
-     * @param string $key
-     *
-     * @return Response
-     */
-    public function withItem($item, Transformer $transformer, $key = 'data')
+    public function withItem($item, Transformer $transformer = null, $key = null)
     {
+        if (!$key) {
+            $key = $this->key;
+        }
+
         $presenter = new Presenter();
         $data = $presenter->setSerializer(new AlwaysArrayKeyedSerializer)
                          ->setMeta('key', $key)
@@ -44,7 +37,7 @@ class Controller extends \BaseController
         return new Response($data, 200, []);
     }
 
-    public function withCollection($collection, Transformer $transformer, $key = 'data')
+    public function withCollection($collection, Transformer $transformer = null, $key = null)
     {
         return $this->withItem($collection, $transformer, $key);
     }

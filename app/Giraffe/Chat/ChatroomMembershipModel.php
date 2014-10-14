@@ -2,13 +2,14 @@
 
 use \Eloquent;
 use Giraffe\Authorization\ProtectedResource;
+use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
 
 /**
  * @property int $user_id
  * @property int $conversation_id
  */
-class ChatroomMembershipModel extends Eloquent implements ProtectedResource {
+class ChatroomMembershipModel extends Eloquent implements ProtectedResource, Transformable {
     protected $table = 'chatroom_memberships';
 	protected $fillable = ['user_id', 'conversation_id'];
 

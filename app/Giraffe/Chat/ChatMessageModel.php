@@ -2,10 +2,11 @@
 
 use Eloquent;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserRepository;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
-class ChatMessageModel extends Eloquent {
+class ChatMessageModel extends Eloquent implements Transformable {
     use HasEloquentHash, SoftDeletingTrait;
 
     protected $table = 'chat_messages';

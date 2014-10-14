@@ -1,9 +1,14 @@
 <?php  namespace Giraffe\Images;
+use Giraffe\Support\Transformer\Transformer;
 use League\Fractal\TransformerAbstract;
 
-class ImageTransformer extends TransformerAbstract
+class ImageTransformer extends Transformer
 {
 
+    /**
+     * @param ImageModel $imageModel
+     * @return array
+     */
     public function transform($imageModel)
     {
         return [

@@ -1,10 +1,14 @@
 <?php  namespace Giraffe\Events; 
+use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Users\UserTransformer;
-use League\Fractal\TransformerAbstract;
 
-class EventTransformer extends TransformerAbstract
+class EventTransformer extends Transformer
 {
-    public function transform(EventModel $model)
+    /**
+     * @param EventModel $model
+     * @return array
+     */
+    public function transform($model)
     {
         $userTransformer = (new UserTransformer());
         $author = $userTransformer->transform($model->owner);

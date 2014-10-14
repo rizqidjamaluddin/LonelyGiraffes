@@ -6,10 +6,11 @@ use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\Value\Hash;
 use Giraffe\Parser\Parser;
+use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 
-class CommentModel extends Eloquent implements ProtectedResource
+class CommentModel extends Eloquent implements ProtectedResource, Transformable
 {
 
     use HasEloquentHash;

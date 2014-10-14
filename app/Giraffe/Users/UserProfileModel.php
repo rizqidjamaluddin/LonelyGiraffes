@@ -1,8 +1,9 @@
 <?php  namespace Giraffe\Users; 
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
+use Giraffe\Support\Transformer\Transformable;
 
-class UserProfileModel extends Eloquent implements ProtectedResource
+class UserProfileModel extends Eloquent implements ProtectedResource, Transformable
 {
     protected $table = 'user_profiles';
     protected $fillable = ['bio', 'html_bio'];
