@@ -1,8 +1,9 @@
 <?php namespace Giraffe\Buddies;
 
 use Eloquent;
+use Giraffe\Support\Transformer\Transformable;
 
-class BuddyModel extends Eloquent {
+class BuddyModel extends Eloquent implements Transformable {
     protected $table = 'buddies';
 	protected $fillable = ['user1_id', 'user2_id'];
 

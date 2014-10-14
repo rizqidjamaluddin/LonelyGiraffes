@@ -1,10 +1,18 @@
 <?php  namespace Giraffe\Stickies; 
-use League\Fractal\TransformerAbstract;
+use Giraffe\Support\Transformer\Transformer;
 
-class StickyTransformer extends TransformerAbstract
+class StickyTransformer extends Transformer
 {
+    public function getServedClass()
+    {
+        return StickyModel::class;
+    }
 
-    public function transform(StickyModel $model)
+    /**
+     * @param StickyModel $model
+     * @return array
+     */
+    public function transform($model)
     {
 
         return [

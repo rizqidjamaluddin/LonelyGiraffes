@@ -1,19 +1,25 @@
 <?php  namespace Giraffe\Notifications;
 
 use Dingo\Api\Transformer\TransformableInterface;
-use Giraffe\Common\Transformable;
+use Giraffe\Support\Transformer\DefaultTransformable;
+use Giraffe\Support\Transformer\Transformable;
+use Giraffe\Support\Transformer\Transformer;
 use League\Fractal\TransformerAbstract;
 use stdClass;
 
-class NotificationTransformer extends TransformerAbstract
+class NotificationTransformer extends Transformer
 {
-    public function transform(NotificationModel $model)
+    /**
+     * @param NotificationModel $model
+     * @return array
+     */
+    public function transform($model)
     {
 
         $body = $model->notifiable();
 
-        if ($body instanceof Transformable) {
-            $transformer = $body->getTransformer();
+        if ($body instanceof DefaultTransformable) {
+            $transformer = $body->getDefaultTransformer();
             $body = $transformer->transform($body);
         }
 

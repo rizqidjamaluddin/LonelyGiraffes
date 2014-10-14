@@ -1,11 +1,16 @@
 <?php  namespace Giraffe\Chat; 
 
+use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Users\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
-class ChatroomMembershipTransformer extends TransformerAbstract
+class ChatroomMembershipTransformer extends Transformer
 {
-    public function transform(ChatroomMembershipModel $model)
+    /**
+     * @param ChatroomMembershipModel $model
+     * @return array
+     */
+    public function transform($model)
     {
         $userTransformer = \App::make(UserTransformer::class);
 

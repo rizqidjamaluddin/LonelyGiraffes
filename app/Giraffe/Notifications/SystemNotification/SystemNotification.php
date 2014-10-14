@@ -2,7 +2,7 @@
 
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
-use Giraffe\Common\Transformable;
+use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Common\Value\ApiAction;
 use Giraffe\Notifications\Notifiable;
 use Giraffe\Notifications\SystemNotification\SystemNotificationTransformer;

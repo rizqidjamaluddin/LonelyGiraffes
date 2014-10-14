@@ -1,12 +1,16 @@
 <?php  namespace Giraffe\Shouts; 
 
+use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Users\UserTransformer;
-use League\Fractal\TransformerAbstract;
 
-class ShoutTransformer extends TransformerAbstract
+class ShoutTransformer extends Transformer
 {
 
-    public function transform(ShoutModel $shoutModel)
+    /**\
+     * @param ShoutModel $shoutModel
+     * @return array
+     */
+    public function transform($shoutModel)
     {
         /** @var UserTransformer $userTransformer */
         $userTransformer = \App::make(UserTransformer::class);
