@@ -84,7 +84,7 @@ return [
             },
         'oauth' => function ($app) {
                 $provider = new Dingo\Api\Auth\LeagueOAuth2Provider($app['oauth2.resource-server']);
-                $provider->setUserResolver(function($id) use ($app){
+                $provider->setUserCallback(function($id) use ($app){
                         /** @var UserRepository $userRepository */
                         $userRepository = $app['Giraffe\Users\UserRepository'];
                         return $userRepository->get($id);
