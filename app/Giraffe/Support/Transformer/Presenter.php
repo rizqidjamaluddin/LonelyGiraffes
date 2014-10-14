@@ -55,9 +55,6 @@ class Presenter
      */
     public function transform($transformable, Transformer $transformer = null)
     {
-        $transformer = $this->obtainDefaultTransformer($transformable, $transformer);
-        $this->catchMissingTransformer($transformer);
-        $this->catchUntransformable($transformable);
 
         if ($this->checkCollection($transformable)) {
             $result = [];
@@ -81,9 +78,13 @@ class Presenter
      *
      * @return TransformedEntity
      */
-    public function handleEntity($entity, Transformer $transformer)
+    protected function handleEntity($entity, Transformer $transformer = null)
     {
+        $transformer = $this->obtainDefaultTransformer($entity, $transformer);
         $this->checkCompatibility($entity, $transformer);
+        $this->catchMissingTransformer($transformer);
+        $this->catchUntransformable($entity);
+
         $transformed = $transformer->transform($entity);
         $normalized = $this->normalizer->normalize($transformed);
         return new TransformedEntity($normalized);
@@ -166,13 +167,6 @@ class Presenter
             $transformer = $transformable->getDefaultTransformer();
         }
 
-        if (!$transformer && $this->checkCollection($transformable)) {
-            if ($transformable[0] instanceof DefaultTransformable) {
-                $transformer = $transformable[0]->getDefaultTransformer();
-                return $transformer;
-            }
-            return $transformer;
-        }
         return $transformer;
     }
 

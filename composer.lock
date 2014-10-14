@@ -180,17 +180,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "87ce1b823941deddf266d2fcbf537145c0530716"
+                "reference": "87e16efbb64cddb81f9f292b89e21dc2f594aa83"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/87ce1b823941deddf266d2fcbf537145c0530716",
-                "reference": "87ce1b823941deddf266d2fcbf537145c0530716",
+                "url": "https://api.github.com/repos/dingo/api/zipball/87e16efbb64cddb81f9f292b89e21dc2f594aa83",
+                "reference": "87e16efbb64cddb81f9f292b89e21dc2f594aa83",
                 "shasum": ""
             },
             "require": {
                 "illuminate/support": "~4.1|~5.0",
-                "league/fractal": "0.8.*",
+                "league/fractal": "0.9.*",
                 "php": ">=5.4.0"
             },
             "require-dev": {
@@ -203,16 +203,17 @@
                 "lucadegasperi/oauth2-server-laravel": "1.0.*",
                 "mockery/mockery": "~0.9",
                 "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "1.*"
+                "squizlabs/php_codesniffer": "~1.5",
+                "tymon/jwt-auth": "0.3.*"
             },
             "suggest": {
-                "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API."
+                "lucadegasperi/oauth2-server-laravel": "Use the League OAuth 2.0 server to protect your API.",
+                "tymon/jwt-auth": "Protect your API with JSON Web Tokens"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.6-dev",
-                    "dev-develop": "0.7-dev"
+                    "dev-master": "0.7-dev"
                 }
             },
             "autoload": {
@@ -237,7 +238,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-09-29 00:06:33"
+            "time": "2014-10-14 07:31:03"
         },
         {
             "name": "doctrine/annotations",
@@ -710,12 +711,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/erusev/parsedown.git",
-                "reference": "f91e4dece3679e845cf4ae9ef4e09325410afa8b"
+                "reference": "2adb87ef4159844fa8d7db5f611a359c50891f0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/erusev/parsedown/zipball/f91e4dece3679e845cf4ae9ef4e09325410afa8b",
-                "reference": "f91e4dece3679e845cf4ae9ef4e09325410afa8b",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/2adb87ef4159844fa8d7db5f611a359c50891f0c",
+                "reference": "2adb87ef4159844fa8d7db5f611a359c50891f0c",
                 "shasum": ""
             },
             "type": "library",
@@ -741,7 +742,7 @@
                 "markdown",
                 "parser"
             ],
-            "time": "2014-09-26 10:06:40"
+            "time": "2014-10-10 18:11:23"
         },
         {
             "name": "ezyang/htmlpurifier",
@@ -1106,16 +1107,16 @@
         },
         {
             "name": "league/fractal",
-            "version": "0.8.3",
+            "version": "0.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/fractal.git",
-                "reference": "9985eee7efc42ef472da07856cdd3fd29c57642c"
+                "reference": "a91cdcfe399a6d330a9285885a9a2a1a7855a915"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/9985eee7efc42ef472da07856cdd3fd29c57642c",
-                "reference": "9985eee7efc42ef472da07856cdd3fd29c57642c",
+                "url": "https://api.github.com/repos/thephpleague/fractal/zipball/a91cdcfe399a6d330a9285885a9a2a1a7855a915",
+                "reference": "a91cdcfe399a6d330a9285885a9a2a1a7855a915",
                 "shasum": ""
             },
             "require": {
@@ -1133,7 +1134,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.8-dev"
+                    "dev-master": "0.9-dev"
                 }
             },
             "autoload": {
@@ -1161,7 +1162,7 @@
                 "league",
                 "rest"
             ],
-            "time": "2014-06-14 11:11:41"
+            "time": "2014-07-06 16:48:26"
         },
         {
             "name": "league/oauth2-server",
@@ -1223,7 +1224,7 @@
         },
         {
             "name": "lucadegasperi/oauth2-server-laravel",
-            "version": "1.0.10",
+            "version": "1.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucadegasperi/oauth2-server-laravel.git",
@@ -2871,12 +2872,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/padraic/mockery.git",
-                "reference": "a0a8d0e7d6964fe556f4a30cb758603a99569cb2"
+                "reference": "d6770d5c46b7446ede3286ea3db7d8deefeb1b91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/padraic/mockery/zipball/a0a8d0e7d6964fe556f4a30cb758603a99569cb2",
-                "reference": "a0a8d0e7d6964fe556f4a30cb758603a99569cb2",
+                "url": "https://api.github.com/repos/padraic/mockery/zipball/d6770d5c46b7446ede3286ea3db7d8deefeb1b91",
+                "reference": "d6770d5c46b7446ede3286ea3db7d8deefeb1b91",
                 "shasum": ""
             },
             "require": {
@@ -2929,7 +2930,7 @@
                 "test double",
                 "testing"
             ],
-            "time": "2014-10-07 06:23:47"
+            "time": "2014-10-10 14:41:25"
         },
         {
             "name": "phpdocumentor/reflection-docblock",

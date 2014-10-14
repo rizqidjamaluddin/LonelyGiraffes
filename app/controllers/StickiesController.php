@@ -22,8 +22,6 @@ class StickiesController extends Controller
     public function index()
     {
         $stickies = $this->service->getStickies();
-        $presenter = new Presenter();
-        return $presenter->setSerializer(new AlwaysArrayKeyedSerializer('stickies'))
-                         ->transform($stickies, new StickyTransformer());
+        return $this->withCollection($stickies, new StickyTransformer(), 'stickies');
     }
 }

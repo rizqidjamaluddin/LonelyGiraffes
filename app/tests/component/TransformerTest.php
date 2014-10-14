@@ -3,6 +3,8 @@ use Giraffe\Support\Transformer\Normalizers\CarbonNormalizer;
 use Giraffe\Support\Transformer\Normalizers\NativeNormalizer;
 use Giraffe\Support\Transformer\Presenter;
 use Giraffe\Support\Transformer\Serializers\AlwaysArrayKeyedSerializer;
+use Giraffe\Support\Transformer\Transformable;
+use Giraffe\Support\Transformer\DefaultTransformable;
 
 class TransformerTest extends TestCase
 {
@@ -121,12 +123,12 @@ class TransformerTest extends TestCase
     public function it_can_use_the_always_collection_json_output_serializer()
     {
         $transformed = [
-            'string' => 'foo',
+            'string'  => 'foo',
             'integer' => 10
         ];
 
         $transformed2 = [
-            'string' => 'bar',
+            'string'  => 'bar',
             'integer' => 50
         ];
 
@@ -155,6 +157,67 @@ class TransformerTest extends TestCase
         $this->assertEquals(10, $result['test'][0]['integer']);
         $this->assertEquals('bar', $result['test'][1]['string']);
         $this->assertEquals(50, $result['test'][1]['integer']);
+    }
+
+    /**
+     * This should still evaluate correctly, but with no entities.
+     *
+     * @test
+     */
+    public function it_can_handle_empty_collections()
+    {
+        $subject = new Presenter();
+        $subject->setSerializer(new AlwaysArrayKeyedSerializer());
+        $subject->setMeta('key', 'test');
+        $result = $subject->transform([]);
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue(isset($result['test']));
+        $this->assertEquals(0, count($result['test']));
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_handle_mixed_collections_with_different_transformers()
+    {
+
+        $transformedOne = [
+            'id' => 1,
+        ];
+
+        $transformedTwo = [
+            'id' => 2,
+        ];
+
+        // create mock transformers
+        $transformerOne = Mockery::mock(Giraffe\Support\Transformer\Transformer::class);
+        $transformerOne->shouldReceive('canServe')->withAnyArgs()->andReturn(true);
+        $transformerOne->shouldReceive('transform')->withAnyArgs()->times(1)->andReturn($transformedOne);
+
+        $transformerTwo = Mockery::mock(Giraffe\Support\Transformer\Transformer::class);
+        $transformerTwo->shouldReceive('canServe')->withAnyArgs()->andReturn(true);
+        $transformerTwo->shouldReceive('transform')->withAnyArgs()->times(1)->andReturn($transformedTwo);
+
+        // create mock entities
+        $mock = Transformable::class . ', ' . DefaultTransformable::class;
+        $entityOne = Mockery::mock($mock);
+        $entityOne->shouldReceive('getDefaultTransformer')->andReturn($transformerOne);
+
+        $entityTwo = Mockery::mock($mock);
+        $entityTwo->shouldReceive('getDefaultTransformer')->andReturn($transformerTwo);
+
+        // execute
+        $subject = new Presenter();
+        $subject->setSerializer(new AlwaysArrayKeyedSerializer());
+        $subject->setMeta('key', 'test');
+        $result = $subject->transform([$entityOne, $entityTwo]);
+
+        $this->assertEquals(1, count($result));
+        $this->assertTrue(isset($result['test']));
+        $this->assertEquals(2, count($result['test']));
+        $this->assertEquals(1, $result['test'][0]['id']);
+        $this->assertEquals(2, $result['test'][1]['id']);
 
     }
 }
