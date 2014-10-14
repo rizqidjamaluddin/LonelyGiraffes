@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "91b9bf71ca598967cf56870804720ca6",
+    "hash": "256fa4df49adf44acec65a0b4d8f4d2e",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -180,12 +180,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/dingo/api.git",
-                "reference": "87e16efbb64cddb81f9f292b89e21dc2f594aa83"
+                "reference": "e565f5da0d45b2f796dbf45f894e4313d1037337"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dingo/api/zipball/87e16efbb64cddb81f9f292b89e21dc2f594aa83",
-                "reference": "87e16efbb64cddb81f9f292b89e21dc2f594aa83",
+                "url": "https://api.github.com/repos/dingo/api/zipball/e565f5da0d45b2f796dbf45f894e4313d1037337",
+                "reference": "e565f5da0d45b2f796dbf45f894e4313d1037337",
                 "shasum": ""
             },
             "require": {
@@ -238,7 +238,7 @@
                 "laravel",
                 "restful"
             ],
-            "time": "2014-10-14 07:31:03"
+            "time": "2014-10-14 15:19:36"
         },
         {
             "name": "doctrine/annotations",
