@@ -1,10 +1,15 @@
 <?php  namespace Giraffe\Chat; 
+use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Users\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
-class ChatMessageTransformer extends TransformerAbstract
+class ChatMessageTransformer extends Transformer
 {
-    public function transform(ChatMessageModel $message)
+    /**
+     * @param ChatMessageModel $message
+     * @return array
+     */
+    public function transform($message)
     {
         $user = (new UserTransformer())->transform($message->author());
 

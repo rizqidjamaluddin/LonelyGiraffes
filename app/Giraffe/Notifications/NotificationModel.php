@@ -6,6 +6,7 @@ use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\Value\Hash;
 use Giraffe\Notifications\Registry\NotifiableRegistry;
+use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
  * @property UserModel  $destination
  * @property integer    $read
  */
-class NotificationModel extends Eloquent implements TransformableInterface, ProtectedResource
+class NotificationModel extends Eloquent implements Transformable, ProtectedResource
 {
     use HasEloquentHash;
 

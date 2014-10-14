@@ -27,7 +27,6 @@ class GiraffeServiceProvider extends ServiceProvider {
         $this->app->singleton('Giraffe\Users\UserService');
 
         $this->app->singleton(EventRelay::class);
-        $this->app->singleton(NotifiableRegistry::class);
     }
 
     public function boot()

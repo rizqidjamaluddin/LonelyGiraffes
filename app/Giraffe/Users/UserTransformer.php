@@ -1,12 +1,16 @@
 <?php  namespace Giraffe\Users;
 use Giraffe\Authorization\Gatekeeper;
-use League\Fractal\TransformerAbstract;
+use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Images\ImageTransformer;
 
-class UserTransformer extends TransformerAbstract
+class UserTransformer extends Transformer
 {
 
-    public function transform(UserModel $userModel)
+    /**
+     * @param UserModel $userModel
+     * @return array
+     */
+    public function transform($userModel)
     {
         $actingUser = \App::make(Gatekeeper::class)->me();
         $optionals = [];
