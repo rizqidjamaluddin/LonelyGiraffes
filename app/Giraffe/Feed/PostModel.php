@@ -4,8 +4,6 @@ use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
-use Giraffe\Support\Transformer\DefaultTransformable;
-use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 
@@ -14,7 +12,7 @@ use Giraffe\Users\UserRepository;
  * @property Postable $postable
  * @property String $hash
  */
-class PostModel extends Eloquent implements ProtectedResource, Transformable, DefaultTransformable {
+class PostModel extends Eloquent implements ProtectedResource, TransformableInterface {
     use HasEloquentHash;
 
     protected $table = 'posts';
@@ -48,7 +46,12 @@ class PostModel extends Eloquent implements ProtectedResource, Transformable, De
         return $this->user->id == $userModel->id;
     }
 
-    public function getDefaultTransformer()
+    /**
+     * Get the transformer instance.
+     *
+     * @return mixed
+     */
+    public function getTransformer()
     {
         return new PostTransformer;
     }

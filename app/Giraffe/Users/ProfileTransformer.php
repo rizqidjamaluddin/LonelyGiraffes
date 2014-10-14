@@ -1,15 +1,10 @@
 <?php  namespace Giraffe\Users; 
 
-use Giraffe\Support\Transformer\Transformer;
 use League\Fractal\TransformerAbstract;
 
-class ProfileTransformer extends Transformer
+class ProfileTransformer extends TransformerAbstract
 {
-    /**
-     * @param UserProfileModel $profile
-     * @return array
-     */
-    public function transform($profile)
+    public function transform(UserProfileModel $profile)
     {
         return [
             'bio' => $profile->bio ?: '',

@@ -1,14 +1,12 @@
 <?php  namespace Giraffe\Stickies;
 
 use Giraffe\Parser\Parser;
-use Giraffe\Support\Transformer\Transformable;
-use Giraffe\Support\Transformer\Transformer;
 
 /**
  * @property string $body
  * @property string $html_body
  */
-class StickyModel extends \Eloquent implements Transformable
+class StickyModel extends \Eloquent
 {
     protected $table = 'stickies';
     protected $fillable = ['body', 'html_body'];
@@ -28,5 +26,4 @@ class StickyModel extends \Eloquent implements Transformable
         $i->html_body = $parser->parseTrusted($body);
         return $i;
     }
-
-}
+} 

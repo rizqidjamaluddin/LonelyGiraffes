@@ -3,7 +3,6 @@
 use Carbon\Carbon;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
-use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
 
 /**
@@ -15,7 +14,7 @@ use Giraffe\Users\UserModel;
  * @property string $extension
  * @property int $image_type_id
  */
-class ImageModel extends Eloquent implements ProtectedResource, Transformable {
+class ImageModel extends Eloquent implements ProtectedResource {
 
     protected $softDelete = true;
 

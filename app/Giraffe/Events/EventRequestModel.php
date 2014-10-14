@@ -2,9 +2,8 @@
 
 use Eloquent;
 use Giraffe\Common\HasEloquentHash;
-use Giraffe\Support\Transformer\Transformable;
 
-class EventRequestModel extends Eloquent implements Transformable{
+class EventRequestModel extends Eloquent {
     use HasEloquentHash;
 
     protected $table = 'event_requests';

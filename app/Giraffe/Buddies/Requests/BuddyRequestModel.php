@@ -3,7 +3,7 @@
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
-use Giraffe\Support\Transformer\Transformable;
+use Giraffe\Common\Transformable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 

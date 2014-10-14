@@ -2,44 +2,69 @@
 
 
 use App;
-use Giraffe\Support\Transformer\Presenter;
-use Giraffe\Support\Transformer\Serializers\AlwaysArrayKeyedSerializer;
-use Giraffe\Support\Transformer\Transformer;
 use Illuminate\Http\Response;
+use League\Fractal\Manager;
 use League\Fractal\Resource\Collection;
+use League\Fractal\Resource\Item;
+use League\Fractal\Resource\ResourceInterface;
+use League\Fractal\Serializer\JsonApiSerializer;
 use League\Fractal\TransformerAbstract;
 
-class Controller extends \Controller
+class Controller extends \Dingo\Api\Routing\Controller
 {
+    /**
+     * @var \Dingo\Api\Auth\Shield
+     */
+    protected $auth;
     /**
      * @var \Giraffe\Authorization\Gatekeeper
      */
     protected $gatekeeper;
 
-    protected $key = 'data';
-
+    /**
+     * @var \Dingo\Api\Http\ResponseBuilder
+     */
+    protected $response;
 
     public function __construct()
     {
+        $api = App::make('Dingo\Api\Dispatcher');
+        $this->auth = App::make('Dingo\Api\Auth\Shield');
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
+        $this->response = App::make('Dingo\Api\Http\ResponseBuilder');
+
+         parent::__construct($api, $this->auth, $this->response);
+
     }
 
-    public function withItem($item, Transformer $transformer = null, $key = null)
+    /**
+     *
+     * Wrapper for dingo/api's response builder class until feature is implemented. Returns one model, through a
+     * transformer, with a key.
+     *
+     * @see https://github.com/dingo/api/issues/94
+     *
+     * @param        $item
+     * @param        $transformer
+     * @param string $key
+     *
+     * @return Response
+     */
+    public function withItem($item, TransformerAbstract $transformer, $key = 'data')
     {
-        if (!$key) {
-            $key = $this->key;
-        }
+        $resource = new Item($item, $transformer, $key);
 
-        $presenter = new Presenter();
-        $data = $presenter->setSerializer(new AlwaysArrayKeyedSerializer)
-                         ->setMeta('key', $key)
-                         ->transform($item, $transformer);
-        return new Response($data, 200, []);
+        /** @var Manager $fractal */
+        $fractal = App::make('dingo.api.transformer')->getFractal();
+    $resource = $fractal->createData($resource)->toArray();
+        return new Response($resource, 200, []);
     }
 
-    public function withCollection($collection, Transformer $transformer = null, $key = null)
+    public function withCollection($collection, TransformerAbstract $transformer, $key = 'data')
     {
-        return $this->withItem($collection, $transformer, $key);
+        $resource = new Collection($collection, $transformer, $key);
+        $resource = App::make('dingo.api.transformer')->getFractal()->createData($resource)->toArray();
+        return new Response($resource, 200, []);
     }
 
 } 

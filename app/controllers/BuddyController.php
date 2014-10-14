@@ -7,8 +7,6 @@ use Illuminate\Support\Collection;
 
 class BuddyController extends Controller
 {
-    protected $key = 'buddies';
-
     /**
      * @param Giraffe\Buddies\BuddyService $buddyService
      */
@@ -36,6 +34,6 @@ class BuddyController extends Controller
 
     public function returnUserModels(Collection $models)
     {
-        return $this->withCollection($models, new UserTransformer());
+        return $this->withCollection($models, new UserTransformer(), 'buddies');
     }
 }

@@ -1,18 +1,13 @@
 <?php  namespace Giraffe\Buddies\Requests;
 
 use Giraffe\Common\Value\ApiAction;
-use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Users\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
-class BuddyRequestTransformer extends Transformer
+class BuddyRequestTransformer extends TransformerAbstract
 {
 
-    /**
-     * @param BuddyRequestModel $buddyRequestModel
-     * @return array
-     */
-    public function transform($buddyRequestModel)
+    public function transform(BuddyRequestModel $buddyRequestModel)
     {
         $userTransformer = new UserTransformer();
 

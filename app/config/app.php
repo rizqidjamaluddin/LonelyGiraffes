@@ -115,7 +115,7 @@ return array(
         'Clockwork\Support\Laravel\ClockworkServiceProvider',
 
         // production-required packages
-        'Dingo\Api\Provider\ApiServiceProvider',
+        'Dingo\Api\ApiServiceProvider',
         'Mews\Purifier\PurifierServiceProvider',
         'LucaDegasperi\OAuth2Server\OAuth2ServerServiceProvider',
 //        'Barryvdh\Cors\CorsServiceProvider',
@@ -159,7 +159,7 @@ return array(
 		'Cache'           => 'Illuminate\Support\Facades\Cache',
 		'ClassLoader'     => 'Illuminate\Support\ClassLoader',
 		'Config'          => 'Illuminate\Support\Facades\Config',
-		'Controller'      => 'Illuminate\Routing\Controller',
+		// 'Controller'      => 'Illuminate\Routing\Controller',
 		'Cookie'          => 'Illuminate\Support\Facades\Cookie',
 		'Crypt'           => 'Illuminate\Support\Facades\Crypt',
 		'DB'              => 'Illuminate\Support\Facades\DB',
@@ -191,6 +191,7 @@ return array(
 		'View'            => 'Illuminate\Support\Facades\View',
 
         'API'             => 'Dingo\Api\Facades\API',
+        'Controller'      => 'Dingo\Api\Routing\Controller',
 
         'Purifier' => 'Mews\Purifier\Facades\Purifier',
         'AuthorizationServer' => 'LucaDegasperi\OAuth2Server\Facades\AuthorizationServerFacade',

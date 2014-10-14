@@ -1,14 +1,10 @@
 <?php  namespace Giraffe\Geolocation; 
 
-use Giraffe\Support\Transformer\Transformer;
+use League\Fractal\TransformerAbstract;
 
-class LocationTransformer extends Transformer
+class LocationTransformer extends TransformerAbstract
 {
-    /**
-     * @param Location $location
-     * @return array
-     */
-    public function transform($location)
+    public function transform(Location $location)
     {
         return [
             'humanized' => $location->getHumanizedForm(),

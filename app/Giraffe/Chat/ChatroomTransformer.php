@@ -1,15 +1,11 @@
 <?php  namespace Giraffe\Chat;
 
-use Giraffe\Support\Transformer\Transformer;
 use Illuminate\Support\Collection;
+use League\Fractal\TransformerAbstract;
 
-class ChatroomTransformer extends Transformer
+class ChatroomTransformer extends TransformerAbstract
 {
-    /**
-     * @param ChatroomModel $model
-     * @return array
-     */
-    public function transform($model)
+    public function transform(ChatroomModel $model)
     {
 
         $participantModels = $model->participants();

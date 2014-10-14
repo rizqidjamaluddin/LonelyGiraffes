@@ -6,8 +6,6 @@ use Giraffe\Comments\Commentable;
 use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
-use Giraffe\Support\Transformer\DefaultTransformable;
-use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Users\UserRepository;
@@ -20,7 +18,7 @@ use Illuminate\Support\Collection;
  * @property $body string
  * @property $html_body string
  */
-class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transformable, Commentable, DefaultTransformable {
+class ShoutModel extends Eloquent implements Postable, ProtectedResource, TransformableInterface, Commentable {
     
     use HasEloquentHash;
 
@@ -97,7 +95,12 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
         return $this->user_id == $userModel->id;
     }
 
-    public function getDefaultTransformer()
+    /**
+     * Get the transformer instance.
+     *
+     * @return mixed
+     */
+    public function getTransformer()
     {
         return new ShoutTransformer;
     }

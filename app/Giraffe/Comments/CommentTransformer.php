@@ -1,15 +1,10 @@
 <?php  namespace Giraffe\Comments; 
-use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Users\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
-class CommentTransformer extends Transformer
+class CommentTransformer extends TransformerAbstract
 {
-    /**
-     * @param CommentModel $commentModel
-     * @return array
-     */
-    public function transform($commentModel)
+    public function transform(CommentModel $commentModel)
     {
         /** @var UserTransformer $userTransformer */
         $userTransformer = \App::make(UserTransformer::class);

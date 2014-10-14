@@ -1,10 +1,9 @@
 <?php  namespace Giraffe\Geolocation; 
 
-use Giraffe\Support\Transformer\Transformable;
 use Illuminate\Support\Contracts\JsonableInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class Location implements Transformable
+class Location
 {
 
     /**

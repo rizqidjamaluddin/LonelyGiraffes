@@ -56,20 +56,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Conditional Requests
-    |--------------------------------------------------------------------------
-    |
-    | Globally enable conditional requests so that an ETag header is added to
-    | any successful response. Subsequent requests will perform a check and
-    | will return a 304 Not Modified. This can also be enabled or disabled
-    | on certain groups or routes.
-    |
-    */
-
-    'conditional_request' => true,
-
-    /*
-    |--------------------------------------------------------------------------
     | Authentication Providers
     |--------------------------------------------------------------------------
     |
@@ -80,17 +66,17 @@ return [
 
     'auth' => [
         'basic' => function ($app) {
-                return new Dingo\Api\Auth\BasicProvider($app['auth']);
-            },
+            return new Dingo\Api\Auth\BasicProvider($app['auth']);
+        },
         'oauth' => function ($app) {
                 $provider = new Dingo\Api\Auth\LeagueOAuth2Provider($app['oauth2.resource-server']);
                 $provider->setUserCallback(function($id) use ($app){
-                        /** @var UserRepository $userRepository */
-                        $userRepository = $app['Giraffe\Users\UserRepository'];
+                       /** @var UserRepository $userRepository */
+                       $userRepository = $app['Giraffe\Users\UserRepository'];
                         return $userRepository->get($id);
                     });
                 return $provider;
-            }
+        }
     ],
 
     /*
@@ -113,12 +99,12 @@ return [
 
         'authenticated' => [
             'limit' => 0,
-            'reset' => 60
+            'reset' => 0
         ],
 
         'unauthenticated' => [
             'limit' => 0,
-            'reset' => 60
+            'reset' => 0
         ],
 
         'exceeded' => 'API rate limit has been exceeded.'
@@ -139,7 +125,7 @@ return [
 
     'transformer' => function ($app) {
         $fractal = new League\Fractal\Manager;
-            $fractal->setSerializer(new JsonApiSerializer());
+        $fractal->setSerializer(new JsonApiSerializer());
 
         return new Dingo\Api\Transformer\FractalTransformer($fractal);
     },

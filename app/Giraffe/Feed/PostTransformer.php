@@ -1,30 +1,24 @@
 <?php  namespace Giraffe\Feed; 
 
 use Dingo\Api\Transformer\TransformableInterface;
-use Giraffe\Support\Transformer\DefaultTransformable;
-use Giraffe\Support\Transformer\Transformable;
-use Giraffe\Support\Transformer\Transformer;
+use Giraffe\Common\Transformable;
 use League\Fractal\TransformerAbstract;
 
-class PostTransformer extends Transformer
+class PostTransformer extends TransformerAbstract
 {
-    /**
-     * @param PostModel $post
-     * @return array
-     */
-    public function transform($post)
+    public function transform(PostModel $post)
     {
         $author = $post->fetchAuthor();
 
-        if ($author instanceof DefaultTransformable) {
-            $transformer = $author->getDefaultTransformer();
+        if ($author instanceof TransformableInterface || $author instanceof Transformable) {
+            $transformer = $author->getTransformer();
             $author = $transformer->transform($author);
         };
 
         $body = $post->postable;
 
-        if ($body instanceof DefaultTransformable) {
-            $transformer = $body->getDefaultTransformer();
+        if ($body instanceof TransformableInterface || $body instanceof Transformable) {
+            $transformer = $body->getTransformer();
             $child = $transformer->transform($body);
         } else {
             if ($body) {

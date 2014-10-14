@@ -7,13 +7,10 @@ use Giraffe\Comments\Commentable;
 use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Feed\Postable;
-use Giraffe\Support\Transformer\DefaultTransformable;
-use Giraffe\Support\Transformer\Transformable;
-use Giraffe\Support\Transformer\Transformer;
 use Giraffe\Users\UserModel;
 use Illuminate\Support\Collection;
 
-class EventModel extends Eloquent implements Commentable, Postable, ProtectedResource, Transformable, DefaultTransformable{
+class EventModel extends Eloquent implements Commentable, Postable, ProtectedResource, TransformableInterface{
     use HasEloquentHash;
 
     protected $table = 'events';
@@ -94,9 +91,11 @@ class EventModel extends Eloquent implements Commentable, Postable, ProtectedRes
     }
 
     /**
-     * @return Transformer
+     * Get the transformer instance.
+     *
+     * @return mixed
      */
-    public function getDefaultTransformer()
+    public function getTransformer()
     {
         return new EventTransformer();
     }

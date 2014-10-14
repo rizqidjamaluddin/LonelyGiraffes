@@ -12,8 +12,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class UserController extends Controller
 {
-    protected $key = 'users';
-
     /**
      * @param Giraffe\Users\UserService $userService
      */
@@ -102,7 +100,7 @@ class UserController extends Controller
      */
     public function returnUserModel(UserModel $model)
     {
-        return $this->withItem($model, new UserTransformer());
+        return $this->withItem($model, new UserTransformer(), 'users');
     }
 
     /**
@@ -112,6 +110,6 @@ class UserController extends Controller
      */
     public function returnUserModels(Collection $models)
     {
-        return $this->withCollection($models, new UserTransformer());
+        return $this->withCollection($models, new UserTransformer(), 'users');
     }
 }

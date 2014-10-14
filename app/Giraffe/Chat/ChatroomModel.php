@@ -3,13 +3,12 @@
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
 use Giraffe\Common\HasEloquentHash;
-use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 use Illuminate\Database\Eloquent\SoftDeletingTrait;
 use Illuminate\Support\Collection;
 
-class ChatroomModel extends Eloquent implements ProtectedResource, Transformable
+class ChatroomModel extends Eloquent implements ProtectedResource
 {
     use HasEloquentHash, SoftDeletingTrait;
 
