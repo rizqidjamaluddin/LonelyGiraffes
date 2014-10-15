@@ -4,6 +4,7 @@ use Dingo\Api\Transformer\TransformableInterface;
 use Giraffe\Support\Transformer\DefaultTransformable;
 use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Support\Transformer\Transformer;
+use Giraffe\Users\UserTransformer;
 use League\Fractal\TransformerAbstract;
 
 class PostTransformer extends Transformer
@@ -14,12 +15,8 @@ class PostTransformer extends Transformer
      */
     public function transform($post)
     {
-        $author = $post->fetchAuthor();
-
-        if ($author instanceof DefaultTransformable) {
-            $transformer = $author->getDefaultTransformer();
-            $author = $transformer->transform($author);
-        };
+        $userTransformer = new UserTransformer();
+        $author = $userTransformer->transform($post->fetchAuthor());
 
         $body = $post->postable;
 
