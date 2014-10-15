@@ -12,7 +12,8 @@
         "respect/validation": "dev-master",
 		"barryvdh/laravel-cors": "0.2.*",
 		"lucadegasperi/oauth2-server-laravel": "1.*",
-        "intervention/image": "2.*"
+        "intervention/image": "2.*",
+        "cboden/ratchet": "0.3.*"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
