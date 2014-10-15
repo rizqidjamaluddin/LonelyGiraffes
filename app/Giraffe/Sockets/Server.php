@@ -1,11 +1,21 @@
 <?php namespace Giraffe\Sockets;
 
+use Illuminate\Console\Command;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Ratchet\Wamp\WampServerInterface;
 
 class Server implements WampServerInterface
 {
+
+    /**
+     * @var Command
+     */
+    protected $display;
+
+    public function setDisplay(Command $command){
+        $this->display = $command;
+    }
 
     /**
      * When a new connection is opened it will be passed to this method
@@ -97,6 +107,7 @@ class Server implements WampServerInterface
     {
         // TODO: Implement onPublish() method.
         echo "publish \n";
+        var_dump($topic);
         echo "Topic: " . $topic . "\n";
         echo "Event: " . $event . "\n";
 }}

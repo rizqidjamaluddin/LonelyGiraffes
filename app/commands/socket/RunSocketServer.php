@@ -17,16 +17,16 @@ class RunSocketServer extends Command {
     {
         $this->info('Starting up websocket server.');
 
-        $loop   = React\EventLoop\Factory::create();
+        $loop = React\EventLoop\Factory::create();
+        $server = new \Giraffe\Sockets\Server();
 
         $webSock = new React\Socket\Server($loop);
         $webSock->listen(8080, '0.0.0.0');
         $webServer = new Ratchet\Server\IoServer(
             new \Ratchet\Http\HttpServer(
                 new Ratchet\WebSocket\WsServer(
-                    new Ratchet\Wamp\WampServer(
-                        new \Giraffe\Sockets\Server()
-                    )
+                    new \Giraffe\Sockets\AuthenticatedWampServer($server)
+//                new \Ratchet\Wamp\WampServer($server)
                 )
             ),
             $webSock
