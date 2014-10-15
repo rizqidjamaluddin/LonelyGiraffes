@@ -11,6 +11,8 @@
 |
 */
 
+Artisan::add(new RunSocketServer());
+
 // lgdb
 Artisan::add(new GenerateGeonames());
 Artisan::add(new ImportGeonamesZipData());
