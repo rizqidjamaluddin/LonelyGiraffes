@@ -39,7 +39,7 @@ class Server implements WampServerInterface
 
         // TODO: Implement onOpen() method.
         echo "opened\n";
-        $conn->send(json_encode(['greeting' => 'Welcome to Lonely Giraffes!']));
+//        $conn->send(json_encode(['greeting' => 'Welcome to Lonely Giraffes!']));
         $this->displayInfo('Connection opened.');
 
     }
@@ -80,12 +80,11 @@ class Server implements WampServerInterface
     function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
         // TODO: Implement onCall() method.
-        echo 'call';
         var_dump($id);
         var_dump((string)$topic);
         var_dump($params);
         $conn->send(json_encode(['response' => 'Hey!']));
-        return $conn->callResult($id, ['test']);
+        return $conn->callResult($id, ['topic' => (string) $topic, 'request_id' => $id]);
     }
 
     /**
@@ -100,9 +99,7 @@ class Server implements WampServerInterface
 
         echo "sub \n";
         echo "Topic: $topic \n";
-        $conn->send('this should totally be working');
-        $conn->send(json_encode(array(ServerProtocol::MSG_EVENT,'test:debug', 'debug test')));
-        return json_encode(['response' => 'Subscribed!']);
+        return $conn->send(json_encode(['response' => 'Subscribed!']));
     }
 
     /**

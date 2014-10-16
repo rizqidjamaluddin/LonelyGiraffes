@@ -26,8 +26,8 @@ class RunSocketServer extends Command {
         $webServer = new Ratchet\Server\IoServer(
             new \Ratchet\Http\HttpServer(
                 new Ratchet\WebSocket\WsServer(
-                    new \Giraffe\Sockets\AuthenticatedWampServer($server)
-//                new \Ratchet\Wamp\WampServer($server)
+//                    new \Giraffe\Sockets\AuthenticatedWampServer($server)
+                new \Ratchet\Wamp\WampServer($server)
                 )
             ),
             $webSock
