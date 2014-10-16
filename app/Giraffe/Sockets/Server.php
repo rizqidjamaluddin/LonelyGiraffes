@@ -1,6 +1,8 @@
 <?php namespace Giraffe\Sockets;
 
+use Illuminate\Console\Command;
 use Ratchet\ConnectionInterface;
+use Ratchet\Wamp\ServerProtocol;
 use Ratchet\Wamp\Topic;
 use Ratchet\Wamp\WampServerInterface;
 
@@ -8,15 +10,38 @@ class Server implements WampServerInterface
 {
 
     /**
+     * @var Command
+     */
+    protected $display;
+
+    private $test;
+
+    public function setDisplay(Command $command){
+        $this->display = $command;
+    }
+
+    protected function displayInfo($info)
+    {
+        $this->display->info($info);
+    }
+
+    /**
      * When a new connection is opened it will be passed to this method
+     *
+     * @var Topic $foo
      *
      * @param  ConnectionInterface $conn The socket/connection that just connected to your application
      * @throws \Exception
      */
     function onOpen(ConnectionInterface $conn)
     {
+        $this->test = $conn;
+
         // TODO: Implement onOpen() method.
         echo "opened\n";
+//        $conn->send(json_encode(['greeting' => 'Welcome to Lonely Giraffes!']));
+        $this->displayInfo('Connection opened.');
+
     }
 
     /**
@@ -55,8 +80,11 @@ class Server implements WampServerInterface
     function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
         // TODO: Implement onCall() method.
-        $conn->send('Hey!');
-        echo "call \n";
+        var_dump($id);
+        var_dump((string)$topic);
+        var_dump($params);
+        $conn->send(json_encode(['response' => 'Hey!']));
+        return $conn->callResult($id, ['topic' => (string) $topic, 'request_id' => $id]);
     }
 
     /**
@@ -68,8 +96,10 @@ class Server implements WampServerInterface
     function onSubscribe(ConnectionInterface $conn, $topic)
     {
         // TODO: Implement onSubscribe() method.
+
         echo "sub \n";
         echo "Topic: $topic \n";
+        return $conn->send(json_encode(['response' => 'Subscribed!']));
     }
 
     /**
@@ -97,6 +127,7 @@ class Server implements WampServerInterface
     {
         // TODO: Implement onPublish() method.
         echo "publish \n";
+        var_dump($topic);
         echo "Topic: " . $topic . "\n";
         echo "Event: " . $event . "\n";
 }}
