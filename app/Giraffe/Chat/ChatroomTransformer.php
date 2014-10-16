@@ -21,12 +21,11 @@ class ChatroomTransformer extends Transformer
         }
 
         return [
-            'name'             => $model->name ?: false,
             'hash'             => $model->hash,
             'href'             => $this->buildUrl($model->hash),
             'title'            => $model->name ?: false,
             'participants'     => $participants,
-            'participantCount' => count($participants)
+            'participant_count' => count($participants)
         ];
     }
 
