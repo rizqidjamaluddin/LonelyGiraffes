@@ -133,7 +133,7 @@ class CommentTest extends AcceptanceCase
             'body'      => 'Details of my awesome event',
             'url'       => 'http://www.google.com',
             'location'  => 'My Awesome Location',
-            'timestamp' => '0000-00-00 00:00:00'
+            'timestamp' => '2014-12-25 12:00:00'
         ];
 
         $mario = $this->registerAndLoginAsMario();

@@ -23,7 +23,7 @@ class EventCase extends AcceptanceCase
         'body'      => 'Details of my awesome event',
         'url'       => 'http://www.google.com',
         'location'  => 'My Awesome Location',
-        'timestamp' => '0000-00-00 00:00:00'
+        'timestamp' => '2014-12-25 00:00:00'
     ];
 
     protected $editedGenericEvent = [
@@ -64,7 +64,7 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('<p>Details of my awesome event</p>', $model->html_body);
         $this->assertEquals('http://www.google.com', $model->url);
         $this->assertEquals('My Awesome Location', $model->location);
-        $this->assertEquals('0000-00-00 00:00:00', $model->timestamp);
+        $this->assertEquals('2014-12-25 00:00:00', $model->timestamp);
         $this->assertEquals($model->links->owner->name, 'Mario');
 
         $model = $this->toJson($this->call('GET', '/api/events/' . $model->hash))->events[0];
@@ -75,7 +75,7 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('<p>Details of my awesome event</p>', $model->html_body);
         $this->assertEquals('http://www.google.com', $model->url);
         $this->assertEquals('My Awesome Location', $model->location);
-        $this->assertEquals('0000-00-00 00:00:00', $model->timestamp);
+        $this->assertEquals('2014-12-25 00:00:00', $model->timestamp);
         $this->assertEquals($model->links->owner->name, 'Mario');
 
     }
@@ -186,5 +186,59 @@ class EventCase extends AcceptanceCase
         $this->assertEquals('<p>Details of my edited awesome event</p>', $editEvent->html_body);
         $this->assertEquals('http://www.notgoogle.com', $editEvent->url);
         $this->assertEquals('My Edited Awesome Location', $editEvent->location);
+    }
+
+    /**
+     * @test
+     */
+    public function timestamps_body_and_name_are_required()
+    {
+
+
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_accept_a_variety_of_timestamp_formats()
+    {
+        $mario = $this->registerAndLoginAsMario();
+
+        $event = $this->genericEvent;
+        $event['timestamp'] = '2014-12-25 12:00:00';
+
+        $model = $this->toJson($this->call('POST', '/api/events/', $event))->events[0];
+        $this->assertEquals('2014-12-25 12:00:00', $model->timestamp);
+
+        $event['timestamp'] = '2014-12-25T12:00:00+00:00';
+
+        $model = $this->toJson($this->call('POST', '/api/events/', $event))->events[0];
+        $this->assertEquals('2014-12-25 12:00:00', $model->timestamp);
+
+        $event['timestamp'] = '2014-12-25T12:00:00+07:00';
+
+        $model = $this->toJson($this->call('POST', '/api/events/', $event))->events[0];
+        $this->assertEquals('2014-12-25 05:00:00', $model->timestamp);
+
+        $event['timestamp'] = '2014-04-12T19:15:00.000Z';
+
+        $model = $this->toJson($this->call('POST', '/api/events/', $event))->events[0];
+        $this->assertEquals('2014-04-12 19:15:00', $model->timestamp);
+
+    }
+
+
+    /**
+     * @test
+     */
+    public function invalid_dates_should_throw_an_error()
+    {
+        $mario = $this->registerAndLoginAsMario();
+
+        $event = $this->genericEvent;
+        $event['timestamp'] = '2014-13-35 12:00:00';
+
+        $model = $this->toJson($this->call('POST', '/api/events/', $event));
+        $this->assertResponseStatus(422);
     }
 }

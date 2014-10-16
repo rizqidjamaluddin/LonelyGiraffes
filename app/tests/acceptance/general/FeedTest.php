@@ -123,7 +123,7 @@ class FeedTest extends AcceptanceCase
             'url'       => 'http://www.google.com',
             'location'  => 'My Awesome Location',
             'cell'      => '',
-            'timestamp' => '0000-00-00 00:00:00'
+            'timestamp' => '2014-12-25 12:00:00'
         ];
 
         $this->registerAndLoginAsMario();
