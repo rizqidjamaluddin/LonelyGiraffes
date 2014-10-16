@@ -20,6 +20,8 @@ class EventModel extends Eloquent implements Commentable, Postable, ProtectedRes
 	protected $fillable = ['hash', 'user_id', 'name', 'body', 'html_body', 'url', 'location', 'city', 'state', 'country', 'lat', 'long',
         'cell', 'timestamp'];
 
+    protected $dates = ['updated_at', 'created_at', 'timestamp'];
+
     public function owner()
     {
         return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');

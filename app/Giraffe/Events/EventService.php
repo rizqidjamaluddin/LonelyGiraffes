@@ -1,5 +1,7 @@
 <?php  namespace Giraffe\Events;
 
+use Carbon\Carbon;
+use Giraffe\Common\InvalidCreationException;
 use Giraffe\Common\Service;
 use Giraffe\Feed\PostGeneratorHelper;
 use Giraffe\Feed\PostRepository;
@@ -78,6 +80,15 @@ class EventService extends Service
         $this->gatekeeper->mayI('create', 'event')->please();
 
         $data = array_only($data, ['name', 'body', 'url', 'location', 'city', 'state', 'country', 'timestamp']);
+
+        // validate incoming data
+        try {
+        $data['timestamp'] = Carbon::parse($data['timestamp'])->setTimezone('utc');
+
+        } catch (\Exception $e) {
+            throw new InvalidCreationException('Invalid date given.');
+        }
+
         $data['hash'] = Str::random(32);
         $data['html_body'] = $this->parser->parseRich($data['body']);
         $user = $this->userRepository->getByHash($user);

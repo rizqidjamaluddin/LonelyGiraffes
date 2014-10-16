@@ -12,6 +12,7 @@ class CarbonNormalizer extends Normalizer
             $data,
             function (&$value, $key) {
                 if ($value instanceof Carbon) {
+                    $value = $value->setTimezone('utc');
                     $value = (string) $value;
                 }
             }

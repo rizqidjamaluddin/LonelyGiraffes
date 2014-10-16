@@ -2,6 +2,8 @@
 
 
 use App;
+use Giraffe\Support\Transformer\Normalizers\CarbonNormalizer;
+use Giraffe\Support\Transformer\Normalizers\NativeNormalizer;
 use Giraffe\Support\Transformer\Presenter;
 use Giraffe\Support\Transformer\Serializers\AlwaysArrayKeyedSerializer;
 use Giraffe\Support\Transformer\Transformer;
@@ -30,7 +32,7 @@ class Controller extends \Controller
             $key = $this->key;
         }
 
-        $presenter = new Presenter();
+        $presenter = new Presenter(new CarbonNormalizer(new NativeNormalizer()));
         $data = $presenter->setSerializer(new AlwaysArrayKeyedSerializer)
                          ->setMeta('key', $key)
                          ->transform($item, $transformer);
