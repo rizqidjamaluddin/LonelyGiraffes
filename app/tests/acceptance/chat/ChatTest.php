@@ -110,20 +110,20 @@ class ChatTest extends ChatCase
 
         $room = $this->callJson('POST', '/api/chatrooms')->chatrooms[0];
         $this->assertResponseOk();
-        $this->assertEquals(1, $room->participantCount);
+        $this->assertEquals(1, $room->participant_count);
 
         $this->callJson('POST', "/api/chatrooms/{$room->hash}/add", ['user' => $luigi->hash]);
         $this->assertResponseOk();
 
         $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
-        $this->assertEquals(2, $room->participantCount);
+        $this->assertEquals(2, $room->participant_count);
 
         // make sure double-adding user doesn't break stuff
         $this->callJson('POST', "/api/chatrooms/{$room->hash}/add", ['user' => $luigi->hash]);
         $this->assertResponseOk();
 
         $room = $this->callJson('GET', "/api/chatrooms/{$room->hash}")->chatrooms[0];
-        $this->assertEquals(2, $room->participantCount);
+        $this->assertEquals(2, $room->participant_count);
     }
 
     /**
@@ -418,7 +418,7 @@ class ChatTest extends ChatCase
      */
     protected function assertChatroomUserCount($fetch, $expectedUsers)
     {
-        $this->assertEquals($expectedUsers, $fetch->participantCount);
+        $this->assertEquals($expectedUsers, $fetch->participant_count);
         $this->assertEquals($expectedUsers, count($fetch->participants));
     }
 
