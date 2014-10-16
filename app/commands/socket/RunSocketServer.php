@@ -19,6 +19,7 @@ class RunSocketServer extends Command {
 
         $loop = React\EventLoop\Factory::create();
         $server = new \Giraffe\Sockets\Server();
+        $server->setDisplay($this);
 
         $webSock = new React\Socket\Server($loop);
         $webSock->listen(8080, '0.0.0.0');

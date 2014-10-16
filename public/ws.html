@@ -6,6 +6,7 @@
     <script type="text/javascript">
         ws = new Wampy('ws://192.168.33.10:8080');
         ws.connect();
+        ws.subscribe('test:debug', function (data) { console.log('Received debug event!'); });
 
     </script>
     <title>Websocket test</title>
