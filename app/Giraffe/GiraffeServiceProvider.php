@@ -9,6 +9,7 @@ use Giraffe\Notifications\NotificationRegistry;
 use Giraffe\Notifications\NotificationService;
 use Giraffe\Notifications\SystemNotification\SystemNotification;
 use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
+use Giraffe\Sockets\Pipeline;
 use Illuminate\Support\ServiceProvider;
 
 class GiraffeServiceProvider extends ServiceProvider {
@@ -26,6 +27,7 @@ class GiraffeServiceProvider extends ServiceProvider {
 
         $this->app->singleton('Giraffe\Users\UserService');
 
+        $this->app->singleton(Pipeline::class);
         $this->app->singleton(EventRelay::class);
     }
 

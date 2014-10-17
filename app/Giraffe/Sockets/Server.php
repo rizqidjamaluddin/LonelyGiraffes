@@ -26,6 +26,14 @@ class Server implements WampServerInterface
     }
 
     /**
+     * Attach redis async instance and begin listening.
+     */
+    public function attachRedis($client)
+    {
+
+    }
+
+    /**
      * When a new connection is opened it will be passed to this method
      *
      * @var Topic $foo
