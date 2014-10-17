@@ -8,7 +8,10 @@ use Illuminate\Redis\Database;
  * Responsible for managing pub/sub interactions that connect between individual request operations and the socket
  * process.
  *
- * @package Giraffe\Sockets
+ * Notes on IDE use: $redis->publish will appear to be a missing method, because it invokes a __call.
+ *
+ *
+*@package Giraffe\Sockets
  */
 class Pipeline
 {
@@ -17,6 +20,8 @@ class Pipeline
      */
     protected $redis;
 
+    protected $channel = 'pipeline';
+
     public function __construct(Database $d)
     {
         $this->redis = $d->connection();
@@ -24,6 +29,6 @@ class Pipeline
 
     public function issue($endpoint)
     {
-        $this->redis->publish();
+        $this->redis->publish($this->channel, json_encode(['endpoint' => $endpoint]));
     }
 } 

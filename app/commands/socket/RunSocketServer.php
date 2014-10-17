@@ -21,6 +21,9 @@ class RunSocketServer extends Command {
         $server = new \Giraffe\Sockets\Server();
         $server->setDisplay($this);
 
+        $client = new Predis\Async\Client('tcp://127.0.0.1:6379', $loop);
+        $client->connect([$server, 'attachRedis']);
+
         $webSock = new React\Socket\Server($loop);
         $webSock->listen(8080, '0.0.0.0');
         $webServer = new Ratchet\Server\IoServer(
