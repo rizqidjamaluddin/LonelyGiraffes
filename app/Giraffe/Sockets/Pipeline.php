@@ -20,7 +20,7 @@ class Pipeline
      */
     protected $redis;
 
-    protected $channel = 'pipeline';
+    protected $channel = 'lg-bridge:pipeline';
 
     public function __construct(Database $d)
     {
@@ -30,5 +30,10 @@ class Pipeline
     public function issue($endpoint)
     {
         $this->redis->publish($this->channel, json_encode(['endpoint' => $endpoint]));
+    }
+
+    public function serializeForBridge($data)
+    {
+        return json_encode($data);
     }
 } 

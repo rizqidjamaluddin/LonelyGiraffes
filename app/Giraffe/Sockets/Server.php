@@ -4,6 +4,7 @@ use Illuminate\Console\Command;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\ServerProtocol;
 use Ratchet\Wamp\Topic;
+use Ratchet\Wamp\WampConnection;
 use Ratchet\Wamp\WampServerInterface;
 
 class Server implements WampServerInterface
@@ -14,15 +15,19 @@ class Server implements WampServerInterface
      */
     protected $display;
 
-    private $test;
-
-    public function setDisplay(Command $command){
+    public function setDisplay(Command $command)
+    {
         $this->display = $command;
     }
 
     protected function displayInfo($info)
     {
         $this->display->info($info);
+    }
+
+    protected function displayOutput($output)
+    {
+        $this->display->getOutput()->writeln($output);
     }
 
     /**
@@ -36,40 +41,37 @@ class Server implements WampServerInterface
     /**
      * When a new connection is opened it will be passed to this method
      *
-     * @var Topic $foo
+     * @var Topic                                $foo
      *
-     * @param  ConnectionInterface $conn The socket/connection that just connected to your application
+     * @param  ConnectionInterface|WampConnection $conn The socket/connection that just connected to your application
+     *
      * @throws \Exception
      */
     function onOpen(ConnectionInterface $conn)
     {
-        $this->test = $conn;
-
-        // TODO: Implement onOpen() method.
-        echo "opened\n";
-//        $conn->send(json_encode(['greeting' => 'Welcome to Lonely Giraffes!']));
-        $this->displayInfo('Connection opened.');
-
+        $this->displayInfo('Client connecting; acquiring session.');
+        $this->displayInfo($this->getDisplayPrefix($conn) . 'Connection established.');
     }
 
     /**
      * This is called before or after a socket is closed (depends on how it's closed).  SendMessage to $conn will not result in an error if it has already been closed.
      *
-     * @param  ConnectionInterface $conn The socket/connection that is closing/closed
+     * @param  ConnectionInterface|WampConnection $conn The socket/connection that is closing/closed
+     *
      * @throws \Exception
      */
     function onClose(ConnectionInterface $conn)
     {
-        // TODO: Implement onClose() method.
-        echo "closed \n";
+        $this->displayInfo($this->getDisplayPrefix($conn) . "<fg=red>Connection closed</fg=red>.");
     }
 
     /**
      * If there is an error with one of the sockets, or somewhere in the application where an Exception is thrown,
      * the Exception is sent back down the stack, handled by the Server and bubbled back up the application through this method
      *
-     * @param  ConnectionInterface $conn
-     * @param  \Exception          $e
+     * @param  ConnectionInterface|WampConnection $conn
+     * @param  \Exception                        $e
+     *
      * @throws \Exception
      */
     function onError(ConnectionInterface $conn, \Exception $e)
@@ -80,41 +82,38 @@ class Server implements WampServerInterface
     /**
      * An RPC call has been received
      *
-     * @param \Ratchet\ConnectionInterface $conn
-     * @param string                       $id     The unique ID of the RPC, required to respond to
-     * @param string|Topic                 $topic  The topic to execute the call against
-     * @param array                        $params Call parameters received from the client
+     * @param ConnectionInterface|WampConnection $conn
+     * @param string                             $id     The unique ID of the RPC, required to respond to
+     * @param string|Topic                       $topic  The topic to execute the call against
+     * @param array                              $params Call parameters received from the client
+     *
+     * @return WampConnection
      */
     function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
-        // TODO: Implement onCall() method.
-        var_dump($id);
-        var_dump((string)$topic);
-        var_dump($params);
-        $conn->send(json_encode(['response' => 'Hey!']));
-        return $conn->callResult($id, ['topic' => (string) $topic, 'request_id' => $id]);
+        $this->displayInfo($this->getDisplayPrefix($conn) . "Remote call: <options=bold>$topic</options=bold>");
+        return $conn->callResult($id, ['topic' => (string)$topic, 'request_id' => $id]);
     }
 
     /**
      * A request to subscribe to a topic has been made
      *
-     * @param \Ratchet\ConnectionInterface $conn
-     * @param string|Topic                 $topic The topic to subscribe to
+     * @param ConnectionInterface|WampConnection $conn
+     * @param string|Topic                       $topic The topic to subscribe to
+     *
+     * @return $this|\Ratchet\ConnectionInterface
      */
     function onSubscribe(ConnectionInterface $conn, $topic)
     {
         // TODO: Implement onSubscribe() method.
-
-        echo "sub \n";
-        echo "Topic: $topic \n";
         return $conn->send(json_encode(['response' => 'Subscribed!']));
     }
 
     /**
      * A request to unsubscribe from a topic has been made
      *
-     * @param \Ratchet\ConnectionInterface $conn
-     * @param string|Topic                 $topic The topic to unsubscribe from
+     * @param ConnectionInterface|WampConnection $conn
+     * @param string|Topic                      $topic The topic to unsubscribe from
      */
     function onUnSubscribe(ConnectionInterface $conn, $topic)
     {
@@ -125,11 +124,11 @@ class Server implements WampServerInterface
     /**
      * A client is attempting to publish content to a subscribed connections on a URI
      *
-     * @param \Ratchet\ConnectionInterface $conn
-     * @param string|Topic                 $topic    The topic the user has attempted to publish to
-     * @param string                       $event    Payload of the publish
-     * @param array                        $exclude  A list of session IDs the message should be excluded from (blacklist)
-     * @param array                        $eligible A list of session Ids the message should be send to (whitelist)
+     * @param ConnectionInterface|WampConnection $conn
+     * @param string|Topic                      $topic    The topic the user has attempted to publish to
+     * @param string                            $event    Payload of the publish
+     * @param array                             $exclude  A list of session IDs the message should be excluded from (blacklist)
+     * @param array                             $eligible A list of session Ids the message should be send to (whitelist)
      */
     function onPublish(ConnectionInterface $conn, $topic, $event, array $exclude, array $eligible)
     {
@@ -138,4 +137,15 @@ class Server implements WampServerInterface
         var_dump($topic);
         echo "Topic: " . $topic . "\n";
         echo "Event: " . $event . "\n";
-}}
+    }
+
+    /**
+     * @param ConnectionInterface|WampConnection $conn
+     *
+     * @return string
+     */
+    protected function getDisplayPrefix(ConnectionInterface $conn)
+    {
+        return  "<fg=blue>#{$conn->WAMP->sessionId}</fg=blue> <fg=black>→</fg=black> ";
+    }
+}
