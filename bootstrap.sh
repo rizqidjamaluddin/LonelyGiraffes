@@ -46,3 +46,4 @@ echo '# Run PHPunit #'
 echo '###############'
 grunt phpunit
 yum -y install hiredis
+yum --enablerepo=remi,remi-php56 install php-devel
