@@ -48,13 +48,18 @@ class ShoutService extends Service
         parent::__construct();
         $this->userRepository = $userRepository;
         $this->shoutRepository = $shoutRepository;
-
         $this->parser = $parser;
         $this->postGeneratorHelper = $postGeneratorHelper;
         $this->creationValidator = $creationValidator;
         $this->postRepository = $postRepository;
     }
 
+    /**
+     * @param $user
+     * @param $body
+     * @return ShoutModel
+     * @throws \Giraffe\Common\ConfigurationException
+     */
     public function createShout($user, $body)
     {
         $this->gatekeeper->mayI('create', 'shout')->please();

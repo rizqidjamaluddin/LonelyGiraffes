@@ -62,6 +62,7 @@ Route::api(
              Route::delete('events/{resource}/requests/{request}', ['uses' => 'EventController@deleteRequest']);
 
              Route::post('shouts', ['uses' => 'ShoutController@store']);
+             Route::get('shouts', ['uses' => 'ShoutController@index']);
              Route::get('shouts/{resource}', ['uses' => 'ShoutController@show']);
              Route::get('shouts/user/{resource}', ['uses' => 'ShoutController@showAll']);
              Route::delete('shouts/{resource}', ['uses' => 'ShoutController@destroy']);

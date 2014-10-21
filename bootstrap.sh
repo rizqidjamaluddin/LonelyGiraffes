@@ -45,4 +45,3 @@ echo '###############'
 echo '# Run PHPunit #'
 echo '###############'
 grunt phpunit
-yum -y install hiredis
