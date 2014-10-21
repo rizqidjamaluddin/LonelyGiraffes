@@ -2,6 +2,7 @@
 
 use Giraffe\Common\Value\Hash;
 use Giraffe\Feed\Postable;
+use Giraffe\Sockets\Pipeline;
 use Illuminate\Support\Str;
 
 class PostGeneratorHelper
@@ -41,6 +42,16 @@ class PostGeneratorHelper
         );
         $this->feedService->invalidateTopPostCache();
         $post = $this->postRepository->getByHashWithPostable($post->hash);
+
+        $this->notify();
         return $post;
+    }
+
+    protected function notify()
+    {
+        /** @var Pipeline $pipeline */
+        $pipeline = \App::make(Pipeline::class);
+
+        $pipeline->issue('/posts');
     }
 } 
