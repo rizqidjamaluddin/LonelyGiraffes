@@ -3,6 +3,7 @@
 use Giraffe\Common\Controller;
 use Giraffe\Shouts\ShoutService;
 use Giraffe\Shouts\ShoutTransformer;
+use Giraffe\Users\UserRepository;
 
 class ShoutController extends Controller
 {
@@ -10,11 +11,27 @@ class ShoutController extends Controller
      * @var Giraffe\Shouts\ShoutService
      */
     private $shoutService;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(ShoutService $shoutService)
+    public function __construct(ShoutService $shoutService, UserRepository $userRepository)
     {
         $this->shoutService = $shoutService;
+        $this->userRepository = $userRepository;
         parent::__construct();
+    }
+
+    public function index()
+    {
+        // serve ?user=$hash
+        if (Input::exists('user')) {
+            $shouts = $this->shoutService->getShouts(Input::get('user'));
+            return $this->withCollection($shouts, new ShoutTransformer(), 'shouts');
+        }
+
+        throw new HttpRequestMethodException;
     }
 
     public function store()

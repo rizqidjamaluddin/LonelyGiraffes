@@ -1,7 +1,5 @@
 <?php
 
-use Json\Validator;
-
 class ShoutTest extends AcceptanceCase
 {
     protected $genericShout = ['body' => 'This is a shout!'];
@@ -25,7 +23,7 @@ class ShoutTest extends AcceptanceCase
 
         $this->assertResponseStatus(200);
 
-        $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shout->hash))->shouts[0];
+        $getShout = $this->toJson($this->call('GET', "/api/shouts/{$shout->hash}"))->shouts[0];
         $this->assertEquals('This is a shout!', $getShout->body);
         $this->assertEquals($getShout->links->author->name, 'Mario');
 
@@ -96,7 +94,7 @@ class ShoutTest extends AcceptanceCase
             );
         }
 
-        $getShouts = $this->toJson($this->call('GET', '/api/shouts/user/' . $model->users[0]->hash));
+        $getShouts = $this->toJson($this->call('GET', '/api/shouts?user=' . $model->users[0]->hash));
         $this->assertResponseStatus(200);
         $this->assertEquals($shoutBodies[0], $getShouts->shouts[0]->body);
         $this->assertEquals($shoutBodies[1], $getShouts->shouts[1]->body);
@@ -211,7 +209,7 @@ class ShoutTest extends AcceptanceCase
 
         $shoutChild = $shoutForDeletion->shouts[0];
 
-        $deleteShout = $this->toJson($this->call('DELETE', '/api/shouts/' . $shoutChild->hash));
+        $deleteShout = $this->callJson('DELETE', "/api/shouts/{$shoutChild->hash}");
         $this->assertResponseStatus(200);
 
         $getShout = $this->toJson($this->call('GET', '/api/shouts/' . $shoutChild->hash));
