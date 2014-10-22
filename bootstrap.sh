@@ -45,3 +45,16 @@ echo '###############'
 echo '# Run PHPunit #'
 echo '###############'
 grunt phpunit
+sudo yum -y install hiredis
+sudo yum --enablerepo=remi,remi-php56 install php-devel
+sudo yum -y install hiredis-devel
+
+cd /home/vagrant
+sudo git clone https://github.com/nrk/phpiredis.git
+cd /home/vagrant/phpiredis
+sudo phpize && ./configure --enable-phpiredis
+sudo make && make install
+
+sudo echo "extension=/home/vagrant/phpiredis/modules/phpiredis.so"
+
+sudo service php-fpm restart
