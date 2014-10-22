@@ -7,6 +7,7 @@ use Giraffe\Comments\Commentable;
 use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Feed\Postable;
+use Giraffe\Sockets\Pipeline;
 use Giraffe\Support\Transformer\DefaultTransformable;
 use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Support\Transformer\Transformer;
@@ -25,6 +26,22 @@ class EventModel extends Eloquent implements Commentable, Postable, ProtectedRes
     public function owner()
     {
         return $this->belongsTo('Giraffe\Users\UserModel', 'user_id');
+    }
+
+    public function addComment($body, $user)
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+
+        $stream = $commentStreamRepository->getOrCreateFor($this);
+        $comment = $stream->postComment($body, $user);
+
+        /** @var Pipeline $pipeline */
+        $pipeline = \App::make(Pipeline::class);
+        $pipeline->issue('/events/' . $this->hash);
+        $pipeline->issue('/events/' . $this->hash . '/comments');
+
+        return $comment;
     }
 
     public function getComments($options = [])
