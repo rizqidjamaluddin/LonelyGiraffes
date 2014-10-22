@@ -42,12 +42,11 @@ class EventCommentingService extends Service
     {
         if (!$user) throw new GatekeeperUnauthorizedException;
 
+        /** @var EventModel $event */
         $event = $this->eventRepository->getByHash($event);
         $user = $this->userRepository->getByHash($user);
 
-        /** @var CommentStreamModel $stream */
-        $stream = $this->commentStreamRepository->getOrCreateFor($event);
-        $comment = $stream->postComment($body, $user);
+        $comment = $event->addComment($body, $user);
         return $comment;
     }
 } 

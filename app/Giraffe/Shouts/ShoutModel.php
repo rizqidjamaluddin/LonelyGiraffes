@@ -7,6 +7,7 @@ use Giraffe\Comments\CommentModel;
 use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
+use Giraffe\Sockets\Pipeline;
 use Giraffe\Support\Transformer\DefaultTransformable;
 use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Users\UserModel;
@@ -47,7 +48,14 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
         $commentStreamRepository = \App::make(CommentStreamRepository::class);
 
         $stream = $commentStreamRepository->getOrCreateFor($this);
-        return $stream->postComment($body, $user);
+        $comment = $stream->postComment($body, $user);
+
+        /** @var Pipeline $pipeline */
+        $pipeline = \App::make(Pipeline::class);
+        $pipeline->issue('/shouts/' . $this->hash);
+        $pipeline->issue('/shouts/' . $this->hash . '/comments');
+
+        return $comment;
     }
 
     public function getComments($options = [])
