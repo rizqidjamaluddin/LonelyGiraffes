@@ -3,6 +3,7 @@
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Comments\Commentable;
+use Giraffe\Comments\CommentModel;
 use Giraffe\Comments\CommentStreamRepository;
 use Giraffe\Feed\Postable;
 use Giraffe\Common\HasEloquentHash;
@@ -38,6 +39,15 @@ class ShoutModel extends Eloquent implements Postable, ProtectedResource, Transf
         /** @var UserRepository $userRepository */
         $userRepository = $userRepository ?: \App::make('Giraffe\Users\UserRepository');
         return $userRepository->getById($this->user_id);
+    }
+
+    public function addComment($body, $user)
+    {
+        /** @var CommentStreamRepository $commentStreamRepository */
+        $commentStreamRepository = \App::make(CommentStreamRepository::class);
+
+        $stream = $commentStreamRepository->getOrCreateFor($this);
+        return $stream->postComment($body, $user);
     }
 
     public function getComments($options = [])

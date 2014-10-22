@@ -50,9 +50,7 @@ class ShoutCommentingService extends Service
         $shout = $this->shoutRepository->getByHash($shout);
         $user = $this->userRepository->getByHash($user);
 
-        /** @var CommentStreamModel $stream */
-        $stream = $this->commentStreamRepository->getOrCreateFor($shout);
-        $comment = $stream->postComment($body, $user);
+        $comment = $shout->addComment($body, $user);
         return $comment;
     }
 } 
