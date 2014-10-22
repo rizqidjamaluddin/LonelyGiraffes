@@ -40,9 +40,9 @@ class RunSocketServer extends Command {
             $webSock
         );
         try {
-
             $loop->run();
         } catch (Exception $e) {
+            var_dump($e->getMessage());
             dd($e->getTraceAsString());
         }
     }
