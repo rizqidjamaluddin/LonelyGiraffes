@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Stickies; 
 
 use Giraffe\Common\Service;
+use Giraffe\Sockets\Pipeline;
 
 class StickyService extends Service
 {
@@ -29,6 +30,12 @@ class StickyService extends Service
         $this->clear();
 
         $this->repository->save($sticky);
+
+
+        /** @var Pipeline $pipeline */
+        $pipeline = \App::make(Pipeline::class);
+        $pipeline->issue('/stickies');
+
         return $sticky;
     }
 
