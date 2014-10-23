@@ -11,7 +11,7 @@ use Ratchet\Wamp\WampServerInterface;
 class Server implements WampServerInterface
 {
 
-    protected $memoryAlert = 30000000;
+    protected $memoryAlert = 20000000;
     protected $highMemory = false;
 
     /**
