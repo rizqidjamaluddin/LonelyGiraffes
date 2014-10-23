@@ -214,7 +214,7 @@ class Server implements WampServerInterface
                         CURLOPT_POST           => 1,
                         CURLOPT_POSTFIELDS     => array(
                             'content'            => 'Memory use has returned to normal.',
-                            'external_user_name' => 'LG::SocketPipeline'
+                            'external_user_name' => 'LG-Socket'
                         )
                     )
                 );
@@ -236,7 +236,7 @@ class Server implements WampServerInterface
                         CURLOPT_POST           => 1,
                         CURLOPT_POSTFIELDS     => array(
                             'content'            => 'High memory warning: ' . $this->formatBytes($memory),
-                            'external_user_name' => 'LG::SocketPipeline'
+                            'external_user_name' => 'LG-Socket'
                         )
                     )
                 );
