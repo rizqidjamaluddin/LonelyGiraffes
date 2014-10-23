@@ -205,43 +205,11 @@ class Server implements WampServerInterface
         if ($this->highMemory) {
             if ($memory < $this->memoryAlert) {
                 $this->highMemory = false;
-                $curl = curl_init();
-                curl_setopt_array(
-                    $curl,
-                    array(
-                        CURLOPT_RETURNTRANSFER => 1,
-                        CURLOPT_URL            => 'https://api.flowdock.com/v1/messages/chat/bb6b47949ab749d3e92e500fe2eb5463',
-                        CURLOPT_POST           => 1,
-                        CURLOPT_POSTFIELDS     => array(
-                            'content'            => 'Memory use has returned to normal.',
-                            'external_user_name' => 'LG-Socket'
-                        )
-                    )
-                );
-                $resp = curl_exec($curl);
-                curl_close($curl);
             }
         } else {
             if ($memory > $this->memoryAlert) {
                 $this->highMemory = true;
                 $this->displayLine("<fg=red>Warning: Memory use above safe limit ({$memory})!</fg=red>");
-
-                // TO-DO: switch this to guzzle
-                $curl = curl_init();
-                curl_setopt_array(
-                    $curl,
-                    array(
-                        CURLOPT_RETURNTRANSFER => 1,
-                        CURLOPT_URL            => 'https://api.flowdock.com/v1/messages/chat/bb6b47949ab749d3e92e500fe2eb5463',
-                        CURLOPT_POST           => 1,
-                        CURLOPT_POSTFIELDS     => array(
-                            'content'            => 'High memory warning: ' . $this->formatBytes($memory),
-                            'external_user_name' => 'LG-Socket'
-                        )
-                    )
-                );
-                $resp = curl_exec($curl);
-                curl_close($curl);
             }
         }
     }
