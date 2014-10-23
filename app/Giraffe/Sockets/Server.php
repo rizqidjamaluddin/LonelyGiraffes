@@ -11,6 +11,9 @@ use Ratchet\Wamp\WampServerInterface;
 class Server implements WampServerInterface
 {
 
+    protected $memoryAlert = 30000000;
+    protected $highMemory = false;
+
     /**
      * @var Command
      */
@@ -51,7 +54,9 @@ class Server implements WampServerInterface
      */
     public function attachRedis(Client $client)
     {
-        $this->displayOutput('Connecting to redis ... ' . \Config::get('sockets.listen', 'tcp://127.0.0.1:6379') . ' ... ');
+        $this->displayOutput(
+            'Connecting to redis ... ' . \Config::get('sockets.listen', 'tcp://127.0.0.1:6379') . ' ... '
+        );
         $client->pubsub('lg-bridge:pipeline', [$this, 'handleBridgeMessage']);
         $this->displayOutput("<fg=magenta> established.</fg=magenta>\n");
     }
@@ -145,7 +150,9 @@ class Server implements WampServerInterface
         $this->connection = $conn;
         $this->displayOutput($this->getDisplayPrefix($conn) . "Subscribing to $topic ... ");
         if (!array_key_exists($topic->getId(), $this->subscribedTopics)) {
-            $this->displayOutput("\n<fg=cyan>Setting up new topic</fg=cyan> → <options=bold>" . (string) $topic . "</options=bold> ... ");
+            $this->displayOutput(
+                "\n<fg=cyan>Setting up new topic</fg=cyan> → <options=bold>" . (string)$topic . "</options=bold> ... "
+            );
             $this->subscribedTopics[$topic->getId()] = $topic;
             $this->displayOutput("OK.\n");
             $this->displayOutput($this->getDisplayPrefix($conn) . "subscribed.\n");
@@ -186,11 +193,57 @@ class Server implements WampServerInterface
 
     public function handleHeartbeat()
     {
+        $memory = memory_get_usage();
+
         $this->displayOutput(date('Y-m-d H:i:s') . ' | ');
-        $this->displayOutput($this->formatBytes(memory_get_usage()) . ' | ');
+        $this->displayOutput($this->formatBytes($memory) . ' | ');
         $this->displayOutput(count($this->subscribedTopics) . ' Topics');
 
         $this->displayOutput("\n");
+
+        // memory warning
+        if ($this->highMemory) {
+            if ($memory < $this->memoryAlert) {
+                $this->highMemory = false;
+                $curl = curl_init();
+                curl_setopt_array(
+                    $curl,
+                    array(
+                        CURLOPT_RETURNTRANSFER => 1,
+                        CURLOPT_URL            => 'https://api.flowdock.com/v1/messages/chat/bb6b47949ab749d3e92e500fe2eb5463',
+                        CURLOPT_POST           => 1,
+                        CURLOPT_POSTFIELDS     => array(
+                            'content'            => 'Memory use has returned to normal.',
+                            'external_user_name' => 'LG::SocketPipeline'
+                        )
+                    )
+                );
+                $resp = curl_exec($curl);
+                curl_close($curl);
+            }
+        } else {
+            if ($memory > $this->memoryAlert) {
+                $this->highMemory = true;
+                $this->displayLine("<fg=red>Warning: Memory use above safe limit ({$memory})!</fg=red>");
+
+                // TO-DO: switch this to guzzle
+                $curl = curl_init();
+                curl_setopt_array(
+                    $curl,
+                    array(
+                        CURLOPT_RETURNTRANSFER => 1,
+                        CURLOPT_URL            => 'https://api.flowdock.com/v1/messages/chat/bb6b47949ab749d3e92e500fe2eb5463',
+                        CURLOPT_POST           => 1,
+                        CURLOPT_POSTFIELDS     => array(
+                            'content'            => 'High memory warning: ' . $this->formatBytes($memory),
+                            'external_user_name' => 'LG::SocketPipeline'
+                        )
+                    )
+                );
+                $resp = curl_exec($curl);
+                curl_close($curl);
+            }
+        }
     }
 
     protected function formatBytes($bytes, $precision = 3)
