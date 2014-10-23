@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Sockets;
 
 use Illuminate\Redis\Database;
+use Predis\Client;
 
 /**
  * Class Pipeline
@@ -16,20 +17,29 @@ use Illuminate\Redis\Database;
 class Pipeline
 {
     /**
-     * @var \Predis\Client
+     * @var \Predis\Client[]
      */
-    protected $redis;
+    protected $servers;
 
     protected $channel = 'lg-bridge:pipeline';
 
     public function __construct(Database $d)
     {
-        $this->redis = $d->connection();
+        $connections = \Config::get('sockets.broadcast');
+        if (isset($connections) && count($connections) > 0 ) {
+            foreach ($connections as $connection) {
+                $this->servers[] = new Client($connection);
+            }
+        } else {
+            $this->servers = $d->connection();
+        }
     }
 
     public function issue($endpoint)
     {
-        $this->redis->publish($this->channel, json_encode(['endpoint' => $endpoint]));
+        foreach ($this->servers as $server) {
+            $server->publish($this->channel, json_encode(['endpoint' => $endpoint]));
+        }
     }
 
     public function serializeForBridge($data)

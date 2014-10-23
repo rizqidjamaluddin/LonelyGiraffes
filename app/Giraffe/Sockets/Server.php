@@ -51,7 +51,7 @@ class Server implements WampServerInterface
      */
     public function attachRedis(Client $client)
     {
-        $this->displayOutput('Connecting to redis ...');
+        $this->displayOutput('Connecting to redis ... ' . \Config::get('sockets.listen', 'tcp://127.0.0.1:6379') . ' ... ');
         $client->pubsub('lg-bridge:pipeline', [$this, 'handleBridgeMessage']);
         $this->displayOutput("<fg=magenta> established.</fg=magenta>\n");
     }
