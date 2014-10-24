@@ -76,4 +76,35 @@ class StickyTest extends AcceptanceCase
         );
     }
 
+    /**
+     * @test
+     */
+    public function stickies_can_be_given_a_class()
+    {
+        Artisan::call(
+            'lg:sticky:post',
+            ['body' => 'Sticky body', 'class' => 'alert']
+        );
+        $fetch = $this->callJson('GET', '/api/stickies');
+        $this->assertResponseOk();
+        $this->assertEquals('<p>Sticky body</p>',$fetch->stickies[0]->html_body);
+        $this->assertEquals('alert', $fetch->stickies[0]->class);
+    }
+
+    /**
+     * @test
+     */
+    public function stickies_have_no_class_by_default()
+    {
+        Artisan::call(
+            'lg:sticky:post',
+            ['body' => 'Sticky body']
+        );
+        $fetch = $this->callJson('GET', '/api/stickies');
+        $this->assertResponseOk();
+        $this->assertEquals('<p>Sticky body</p>',$fetch->stickies[0]->html_body);
+        $this->assertEquals('', $fetch->stickies[0]->class);
+
+    }
+
 } 

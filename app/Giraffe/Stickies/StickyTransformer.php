@@ -18,6 +18,7 @@ class StickyTransformer extends Transformer
         return [
             'body' => $model->body,
             'html_body' => $model->html_body,
+            'class' => $model->class,
             'timestamp' => (string) $model->created_at
         ];
     }

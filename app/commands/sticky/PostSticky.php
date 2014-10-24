@@ -20,7 +20,8 @@ class PostSticky extends Command
         $stickyService = \App::make(StickyService::class);
 
         $body = $this->argument('body');
-        $stickyService->post($body);
+        $class = $this->argument('class');
+        $stickyService->post($body, $class);
 
         $this->info('Sticky set with body: ' . $body);
     }
@@ -30,6 +31,7 @@ class PostSticky extends Command
     {
         return [
             ['body', InputArgument::REQUIRED, "Text for the sticky to display."],
+            ['class', InputArgument::OPTIONAL, "CSS class to apply to the sticky.", ''],
         ];
     }
 

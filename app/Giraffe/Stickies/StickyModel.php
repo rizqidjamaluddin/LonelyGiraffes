@@ -7,17 +7,19 @@ use Giraffe\Support\Transformer\Transformer;
 /**
  * @property string $body
  * @property string $html_body
+ * @property string $class
  */
 class StickyModel extends \Eloquent implements Transformable
 {
     protected $table = 'stickies';
-    protected $fillable = ['body', 'html_body'];
+    protected $fillable = ['body', 'html_body', 'class'];
 
     /**
-     * @param $body
+     * @param        $body
+     * @param string $class
      * @return static
      */
-    public static function post($body)
+    public static function post($body, $class = '')
     {
         $i = new static;
         $i->body = $body;
@@ -26,6 +28,7 @@ class StickyModel extends \Eloquent implements Transformable
         $parser = \App::make(Parser::class);
 
         $i->html_body = $parser->parseTrusted($body);
+        $i->class = $class;
         return $i;
     }
 

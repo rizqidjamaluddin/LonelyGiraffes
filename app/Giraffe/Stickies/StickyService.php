@@ -22,9 +22,9 @@ class StickyService extends Service
         return $this->repository->all();
     }
 
-    public function post($body)
+    public function post($body, $class = '')
     {
-        $sticky = StickyModel::post($body);
+        $sticky = StickyModel::post($body, $class);
 
         // delete old sticky first, if applicable
         $this->clear();
