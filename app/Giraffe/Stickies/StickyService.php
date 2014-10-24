@@ -43,5 +43,9 @@ class StickyService extends Service
     public function clear()
     {
         $this->repository->cleanOld();
+
+        /** @var Pipeline $pipeline */
+        $pipeline = \App::make(Pipeline::class);
+        $pipeline->issueWithPayload('/stickies', []);
     }
 }
