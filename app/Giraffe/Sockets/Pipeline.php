@@ -41,6 +41,15 @@ class Pipeline
         }
     }
 
+    public function issueWithPayload($endpoint, $payload)
+    {
+        $this->assertConnected();
+        foreach ($this->servers as $server) {
+            $server->publish($this->channel, json_encode(['endpoint' => $endpoint, 'payload' => json_encode($payload)]));
+        }
+
+    }
+
     protected function assertConnected()
     {
         if ($this->connected) return;

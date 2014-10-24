@@ -34,7 +34,8 @@ class StickyService extends Service
 
         /** @var Pipeline $pipeline */
         $pipeline = \App::make(Pipeline::class);
-        $pipeline->issue('/stickies');
+        $transformed = (new StickyTransformer())->transform($sticky);
+        $pipeline->issueWithPayload('/stickies', $transformed);
 
         return $sticky;
     }
