@@ -35,7 +35,7 @@ class Notify extends Command {
 
         $user = $userRepository->getByHash($this->argument('hash'));
 
-        $this->info("Issuing notification ...");
+        $this->info("Issuing notification to " . $user->email . " ... ");
         $service->issue($notification, $user);
         $this->info("Sent.");
 
