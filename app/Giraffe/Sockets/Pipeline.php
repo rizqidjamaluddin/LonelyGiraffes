@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Sockets;
 
 use Giraffe\Common\ConfigurationException;
+use Giraffe\Logging\Log;
 use Illuminate\Redis\Database;
 use Predis\Client;
 
@@ -28,9 +29,14 @@ class Pipeline
     protected $connected = false;
 
     protected $channel = 'lg-bridge:pipeline';
+    /**
+     * @var \Giraffe\Logging\Log
+     */
+    private $log;
 
-    public function __construct()
+    public function __construct(Log $log)
     {
+        $this->log = $log;
     }
 
     public function issue($endpoint)
@@ -53,6 +59,7 @@ class Pipeline
     protected function assertConnected()
     {
         if ($this->connected) return;
+
         $connections = \Config::get('sockets.broadcast');
         if (isset($connections) && count($connections) > 0 ) {
             foreach ($connections as $connection) {
@@ -61,10 +68,11 @@ class Pipeline
         } else {
             throw new ConfigurationException("No broadcast servers defined for sockets (Config sockets.broadcast)");
         }
+
         $this->connected = true;
     }
 
-    public function serializeForBridge($data)
+    protected function serializeForBridge($data)
     {
         return json_encode($data);
     }
