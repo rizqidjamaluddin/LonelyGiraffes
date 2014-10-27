@@ -20,22 +20,22 @@ class BuddyRequestReceivedNotification implements Notifiable
     /**
      * @var string
      */
-    protected static $type = 'new_buddy_request';
+    public static $type = 'new_buddy_request';
 
     /**
      * @var int
      */
-    protected $buddy_request_id;
+    public $buddy_request_id;
 
     /**
      * @var int
      */
-    protected $sender_id;
+    public $sender_id;
 
     /**
      * @var
      */
-    protected $timestamp;
+    public $timestamp;
 
     /**
      * @param BuddyRequestModel $requestModel
