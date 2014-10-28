@@ -67,9 +67,8 @@ class Server implements WampServerInterface
         $channel = $event->channel;
         $payload = json_decode($event->payload);
 
-        $this->displayLine('Bridge message accepted.');
-
         $topic = $payload->endpoint;
+        $this->displayLine('Bridge message accepted on $topic');
 
         if (array_key_exists($topic, $this->subscribedTopics)) {
             $this->displayLine('Broadcasting: ' . $topic);
@@ -170,8 +169,6 @@ class Server implements WampServerInterface
      */
     function onUnSubscribe(ConnectionInterface $conn, $topic)
     {
-        // TODO: Implement onUnSubscribe() method.
-        echo "unsub \n";
     }
 
     /**
@@ -234,5 +231,10 @@ class Server implements WampServerInterface
     protected function getDisplayPrefix(ConnectionInterface $conn)
     {
         return "<fg=blue>#{$conn->WAMP->sessionId}</fg=blue> <fg=black>→</fg=black> ";
+    }
+
+    protected function escape($output)
+    {
+        return preg_replace('/[^a-zA-Z0-9\/\?]/', '', $output);
     }
 }
