@@ -46,8 +46,8 @@ class NotificationTransformer extends Transformer
         $links = $model->notifiable()->getLinks();
         $linkAttachments = [];
         foreach ($links as $link => $entity) {
-            if ($entity instanceof Transformable) {
-                $linkAttachments[$link] = $entity->getTransformer()->transform($entity);
+            if ($entity instanceof DefaultTransformable) {
+                $linkAttachments[$link] = $entity->getDefaultTransformer()->transform($entity);
             } else {
                 $linkAttachments[$link] = $entity;
             }

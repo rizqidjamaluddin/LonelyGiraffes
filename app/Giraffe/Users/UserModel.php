@@ -8,11 +8,13 @@ use Giraffe\Buddies\BuddyService;
 use Giraffe\Buddies\Requests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
 use Giraffe\Common\NotFoundModelException;
+use Giraffe\Support\Transformer\DefaultTransformable;
 use Giraffe\Support\Transformer\Transformable;
 use Giraffe\Geolocation\Locatable;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\UnlocatableModelException;
 use Giraffe\Images\ImageTypeModel;
+use Giraffe\Support\Transformer\Transformer;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
 
@@ -32,7 +34,7 @@ use Illuminate\Auth\Reminders\RemindableInterface;
  * @property int    $tutorial_flag
  */
 class UserModel extends Eloquent implements UserInterface, Locatable,
-    RemindableInterface, ProtectedResource, Transformable {
+    RemindableInterface, ProtectedResource, Transformable, DefaultTransformable {
 
     use HasEloquentHash;
 
@@ -266,5 +268,13 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
     public function disableTutorialFlag()
     {
         $this->tutorial_flag = 0;
+    }
+
+    /**
+     * @return Transformer
+     */
+    public function getDefaultTransformer()
+    {
+        return new UserTransformer();
     }
 }
