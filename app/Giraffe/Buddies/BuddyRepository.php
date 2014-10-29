@@ -39,7 +39,7 @@ class BuddyRepository extends EloquentRepository
     /**
      * Gets Buddy relationships for a user.
      *
-     * @param string|BuddyModel $user
+     * @param string|BuddyModel|UserModel $user
      *
      * @throws \Giraffe\Common\NotFoundModelException
      * @return Array

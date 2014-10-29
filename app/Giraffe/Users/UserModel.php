@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Dingo\Api\Transformer\TransformableInterface;
 use Eloquent;
 use Giraffe\Authorization\ProtectedResource;
+use Giraffe\Buddies\BuddyRepository;
 use Giraffe\Buddies\BuddyService;
 use Giraffe\Buddies\Requests\BuddyRequestService;
 use Giraffe\Common\HasEloquentHash;
@@ -17,6 +18,7 @@ use Giraffe\Images\ImageTypeModel;
 use Giraffe\Support\Transformer\Transformer;
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
+use Illuminate\Support\Collection;
 
 /**
  * Class UserModel
@@ -237,6 +239,16 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
             $location->provideCacheMetadata($this->cell);
         }
         return $location;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getBuddies()
+    {
+        /** @var BuddyRepository $buddyRepository */
+        $buddyRepository = \App::make(BuddyRepository::class);
+        return $buddyRepository->getByUser($this);
     }
 
     public function receivedBuddyRequests()

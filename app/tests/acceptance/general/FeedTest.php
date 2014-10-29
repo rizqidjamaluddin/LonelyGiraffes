@@ -169,6 +169,68 @@ class FeedTest extends AcceptanceCase
     /**
      * @test
      */
+    public function it_can_display_posts_from_a_users_buddies()
+    {
+        $mario = $this->registerMario();
+        $luigi = $this->registerLuigi();
+        $yoshi = $this->registerYoshi();
+
+        // query should be possible with no friends
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', '/api/posts', ['buddies' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($fetch->posts));
+
+        // be friends
+        $this->asUser($mario->hash);
+        $this->callJson("POST", "/api/users/" . $luigi->hash . "/buddy-requests");
+        $this->asUser($luigi->hash);
+        $request = $this->callJson("GET", "/api/users/{$luigi->hash}/buddy-requests")->buddy_requests[0]->hash;
+        $this->callJson("POST", "/api/users/{$luigi->hash}/buddy-requests/$request/accept");
+
+        // query should be possible with no posts
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', '/api/posts', ['buddies' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(0, count($fetch->posts));
+
+        // luigi post
+        $this->asUser($luigi->hash);
+        $this->call('POST', '/api/shouts', ['body' => 'Luigi is making a shout.']);
+
+        // yoshi post
+        $this->asUser($yoshi->hash);
+        $this->call('POST', '/api/shouts', ['body' => 'Yoshi is making a shout.']);
+
+        // actual fetch
+        $this->asUser($mario->hash);
+        $fetch = $this->callJson('GET', '/api/posts', ['buddies' => $mario->hash]);
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetch->posts));
+        $this->assertEquals('Luigi is making a shout.', $fetch->posts[0]->body->body);
+
+        // it should also work with just the query string key with no value
+        $fetch = $this->callJson('GET', '/api/posts?buddies');
+        $this->assertResponseOk();
+        $this->assertEquals(1, count($fetch->posts));
+        $this->assertEquals('Luigi is making a shout.', $fetch->posts[0]->body->body);
+
+        // make sure others can't check this info
+        $this->asUser($luigi->hash);
+        $fetch = $this->callJson('GET', '/api/posts', ['buddies' => $mario->hash]);
+        $this->assertResponseStatus(403);
+        $this->asUser($yoshi->hash);
+        $fetch = $this->callJson('GET', '/api/posts', ['buddies' => $mario->hash]);
+        $this->assertResponseStatus(403);
+        $this->asGuest();
+        $fetch = $this->callJson('GET', '/api/posts', ['buddies' => $mario->hash]);
+        $this->assertResponseStatus(401);
+
+    }
+
+    /**
+     * @test
+     */
     public function it_can_use_before_and_after_parameters_on_user_feeds()
     {
         $mario = $this->registerAndLoginAsMario();
@@ -233,6 +295,9 @@ class FeedTest extends AcceptanceCase
         $this->assertEquals("I am post number 3.", $fetchBetween->posts[0]->body->body);
     }
 
+    /**
+     * @test
+     */
     public function a_request_cannot_fetch_more_than_20_posts_with_take()
     {
         $mario = $this->registerAndLoginAsMario();

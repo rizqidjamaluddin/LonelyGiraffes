@@ -6,6 +6,7 @@ use Giraffe\Common\NotImplementedException;
 use Giraffe\Feed\FeedService;
 use Giraffe\Feed\PostRepository;
 use Giraffe\Feed\PostTransformer;
+use Giraffe\Users\UserRepository;
 
 class PostController extends Controller
 {
@@ -18,11 +19,16 @@ class PostController extends Controller
      * @var PostRepository
      */
     private $postRepository;
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
 
-    public function __construct(FeedService $feedService, PostRepository $postRepository)
+    public function __construct(FeedService $feedService, PostRepository $postRepository, UserRepository $userRepository)
     {
         $this->feedService = $feedService;
         $this->postRepository = $postRepository;
+        $this->userRepository = $userRepository;
         parent::__construct();
     }
 
@@ -35,6 +41,14 @@ class PostController extends Controller
 
         if (Input::exists('user')) {
             $results = $this->feedService->getUserPosts(Input::get('user'), $filter);
+            return $this->withCollection($results, new PostTransformer(), 'posts');
+        }
+
+        if (Input::exists('buddies')) {
+            if (!$user = Input::get('buddies')) {
+                $user = $this->gatekeeper->me();
+            }
+            $results = $this->feedService->geyBuddyPosts($user, $filter);
             return $this->withCollection($results, new PostTransformer(), 'posts');
         }
 

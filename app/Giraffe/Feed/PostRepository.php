@@ -30,6 +30,24 @@ class PostRepository extends EloquentRepository
         return $q->get();
     }
 
+    /**
+     * @param Collection $buddies
+     * @param $options
+     * @return array|static[]
+     */
+    public function getForUsers($buddies, $options)
+    {
+        $ids = $buddies->lists('id');
+
+        $q = $this->model;
+        $q = $this->appendOptions($q, $options);
+        $q = $this->appendEagerLoads($q);
+        $q = $q->whereIn('user_id', $ids)
+               ->orderBy('id', 'desc');
+        return $q->get();
+
+    }
+
     public function deleteForPostable(Postable $postable)
     {
         $this->model->where('postable_type', get_class($postable))->where('postable_id', $postable->getId())->delete();
@@ -73,4 +91,4 @@ class PostRepository extends EloquentRepository
         return $query->with('postable');
     }
 
-} 
+}

@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Feed;
 
 use Cache;
+use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Common\Service;
 use Giraffe\Geolocation\LocationHelper;
@@ -94,6 +95,24 @@ class FeedService extends Service
         // no specific gatekeeper check here; adjust PostRepository call if policy changes
         $this->gatekeeper->mayI('read', 'posts')->please();
         return $this->postRepository->getForUser($user->id, $options);
+    }
+
+    public function geyBuddyPosts($user, QueryFilter $filter)
+    {
+        $user = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI('read_buddies', 'posts')->please();
+
+        if ($this->gatekeeper->me()->id != $user->id) {
+            throw new GatekeeperException;
+        }
+
+        $buddies = $user->getBuddies();
+
+        // fail early if there are no buddies
+        if (count($buddies) == 0) {
+            return [];
+        }
+        return $this->postRepository->getForUsers($buddies, $filter);
     }
 
 } 
