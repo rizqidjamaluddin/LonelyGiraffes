@@ -94,7 +94,7 @@ class StickyTest extends AcceptanceCase
     /**
      * @test
      */
-    public function stickies_have_no_class_by_default()
+    public function stickies_have_class_general_by_default()
     {
         Artisan::call(
             'lg:sticky:post',
@@ -103,8 +103,7 @@ class StickyTest extends AcceptanceCase
         $fetch = $this->callJson('GET', '/api/stickies');
         $this->assertResponseOk();
         $this->assertEquals('<p>Sticky body</p>',$fetch->stickies[0]->html_body);
-        $this->assertEquals('', $fetch->stickies[0]->class);
-
+        $this->assertEquals('general', $fetch->stickies[0]->class);
     }
 
 } 

@@ -31,7 +31,7 @@ class PostSticky extends Command
     {
         return [
             ['body', InputArgument::REQUIRED, "Text for the sticky to display."],
-            ['class', InputArgument::OPTIONAL, "CSS class to apply to the sticky.", ''],
+            ['class', InputArgument::OPTIONAL, "CSS class to apply to the sticky.", 'general'],
         ];
     }
 
