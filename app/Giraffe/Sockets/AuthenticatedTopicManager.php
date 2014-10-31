@@ -1,9 +1,14 @@
 <?php  namespace Giraffe\Sockets; 
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\TopicManager;
+use Ratchet\Wamp\WampConnection;
 
 class AuthenticatedTopicManager extends TopicManager
 {
+    /**
+     * @param WampConnection        $conn
+     * @param \Ratchet\Wamp\Topic|string $topic
+     */
     public function onSubscribe(ConnectionInterface $conn, $topic)
     {
         try {
