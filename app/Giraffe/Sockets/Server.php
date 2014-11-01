@@ -1,12 +1,13 @@
 <?php namespace Giraffe\Sockets;
 
+use Giraffe\Sockets\Support\UnknownCommandException;
 use Illuminate\Console\Command;
 use Predis\Async\Client;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\ServerProtocol;
 use Ratchet\Wamp\Topic;
-use Ratchet\Wamp\WampConnection;
 use Ratchet\Wamp\WampServerInterface;
+use Giraffe\Sockets\AuthenticatedWampConnection as WampConnection;
 
 class Server implements WampServerInterface
 {
@@ -28,6 +29,16 @@ class Server implements WampServerInterface
      * @var Topic[]
      */
     protected $subscribedTopics = [];
+
+    /**
+     * @var CallRouter
+     */
+    protected $router;
+
+    public function __construct()
+    {
+        $this->router = new CallRouter();
+    }
 
     public function setDisplay(Command $command)
     {
@@ -68,10 +79,10 @@ class Server implements WampServerInterface
         $payload = json_decode($event->payload);
 
         $topic = $payload->endpoint;
-        $this->displayLine('Bridge message accepted on $topic');
+        $this->displayLine('Bridge message accepted on ' . $this->escape($topic) . '.');
 
         if (array_key_exists($topic, $this->subscribedTopics)) {
-            $this->displayLine('Broadcasting: ' . $topic);
+            $this->displayLine('Broadcasting: ' . $this->escape($topic));
             $this->subscribedTopics[$topic]->broadcast($event->payload);
         }
 
@@ -132,7 +143,14 @@ class Server implements WampServerInterface
     function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
         $this->displayInfo($this->getDisplayPrefix($conn) . "Remote call: <options=bold>$topic</options=bold>");
-        return $conn->callResult($id, ['topic' => (string)$topic, 'request_id' => $id]);
+
+        try{
+        $result = $this->router->handle($topic, $params);
+            if (!is_array($result)) $result = [$result];
+            return $conn->callResult($id, $result);
+        } catch (UnknownCommandException $e) {
+            return $conn->callError($id, 'unknown', 'Command not recognized');
+        }
     }
 
     /**
