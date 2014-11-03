@@ -14,7 +14,6 @@ class AuthenticatedTopicManager extends TopicManager
         try {
             $topicObj = $this->getTopic($topic);
         } catch (InvalidEndpointException $e) {
-            $conn->send("Invalid endpoint given.");
             return;
         }
 

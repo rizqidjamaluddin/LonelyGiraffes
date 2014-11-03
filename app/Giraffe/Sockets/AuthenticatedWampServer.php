@@ -13,7 +13,7 @@ class AuthenticatedWampServer extends WampServer
     protected $wampProtocol;
 
     public function __construct(WampServerInterface $app) {
-        $this->wampProtocol = new ServerProtocol(new AuthenticatedTopicManager($app));
+        $this->wampProtocol = new AuthenticatedServerProtocol(new AuthenticatedTopicManager($app));
     }
 
     /**

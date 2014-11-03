@@ -4,7 +4,8 @@ use Giraffe\Stickies\StickyService;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 
-class RunSocketServer extends Command {
+class RunSocketServer extends Command
+{
     protected $name = 'lg:socket:run';
     protected $description = "Run websocket server.";
 
@@ -33,8 +34,7 @@ class RunSocketServer extends Command {
         $webServer = new Ratchet\Server\IoServer(
             new \Ratchet\Http\HttpServer(
                 new Ratchet\WebSocket\WsServer(
-//                    new \Giraffe\Sockets\AuthenticatedWampServer($server)
-                new \Ratchet\Wamp\WampServer($server)
+                    new \Giraffe\Sockets\AuthenticatedWampServer($server)
                 )
             ),
             $webSock

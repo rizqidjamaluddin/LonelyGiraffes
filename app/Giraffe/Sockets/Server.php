@@ -1,12 +1,14 @@
 <?php namespace Giraffe\Sockets;
 
+use Giraffe\Sockets\Response\SocketErrorResponse;
+use Giraffe\Sockets\Support\UnknownCommandException;
 use Illuminate\Console\Command;
 use Predis\Async\Client;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\ServerProtocol;
 use Ratchet\Wamp\Topic;
-use Ratchet\Wamp\WampConnection;
 use Ratchet\Wamp\WampServerInterface;
+use Giraffe\Sockets\AuthenticatedWampConnection as WampConnection;
 
 class Server implements WampServerInterface
 {
@@ -28,6 +30,16 @@ class Server implements WampServerInterface
      * @var Topic[]
      */
     protected $subscribedTopics = [];
+
+    /**
+     * @var CallRouter
+     */
+    protected $router;
+
+    public function __construct()
+    {
+        $this->router = new CallRouter();
+    }
 
     public function setDisplay(Command $command)
     {
@@ -68,10 +80,10 @@ class Server implements WampServerInterface
         $payload = json_decode($event->payload);
 
         $topic = $payload->endpoint;
-        $this->displayLine('Bridge message accepted on $topic');
+        $this->displayLine('Bridge message accepted on ' . $this->escape($topic) . '.');
 
         if (array_key_exists($topic, $this->subscribedTopics)) {
-            $this->displayLine('Broadcasting: ' . $topic);
+            $this->displayLine('Broadcasting: ' . $this->escape($topic));
             $this->subscribedTopics[$topic]->broadcast($event->payload);
         }
 
@@ -131,8 +143,21 @@ class Server implements WampServerInterface
      */
     function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
-        $this->displayInfo($this->getDisplayPrefix($conn) . "Remote call: <options=bold>$topic</options=bold>");
-        return $conn->callResult($id, ['topic' => (string)$topic, 'request_id' => $id]);
+        $this->displayOutput($this->getDisplayPrefix($conn) . "Remote call: <options=bold>$topic</options=bold> ... ");
+
+        try {
+            $result = $this->router->handle($topic, $params, $conn);
+            if ($result instanceof SocketErrorResponse) {
+                $this->displayOutput("<fg=yellow>{$result->getIdentifier()}</fg=yellow>\n");
+                return $conn->callError($id, $result->getPayload());
+            } else {
+                $this->displayOutput("<fg=green>OK.</fg=green>\n");
+                return $conn->callResult($id, $result->getPayload());
+            }
+        } catch (UnknownCommandException $e) {
+            $this->displayOutput("<fg=red>Unknown command.</fg=red>\n");
+            return $conn->callError($id, 'unknown', 'Command not recognized');
+        }
     }
 
     /**
@@ -224,13 +249,17 @@ class Server implements WampServerInterface
     }
 
     /**
-     * @param ConnectionInterface|WampConnection $conn
+     * @param AuthenticatedWampConnection|ConnectionInterface $conn
      *
      * @return string
      */
     protected function getDisplayPrefix(ConnectionInterface $conn)
     {
-        return "<fg=blue>#{$conn->WAMP->sessionId}</fg=blue> <fg=black>→</fg=black> ";
+        if ($user = $conn->getAuthentication()) {
+            return "<fg=blue>{$user->email}</fg=blue> <fg=black>→</fg=black> ";
+        } else {
+            return "<fg=blue>#{$conn->WAMP->sessionId}</fg=blue> <fg=black>→</fg=black> ";
+        }
     }
 
     protected function escape($output)
