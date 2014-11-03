@@ -1,21 +1,40 @@
 <?php  namespace Giraffe\Sockets; 
 
+use Giraffe\Sockets\Response\SocketErrorResponse;
+use Giraffe\Sockets\Response\SocketResponse;
+use Giraffe\Sockets\Support\UnknownCommandException;
+use Giraffe\Users\UserTransformer;
+
 class CallRouter
 {
-    public function handle($uri, Array $arguments)
+    /**
+     * @param                             $uri
+     * @param array                       $arguments
+     * @param AuthenticatedWampConnection $connection
+     * @throws UnknownCommandException
+     * @return SocketResponse
+     */
+    public function handle($uri, Array $arguments, AuthenticatedWampConnection $connection)
     {
         // handle built-in routes
         if ($uri == 'whoami') {
-            return 'foo';
+            if ($user = $connection->getAuthentication()) {
+                return new SocketResponse((new UserTransformer())->transform($user));
+            } else {
+                return new SocketResponse('GUEST');
+            }
         }
         if ($uri == 'authenticate') {
             /** @var Authenticator $authenticator */
             $authenticator = \App::make(Authenticator::class);
-            // $authenticator->attempt($arguments);
-            return $arguments;
+            $user = $authenticator->attempt($arguments[0]);
+            if (!$user) {
+                return new SocketErrorResponse('Token not recognized.', 'Authentication Failed');
+            }
+            $connection->setAuthentication($user);
+            return new SocketResponse((new UserTransformer())->transform($user));
         }
-        echo $uri;
 
-        return null;
+        throw new UnknownCommandException;
     }
 } 

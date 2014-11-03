@@ -1,5 +1,6 @@
 <?php namespace Giraffe\Sockets;
 
+use Giraffe\Sockets\Response\SocketErrorResponse;
 use Giraffe\Sockets\Support\UnknownCommandException;
 use Illuminate\Console\Command;
 use Predis\Async\Client;
@@ -142,13 +143,19 @@ class Server implements WampServerInterface
      */
     function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
-        $this->displayInfo($this->getDisplayPrefix($conn) . "Remote call: <options=bold>$topic</options=bold>");
+        $this->displayOutput($this->getDisplayPrefix($conn) . "Remote call: <options=bold>$topic</options=bold> ... ");
 
-        try{
-        $result = $this->router->handle($topic, $params);
-            if (!is_array($result)) $result = [$result];
-            return $conn->callResult($id, $result);
+        try {
+            $result = $this->router->handle($topic, $params, $conn);
+            if ($result instanceof SocketErrorResponse) {
+                $this->displayOutput("<fg=yellow>{$result->getIdentifier()}</fg=yellow>\n");
+                return $conn->callError($id, $result->getPayload());
+            } else {
+                $this->displayOutput("<fg=green>OK.</fg=green>\n");
+                return $conn->callResult($id, $result->getPayload());
+            }
         } catch (UnknownCommandException $e) {
+            $this->displayOutput("<fg=red>Unknown command.</fg=red>\n");
             return $conn->callError($id, 'unknown', 'Command not recognized');
         }
     }
@@ -242,13 +249,17 @@ class Server implements WampServerInterface
     }
 
     /**
-     * @param ConnectionInterface|WampConnection $conn
+     * @param AuthenticatedWampConnection|ConnectionInterface $conn
      *
      * @return string
      */
     protected function getDisplayPrefix(ConnectionInterface $conn)
     {
-        return "<fg=blue>#{$conn->WAMP->sessionId}</fg=blue> <fg=black>→</fg=black> ";
+        if ($user = $conn->getAuthentication()) {
+            return "<fg=blue>{$user->email}</fg=blue> <fg=black>→</fg=black> ";
+        } else {
+            return "<fg=blue>#{$conn->WAMP->sessionId}</fg=blue> <fg=black>→</fg=black> ";
+        }
     }
 
     protected function escape($output)
