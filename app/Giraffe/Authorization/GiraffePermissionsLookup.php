@@ -33,7 +33,7 @@ class GiraffePermissionsLookup
                     'event'                  => ['create', 'edit', 'update', 'delete'],
                     'image'                  => ['create', 'delete'],
                     'notification'        => ['read', 'delete', 'dismiss', 'dismiss_all'],
-                    'post'                   => ['read_buddies', 'read_local', 'delete'],
+                    'post'                   => ['read_buddies', 'read_nearby', 'delete'],
                     'profile'                => ['create', 'update'],
                     'shout'                  => ['create', 'delete'],
                     'user'                   => ['update', 'deactivate', 'add_buddy', 'read_buddy', 'delete_buddy',

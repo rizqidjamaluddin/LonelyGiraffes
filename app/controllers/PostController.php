@@ -48,7 +48,15 @@ class PostController extends Controller
             if (!$user = Input::get('buddies')) {
                 $user = $this->gatekeeper->me();
             }
-            $results = $this->feedService->geyBuddyPosts($user, $filter);
+            $results = $this->feedService->getBuddyPosts($user, $filter);
+            return $this->withCollection($results, new PostTransformer(), 'posts');
+        }
+
+        if (Input::exists('nearby')) {
+            if (!$user = Input::get('nearby')) {
+                $user = $this->gatekeeper->me();
+            }
+            $results = $this->feedService->getNearbyPosts($user, $filter);
             return $this->withCollection($results, new PostTransformer(), 'posts');
         }
 

@@ -5,8 +5,11 @@ use Giraffe\Authorization\GatekeeperException;
 use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Common\Service;
 use Giraffe\Geolocation\LocationHelper;
+use Giraffe\Geolocation\LocationService;
+use Giraffe\Geolocation\UnlocatableModelException;
 use Giraffe\Parser\Parser;
 use Giraffe\Users\UserRepository;
+use Giraffe\Users\UserService;
 use Illuminate\Cache\Repository;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -25,27 +28,27 @@ class FeedService extends Service
      */
     private $parser;
     /**
-     * @var \Giraffe\Geolocation\LocationHelper
-     */
-    private $locationHelper;
-    /**
      * @var \Illuminate\Cache\Repository
      */
     private $cache;
+    /**
+     * @var LocationService
+     */
+    private $locationService;
 
     public function __construct(
         Parser $parser,
-        LocationHelper $locationHelper,
         PostRepository $postRepository,
         UserRepository $userRepository,
-        Repository $cache
+        Repository $cache,
+        LocationService $locationService
     ) {
         parent::__construct();
         $this->userRepository = $userRepository;
         $this->parser = $parser;
-        $this->locationHelper = $locationHelper;
         $this->postRepository = $postRepository;
         $this->cache = $cache;
+        $this->locationService = $locationService;
     }
 
     public function getGlobalFeed(QueryFilter $options)
@@ -97,7 +100,7 @@ class FeedService extends Service
         return $this->postRepository->getForUser($user->id, $options);
     }
 
-    public function geyBuddyPosts($user, QueryFilter $filter)
+    public function getBuddyPosts($user, QueryFilter $filter)
     {
         $user = $this->userRepository->getByHash($user);
         $this->gatekeeper->mayI('read_buddies', 'posts')->please();
@@ -113,6 +116,35 @@ class FeedService extends Service
             return [];
         }
         return $this->postRepository->getForUsers($buddies, $filter);
+    }
+
+    public function getNearbyPosts($user, $filter)
+    {
+        $user = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI('read_nearby', 'posts')->please();
+
+        if ($this->gatekeeper->me()->id != $user->id) {
+            throw new GatekeeperException;
+        }
+
+        // fail early if user has no location
+        try {
+            $user->getLocation();
+        } catch (UnlocatableModelException $e) {
+            return [];
+        }
+
+        /** @var UserService $userService */
+        $userService = \App::make(UserService::class);
+
+        $nearbyPeople = $userService->getNearbyUsers($user);
+
+        // fail early if there is nobody nearby
+        if (count($nearbyPeople) == 0) {
+            return [];
+        }
+        return $this->postRepository->getForUsers($nearbyPeople, $filter);
+
     }
 
 } 

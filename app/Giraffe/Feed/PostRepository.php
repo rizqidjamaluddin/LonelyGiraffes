@@ -4,6 +4,7 @@ use Giraffe\Common\EloquentRepository;
 use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Feed\Postable;
 use Giraffe\Feed\PostModel;
+use Giraffe\Geolocation\NearbySearchStrategies\TwoDegreeCellStrategy\TwoDegreeCellSearchableRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
 
@@ -90,5 +91,4 @@ class PostRepository extends EloquentRepository
     {
         return $query->with('postable');
     }
-
 }
