@@ -77,7 +77,7 @@ class NotificationModel extends Eloquent implements Transformable, ProtectedReso
 
     public function checkOwnership(UserModel $user)
     {
-        return $this->destination->id == $user->id;
+        return $this->user_id == $user->id;
     }
 
 

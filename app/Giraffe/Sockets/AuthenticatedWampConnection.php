@@ -11,7 +11,7 @@ class AuthenticatedWampConnection extends WampConnection implements ConnectionIn
     /**
      * @var bool|UserModel
      */
-    protected $authentication;
+    public  $authentication;
 
     public function __construct(ConnectionInterface $conn)
     {

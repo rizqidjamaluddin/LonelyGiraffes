@@ -1,5 +1,6 @@
 <?php namespace Giraffe\Sockets;
 
+use Giraffe\Sockets\Broadcasts\Broadcast;
 use Giraffe\Sockets\Response\SocketErrorResponse;
 use Giraffe\Sockets\Support\UnknownCommandException;
 use Illuminate\Console\Command;
@@ -13,7 +14,7 @@ use Giraffe\Sockets\AuthenticatedWampConnection as WampConnection;
 class Server implements WampServerInterface
 {
 
-    protected $memoryAlert = 20000000;
+    protected $memoryAlert = 100000000;
     protected $highMemory = false;
 
     /**
@@ -27,7 +28,7 @@ class Server implements WampServerInterface
     protected $connection;
 
     /**
-     * @var Topic[]
+     * @var AuthenticatedTopic[]
      */
     protected $subscribedTopics = [];
 
@@ -77,14 +78,16 @@ class Server implements WampServerInterface
     {
         $kind = $event->kind;
         $channel = $event->channel;
-        $payload = json_decode($event->payload);
 
-        $topic = $payload->endpoint;
+        /** @var Broadcast $broadcast */
+        $broadcast = unserialize($event->payload);
+
+        $topic = $broadcast->getEndpoint();
         $this->displayLine('Bridge message accepted on ' . $this->escape($topic) . '.');
 
         if (array_key_exists($topic, $this->subscribedTopics)) {
             $this->displayLine('Broadcasting: ' . $this->escape($topic));
-            $this->subscribedTopics[$topic]->broadcast($event->payload);
+            $this->subscribedTopics[$topic]->broadcast($broadcast);
         }
 
     }
