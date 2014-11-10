@@ -51,12 +51,15 @@ class Broadcast
 
     public function toJson()
     {
-        return json_encode(
-            [
-                'endpoint' => $this->getEndpoint(),
-                'event'    => $this->getEvent(),
-                'payload'  => $this->getPayload()->getContents()
-            ]
-        );
+        $base = [
+            'endpoint' => $this->getEndpoint(),
+            'event'    => $this->getEvent()
+        ];
+
+        if ($this->getPayload()) {
+            $base ['payload'] = $this->getPayload()->getContents();
+        }
+
+        return json_encode($base);
     }
 } 

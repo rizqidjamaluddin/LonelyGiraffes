@@ -14,8 +14,9 @@ class NotificationPayload extends AuthenticatedPayload
     public function canAccess(UserModel $user)
     {
         /** @var NotificationModel $notification */
-        $notification = $this->getContents();
-        return $notification->checkOwnership($user);
+       $notification = $this->contents;
+        $result = $notification->checkOwnership($user);
+        return $result;
     }
 
     public function getContents()

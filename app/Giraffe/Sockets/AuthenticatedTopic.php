@@ -45,8 +45,14 @@ class AuthenticatedTopic extends Topic
                 continue;
             }
 
-            if ($authenticate && !$payload->canAccess($client->authentication)) {
-                continue;
+            if ($authenticate) {
+                if ($client->authentication) {
+                    if (!$payload->canAccess($client->authentication)) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
             }
 
             if ($useEligible && !in_array($client->WAMP->sessionId, $eligible)) {
@@ -55,6 +61,7 @@ class AuthenticatedTopic extends Topic
 
             $client->event($this->id, $msg->toJson());
         }
+        unset($msg);
 
         return $this;
     }
