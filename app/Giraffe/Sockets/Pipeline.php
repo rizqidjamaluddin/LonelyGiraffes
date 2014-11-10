@@ -2,6 +2,8 @@
 
 use Giraffe\Common\ConfigurationException;
 use Giraffe\Logging\Log;
+use Giraffe\Sockets\Broadcasts\Broadcast;
+use Giraffe\Sockets\Payload\Payload;
 use Illuminate\Redis\Database;
 use Predis\Client;
 
@@ -43,7 +45,7 @@ class Pipeline
     {
         $this->assertConnected();
         foreach ($this->servers as $server) {
-            $server->publish($this->channel, json_encode(['endpoint' => $endpoint]));
+            $server->publish($this->channel, serialize(new Broadcast($endpoint)));
         }
     }
 
@@ -51,7 +53,16 @@ class Pipeline
     {
         $this->assertConnected();
         foreach ($this->servers as $server) {
-            $server->publish($this->channel, json_encode(['endpoint' => $endpoint, 'payload' => json_encode($payload)]));
+            $server->publish($this->channel, serialize(new Broadcast($endpoint, 'update', new Payload($payload))));
+        }
+
+    }
+
+    public function dispatch(Broadcast $broadcast)
+    {
+        $this->assertConnected();
+        foreach ($this->servers as $server) {
+            $server->publish($this->channel, serialize($broadcast));
         }
 
     }

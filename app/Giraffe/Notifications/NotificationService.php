@@ -1,8 +1,11 @@
 <?php  namespace Giraffe\Notifications;
 
+use Giraffe\Buddies\Notifications\Support\NotificationPayload;
 use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
+use Giraffe\Sockets\Broadcasts\Broadcast;
+use Giraffe\Sockets\Pipeline;
 use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -81,6 +84,11 @@ class NotificationService extends Service
     {
         $notification = NotificationModel::generate($notifiable, $destinationUser);
         $this->repository->save($notification);
+
+        /** @var Pipeline $pipeline */
+        $pipeline = \App::make(Pipeline::class);
+        $pipeline->dispatch(new Broadcast("/users/{$destinationUser->hash}/notifications", 'update', new NotificationPayload($notification)));
+
         return $notification;
     }
 

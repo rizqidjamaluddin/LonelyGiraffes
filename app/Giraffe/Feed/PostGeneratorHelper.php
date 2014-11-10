@@ -51,7 +51,6 @@ class PostGeneratorHelper
     {
         /** @var Pipeline $pipeline */
         $pipeline = \App::make(Pipeline::class);
-
         $pipeline->issue('/posts');
     }
 } 
