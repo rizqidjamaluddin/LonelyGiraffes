@@ -14,7 +14,7 @@ use Giraffe\Sockets\AuthenticatedWampConnection as WampConnection;
 class Server implements WampServerInterface
 {
 
-    protected $memoryAlert = 20000000;
+    protected $memoryAlert = 100000000;
     protected $highMemory = false;
 
     /**
