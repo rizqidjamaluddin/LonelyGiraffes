@@ -7,6 +7,13 @@ use Giraffe\Users\UserTransformer;
 
 class CallRouter
 {
+    protected $authenticator;
+
+    public function __construct()
+    {
+        $this->authenticator = \App::make(Authenticator::class);
+    }
+
     /**
      * @param                             $uri
      * @param array                       $arguments
@@ -25,9 +32,8 @@ class CallRouter
             }
         }
         if ($uri == 'authenticate') {
-            /** @var Authenticator $authenticator */
-            $authenticator = \App::make(Authenticator::class);
-            $user = $authenticator->attempt($arguments[0]);
+            // to-do: move this to a curl-based call to the webserver instead
+            $user = $this->authenticator->attempt($arguments[0]);
             if (!$user) {
                 return new SocketErrorResponse('Token not recognized.', 'Authentication Failed');
             }
