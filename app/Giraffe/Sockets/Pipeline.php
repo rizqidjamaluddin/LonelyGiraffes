@@ -41,6 +41,10 @@ class Pipeline
         $this->log = $log;
     }
 
+    /**
+     * @param $endpoint
+     * @throws ConfigurationException
+     */
     public function issue($endpoint)
     {
         $this->assertConnected();
@@ -49,6 +53,11 @@ class Pipeline
         }
     }
 
+    /**
+     * @param $endpoint
+     * @param $payload
+     * @throws ConfigurationException
+     */
     public function issueWithPayload($endpoint, $payload)
     {
         $this->assertConnected();
@@ -58,6 +67,10 @@ class Pipeline
 
     }
 
+    /**
+     * @param Broadcast $broadcast
+     * @throws ConfigurationException
+     */
     public function dispatch(Broadcast $broadcast)
     {
         $this->assertConnected();
