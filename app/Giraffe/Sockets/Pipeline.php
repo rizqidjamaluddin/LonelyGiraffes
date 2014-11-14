@@ -30,7 +30,8 @@ class Pipeline
      */
     protected $connected = false;
 
-    protected $channel = 'lg-bridge:pipeline';
+    protected $channel;
+
     /**
      * @var \Giraffe\Logging\Log
      */
@@ -39,6 +40,7 @@ class Pipeline
     public function __construct(Log $log)
     {
         $this->log = $log;
+        $this->channel = 'lg-bridge:pipeline';
     }
 
     /**
