@@ -42,7 +42,7 @@ class GiraffePermissionsLookup
 
                 ],
                 'global' => [
-                    'event' => ['comment', 'find_nearby'],
+                    'event' => ['comment', 'find_nearby', 'join'],
                     'post'  => ['comment'],
                     'shout' => ['comment']
                 ]
