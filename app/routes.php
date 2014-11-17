@@ -48,18 +48,11 @@ Route::api(
              Route::delete('events/{resource}', ['uses' => 'EventController@delete']);
              Route::put('events/{resource}', ['uses' => 'EventController@update']);
 
+             Route::get('events/{resource}/participants', ['uses' => 'EventController@showParticipants']);
+             Route::post('events/{resource}/join', ['uses' => 'EventController@join']);
+
              Route::get('events/{resource}/comments', ['uses' => 'EventCommentController@index']);
              Route::post('events/{resource}/comments', ['uses' => 'EventCommentController@store']);
-
-             Route::get('events/{resource}/invites', ['uses' => 'EventController@indexInvite']);
-             Route::post('events/{resource}/invites/{invitation}/accept', ['uses' => 'EventController@acceptInvite']);
-             Route::delete('events/{resource}/invites/{invitation}', ['uses' => 'EventController@deleteInvite']);
-             Route::post('events/{resource}/invites', ['uses' => 'EventController@createInvite']);
-
-             Route::get('events/{resource}/requests', ['uses' => 'EventController@indexRequest']);
-             Route::post('events/{resource}/requests', ['uses' => 'EventController@createRequest']);
-             Route::post('events/{resource}/requests/{request}/accept', ['uses' => 'EventController@acceptRequest']);
-             Route::delete('events/{resource}/requests/{request}', ['uses' => 'EventController@deleteRequest']);
 
              Route::post('shouts', ['uses' => 'ShoutController@store']);
              Route::get('shouts', ['uses' => 'ShoutController@index']);

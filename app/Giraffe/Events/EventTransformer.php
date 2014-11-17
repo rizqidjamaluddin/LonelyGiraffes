@@ -32,6 +32,7 @@ class EventTransformer extends Transformer
             'timestamp' => $model->timestamp,
             'comment_count' => $model->getCommentCount(),
             'commentators' => $commentatorList,
+            'participants' => [],
             'links' => [
                 'owner' => $author
             ]

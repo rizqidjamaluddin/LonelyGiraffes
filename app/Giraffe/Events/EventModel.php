@@ -77,6 +77,11 @@ class EventModel extends Eloquent implements Commentable, Postable, ProtectedRes
         return $stream->getParticipatingUsers();
     }
 
+    public function getParticipants()
+    {
+        return [];
+    }
+
     /**
      * Lowercase name of this resource.
      *
