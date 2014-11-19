@@ -28,7 +28,7 @@ class EventParticipationTest extends AcceptanceCase
         $this->assertEquals(0, count($participants));
 
         $luigi = $this->registerAndLoginAsLuigi();
-        $this->callJson('POST', "/api/events/{$destination}/join");
+        $r = $this->callJson('POST', "/api/events/{$destination}/join");
         $this->assertResponseOk();
 
         $participants = $this->callJson('GET', "/api/events/{$destination}/participants");
@@ -37,8 +37,8 @@ class EventParticipationTest extends AcceptanceCase
         $this->assertEquals($this->luigi['name'], $participants->participants[0]->name);
         $participants = $this->callJson('GET', "/api/events/{$destination}")->events[0]->participants;
         $this->assertResponseOk();
-        $this->assertEquals(1, count($participants->participants));
-        $this->assertEquals($this->luigi['name'], $participants->participants[0]->name);
+        $this->assertEquals(1, count($participants));
+        $this->assertEquals($this->luigi['name'], $participants[0]->name);
 
     }
 

@@ -19,6 +19,12 @@ class EventTransformer extends Transformer
             $commentatorList[] = $userTransformer->transform($commentator);
         }
 
+        $participantList = [];
+        $participants = $model->getParticipants();
+        foreach ($participants as $participant) {
+            $participantList[] = $userTransformer->transform($participant);
+        }
+
         return [
             'hash' => $model->hash,
             'name' => $model->name,
@@ -32,7 +38,7 @@ class EventTransformer extends Transformer
             'timestamp' => $model->timestamp,
             'comment_count' => $model->getCommentCount(),
             'commentators' => $commentatorList,
-            'participants' => [],
+            'participants' => $participantList,
             'links' => [
                 'owner' => $author
             ]

@@ -155,8 +155,10 @@ class EventService extends Service
 
     public function joinEvent($event, $me)
     {
+        /** @var EventModel $event */
         $event = $this->eventRepository->getByHash($event);
         $this->gatekeeper->mayI('join', $event)->please();
+        $me = $this->userRepository->getByHash($me);
         $event->addParticipant($me);
         return $event;
     }

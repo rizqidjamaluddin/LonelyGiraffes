@@ -5,6 +5,10 @@ use Giraffe\Images\ImageTransformer;
 
 class UserTransformer extends Transformer
 {
+    public function getServedClass()
+    {
+        return UserModel::class;
+    }
 
     /**
      * @param UserModel $userModel
