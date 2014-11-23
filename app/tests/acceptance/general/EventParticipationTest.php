@@ -31,6 +31,33 @@ class EventParticipationTest extends AcceptanceCase
         $r = $this->callJson('POST', "/api/events/{$destination}/join");
         $this->assertResponseOk();
 
+        $this->assertLuigiAttending($destination);
+
+    }
+
+    /**
+     * @test
+     */
+    public function a_user_cannot_join_an_event_twice()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        $event = $this->callJson('POST', '/api/events', $this->boilerplateEvent);
+        $destination = $event->events[0]->hash;
+
+        $luigi = $this->registerAndLoginAsLuigi();
+        $r = $this->callJson('POST', "/api/events/{$destination}/join");
+        $this->assertResponseOk();
+        $r = $this->callJson('POST', "/api/events/{$destination}/join");
+        $this->assertResponseOk();
+
+        $this->assertLuigiAttending($destination);
+    }
+
+    /**
+     * @param $destination
+     */
+    protected function assertLuigiAttending($destination)
+    {
         $participants = $this->callJson('GET', "/api/events/{$destination}/participants");
         $this->assertResponseOk();
         $this->assertEquals(1, count($participants->participants));
@@ -39,12 +66,6 @@ class EventParticipationTest extends AcceptanceCase
         $this->assertResponseOk();
         $this->assertEquals(1, count($participants));
         $this->assertEquals($this->luigi['name'], $participants[0]->name);
-
-    }
-
-    public function a_user_cannot_join_an_event_twice()
-    {
-
     }
 
 
