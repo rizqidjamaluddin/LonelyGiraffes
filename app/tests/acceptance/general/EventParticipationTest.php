@@ -31,7 +31,7 @@ class EventParticipationTest extends AcceptanceCase
         $r = $this->callJson('POST', "/api/events/{$destination}/join");
         $this->assertResponseOk();
 
-        $this->assertLuigiAttending($destination);
+        $this->assertOnlyLuigiAttending($destination);
 
     }
 
@@ -48,15 +48,15 @@ class EventParticipationTest extends AcceptanceCase
         $r = $this->callJson('POST', "/api/events/{$destination}/join");
         $this->assertResponseOk();
         $r = $this->callJson('POST', "/api/events/{$destination}/join");
-        $this->assertResponseOk();
+        $this->assertResponseStatus(422);
 
-        $this->assertLuigiAttending($destination);
+        $this->assertOnlyLuigiAttending($destination);
     }
 
     /**
      * @param $destination
      */
-    protected function assertLuigiAttending($destination)
+    protected function assertOnlyLuigiAttending($destination)
     {
         $participants = $this->callJson('GET', "/api/events/{$destination}/participants");
         $this->assertResponseOk();
