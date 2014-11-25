@@ -77,6 +77,27 @@ class EventModel extends Eloquent implements Commentable, Postable, ProtectedRes
         return $stream->getParticipatingUsers();
     }
 
+    public function getParticipants()
+    {
+        /** @var EventParticipantRepository $eventParticipantRepository */
+        $eventParticipantRepository = \App::make(EventParticipantRepository::class);
+        $participation = $eventParticipantRepository->getForEvent($this);
+        $participation = $participation->map(function(&$v) {
+                /** @var EventParticipantModel $v */
+                $v = $v->getUser();
+                return $v;
+            });
+        return $participation;
+    }
+
+    public function addParticipant(UserModel $user)
+    {
+        $participation = EventParticipantModel::join($this, $user);
+        /** @var EventParticipantRepository $eventParticipantRepository */
+        $eventParticipantRepository = \App::make(EventParticipantRepository::class);
+        $eventParticipantRepository->save($participation);
+    }
+
     /**
      * Lowercase name of this resource.
      *

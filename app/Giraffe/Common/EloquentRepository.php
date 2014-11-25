@@ -129,7 +129,14 @@ abstract class EloquentRepository implements Repository
 
     public function save(Model $model)
     {
-        $model->save();
+        try {
+            $model->save();
+        } catch (QueryException $e) {
+            if ($e->errorInfo[0] == 23000) {
+                throw new DuplicateCreationException;
+            }
+            throw $e;
+        }
         return $model;
     }
 

@@ -36,10 +36,12 @@ class Server implements WampServerInterface
      * @var CallRouter
      */
     protected $router;
+    protected $hostname;
 
     public function __construct()
     {
         $this->router = new CallRouter();
+        $this->hostname = gethostname();
     }
 
     public function setDisplay(Command $command)
@@ -49,17 +51,17 @@ class Server implements WampServerInterface
 
     protected function displayInfo($info)
     {
-        $this->display->info($info);
+        $this->displayLine("<info>".$info."</info>");
     }
 
     protected function displayLine($output)
     {
-        $this->display->getOutput()->writeln($output);
+        $this->display->getOutput()->writeln($this->hostname . ' | ' . $output);
     }
 
     public function displayOutput($output)
     {
-        $this->display->getOutput()->write($output);
+        $this->display->getOutput()->write($this->hostname . ' | ' . $output);
     }
 
     /**

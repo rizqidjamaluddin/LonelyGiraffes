@@ -143,4 +143,24 @@ class EventService extends Service
         return $this->locationService->getNearbyFromRepository($user, $this->eventRepository);
 
     }
+
+    public function getEventParticipants($event)
+    {
+        /** @var EventModel $event */
+        $event = $this->eventRepository->getByHash($event);
+        $this->gatekeeper->mayI('read', $event)->please();
+        $participants = $event->getParticipants();
+        return $participants;
+    }
+
+    public function joinEvent($event, $me)
+    {
+        /** @var EventModel $event */
+        $event = $this->eventRepository->getByHash($event);
+        $this->gatekeeper->mayI('join', $event)->please();
+        $me = $this->userRepository->getByHash($me);
+        $event->addParticipant($me);
+        return $event;
+    }
+
 } 

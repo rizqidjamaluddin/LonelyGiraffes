@@ -3,6 +3,7 @@
 use Giraffe\Common\Controller;
 use Giraffe\Events\EventService;
 use Giraffe\Events\EventTransformer;
+use Giraffe\Users\UserTransformer;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class EventController extends Controller
@@ -52,6 +53,17 @@ class EventController extends Controller
     {
         $edit = $this->eventService->updateEvent($event, Input::all());
         return $this->returnEventModel($edit);
+    }
+
+    public function showParticipants($event)
+    {
+        $participants = $this->eventService->getEventParticipants($event);
+        return $this->withCollection($participants, new UserTransformer(), 'participants');
+    }
+
+    public function join($event)
+    {
+        $this->eventService->joinEvent($event, $this->gatekeeper->me());
     }
 
     /**
