@@ -27,6 +27,8 @@ $app = new Illuminate\Foundation\Application;
 $env = $app->detectEnvironment(array(
 
 	'vagrant' => ['vagrant', 'vagrant.dev'],
+    'dev' => ['dev-web1', 'dev-web2'],
+    'production' => ['webn01', 'webn02'],
 
 ));
 
