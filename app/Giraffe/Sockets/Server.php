@@ -59,9 +59,14 @@ class Server implements WampServerInterface
         $this->display->getOutput()->writeln($this->hostname . ' | ' . $output);
     }
 
+    public function startOutput()
+    {
+        $this->display->getOutput()->write($this->hostname . ' | ');
+    }
+
     public function displayOutput($output)
     {
-        $this->display->getOutput()->write($this->hostname . ' | ' . $output);
+        $this->display->getOutput()->write($output);
     }
 
     /**
@@ -69,6 +74,7 @@ class Server implements WampServerInterface
      */
     public function attachRedis(Client $client)
     {
+        $this->startOutput();
         $this->displayOutput(
             'Connecting to redis ... ' . \Config::get('sockets.listen', 'tcp://127.0.0.1:6379') . ' ... '
         );
@@ -105,6 +111,7 @@ class Server implements WampServerInterface
      */
     function onOpen(ConnectionInterface $conn)
     {
+        $this->startOutput();
         $this->displayOutput('Client connecting ... Assigning ' . $this->getDisplayPrefix($conn) . "Connected.\n");
     }
 
@@ -148,6 +155,7 @@ class Server implements WampServerInterface
      */
     function onCall(ConnectionInterface $conn, $id, $topic, array $params)
     {
+        $this->startOutput();
         $this->displayOutput($this->getDisplayPrefix($conn) . "Remote call: <options=bold>$topic</options=bold> ... ");
 
         try {
@@ -177,6 +185,7 @@ class Server implements WampServerInterface
     {
         // TODO: Implement onSubscribe() method.
         $this->connection = $conn;
+        $this->startOutput();
         $this->displayOutput($this->getDisplayPrefix($conn) . "Subscribing to $topic ... ");
         if (!array_key_exists($topic->getId(), $this->subscribedTopics)) {
             $this->displayOutput(
@@ -221,7 +230,8 @@ class Server implements WampServerInterface
     public function handleHeartbeat()
     {
         $memory = memory_get_usage();
-
+        
+        $this->startOutput();
         $this->displayOutput(date('Y-m-d H:i:s') . ' | ');
         $this->displayOutput($this->formatBytes($memory) . ' | ');
         $this->displayOutput(count($this->subscribedTopics) . ' Topics');
