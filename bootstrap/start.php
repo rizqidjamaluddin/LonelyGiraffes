@@ -27,8 +27,8 @@ $app = new Illuminate\Foundation\Application;
 $env = $app->detectEnvironment(array(
 
 	'vagrant' => ['vagrant', 'vagrant.dev'],
-    'dev' => ['dev-web1', 'dev-web2'],
-    'production' => ['webn01', 'webn02'],
+    'dev' => ['dev-web1.thinkster.local', 'dev-web2.thinkster.local'],
+    'production' => ['webn01.thinkster.local', 'webn02.thinkster.local'],
 
 ));
 

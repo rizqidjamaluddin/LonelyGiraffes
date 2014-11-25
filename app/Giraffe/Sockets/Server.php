@@ -230,7 +230,7 @@ class Server implements WampServerInterface
     public function handleHeartbeat()
     {
         $memory = memory_get_usage();
-        
+
         $this->startOutput();
         $this->displayOutput(date('Y-m-d H:i:s') . ' | ');
         $this->displayOutput($this->formatBytes($memory) . ' | ');
