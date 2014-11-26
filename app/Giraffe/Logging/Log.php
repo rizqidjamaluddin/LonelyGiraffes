@@ -10,92 +10,39 @@ use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
 
 /**
- * @method bool debug($stream, $message, $meta = '')
- * @method bool info($stream, $message, $meta = '')
- * @method bool notice($stream, $message, $meta = '')
- * @method bool warning($stream, $message, $meta = '')
- * @method bool error($stream, $message, $meta = '')
- * @method bool critical($stream, $message, $meta = '')
- * @method bool alert($stream, $message, $meta = '')
- * @method bool emergency($stream, $message, $meta = '')
+ * @method bool debug($message, $meta = [])
+ * @method bool info($message, $meta = [])
+ * @method bool notice(  $message, $meta = [])
+ * @method bool warning($message, $meta = [])
+ * @method bool error($message, $meta = [])
+ * @method bool critical($message, $meta = [])
+ * @method bool alert($message, $meta = [])
+ * @method bool emergency($message, $meta = [])
  */
 class Log
 {
-    protected $levels = [
-        'debug',
-        'info',
-        'notice',
-        'warning',
-        'error',
-        'critical',
-        'alert',
-        'emergency'
-    ];
-
     /**
      * @var Logger
      */
-    protected $monolog;
+    protected $logger;
 
-    /**
-     * @var Logger[]
-     */
-    protected $channels;
-
-
-    /**
-     * @var Writer
-     */
-    private $writer;
-
-    /**
-     * @var \Illuminate\Foundation\Application
-     */
-    private $application;
-
-    public function __construct(Writer $writer, Application $application)
+    public function __construct()
     {
-        $this->writer = $writer;
-        $this->application = $application;
-        $this->defaultLogLevel = Logger::DEBUG;
-        $this->exceptionalLogLevel = Logger::WARNING;
     }
 
-    public function boot()
+    public function setLogger(Logger $logger)
     {
-        $this->monolog = $this->writer->getMonolog();
-
+        $this->logger = $logger;
     }
 
-    /**
-     * Methods come in this format:
-     * $log->warning('sourceClass', []);
-     *
-     * The second array can be any additional context to attach with the request.
-     *
-     * @param       $method
-     * @param array $arguments
-     *
-     * @return bool
-     * @throws \Giraffe\Common\ConfigurationException
-     */
     public function __call($method, Array $arguments)
     {
-    }
-
-    /**
-     * @param $raw_level
-     *
-     * @returns integer
-     * @throws \Giraffe\Common\ConfigurationException
-     */
-    protected function translateLogLevel($raw_level)
-    {
-        $raw_level = strtolower($raw_level);
-
-        if (in_array($raw_level, $this->levels)) {
-            return strtoupper($raw_level);
+        $message = $arguments[0];
+        $context = $arguments[1];
+        if (!is_array($context)) {
+            $context = [$context];
         }
-        throw new ConfigurationException("Invalid log level used ($raw_level).");
+        return call_user_func([$this->logger, $method], $message, $context);
     }
+
 } 

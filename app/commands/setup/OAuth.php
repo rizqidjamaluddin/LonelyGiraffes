@@ -53,12 +53,12 @@ class SeedOAuth extends Command
 
         // start
         $this->info('Inserting base Lonely Giraffes data into OAuth tables.');
-        $this->log->info(self::LOG_STREAM, "initializing OAuth insertion");
+        $this->log->info("initializing OAuth insertion");
 
         // check tables migrated
         if (!Schema::hasTable('oauth_clients') || !Schema::hasTable('oauth_scopes')) {
             $this->error('OAuth tables not found in database; check that migrations have been run');
-            $this->log->notice(self::LOG_STREAM, 'aborting due to missing tables');
+            $this->log->notice('aborting due to missing tables');
             return;
         }
 

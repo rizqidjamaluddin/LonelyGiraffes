@@ -79,7 +79,7 @@ class ImageService extends Service
 
         // Create the object
         $image = $this->imageRepository->create($data);
-        $this->log->info($this, 'New image created', $image->toArray());
+        $this->log->info('New image created', $image->toArray());
 
 
         // Create the path for the image file

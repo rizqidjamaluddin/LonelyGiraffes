@@ -91,7 +91,7 @@ class BuddyRequestService extends Service
 
         $buddyRequest = $this->buddyRequestRepository->create($data);
         $this->relay->dispatch(new BuddyRequestSentEvent($buddyRequest));
-        $this->log->info($this, 'Buddy Request created', $buddyRequest->toArray());
+        $this->log->info('Buddy Request created', $buddyRequest->toArray());
         return $buddyRequest;
     }
 

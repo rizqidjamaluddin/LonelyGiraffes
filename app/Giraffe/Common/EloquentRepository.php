@@ -98,7 +98,7 @@ abstract class EloquentRepository implements Repository
         try {
             $model = $this->model->create($attributes);
         } catch (QueryException $e) {
-            $this->log->info(__CLASS__, "Invalid Creation", $e->getMessage());
+            $this->log->info("Invalid Creation", $e->getMessage());
             // error code for "duplicate in unique column"
             if ($e->errorInfo[0] == 23000) {
                 throw new DuplicateCreationException;
@@ -118,7 +118,7 @@ abstract class EloquentRepository implements Repository
         try {
             $model->save();
         } catch (QueryException $e) {
-            $this->log->info(__CLASS__, "Invalid Update", $e->getMessage());
+            $this->log->info("Invalid Update", $e->getMessage());
             if ($e->errorInfo[0] == 23000) {
                 throw new DuplicateUpdateException;
             }

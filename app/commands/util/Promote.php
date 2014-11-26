@@ -92,7 +92,7 @@ class Promote extends Command
 
             if (!$confirm) {
                 $this->info('Operation canceled.');
-                $this->log->info(SELF::LOG_STREAM, 'promote canceled');
+                $this->log->info('promote canceled');
                 return;
             }
         }

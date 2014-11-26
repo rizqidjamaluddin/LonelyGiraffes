@@ -199,7 +199,7 @@ class Gatekeeper
         $result = null;
 
         if ($this->sudo) {
-            $this->log->notice($this, "Superuser invoked access", ['query' => $this->query]);
+            $this->log->notice("Superuser invoked access", ['query' => $this->query]);
             $result = true;
         } else {
             switch ($this->request) {
@@ -214,9 +214,6 @@ class Gatekeeper
                 }
             }
         }
-
-
-        $this->log->debug($this, "Attempted resource access", ['query' => $this->query, 'result' => $result]);
 
         $this->reset();
         return $result;

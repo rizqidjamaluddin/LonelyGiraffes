@@ -14,7 +14,8 @@
 		"lucadegasperi/oauth2-server-laravel": "1.*",
         "intervention/image": "2.*",
         "cboden/ratchet": "0.3.*",
-        "predis/predis-async": "dev-master"
+        "predis/predis-async": "dev-master",
+		"graylog2/gelf-php": "~1.0"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",

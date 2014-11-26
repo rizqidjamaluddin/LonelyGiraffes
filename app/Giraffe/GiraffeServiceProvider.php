@@ -33,7 +33,10 @@ class GiraffeServiceProvider extends ServiceProvider {
 
     public function boot()
     {
-        $this->app->make('Giraffe\Logging\Log')->boot();
+        $log = $this->app->make('Giraffe\Logging\Log');
+        /** @var callable $logger */
+        $logger = \Config::get('logs.logger');
+        $log->setLogger($logger());
 
         /*
          * Geolocation

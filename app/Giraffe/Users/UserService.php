@@ -58,7 +58,7 @@ class UserService extends Service
         $data['role'] = 'member';
 
         $user = $this->userRepository->create($data);
-        $this->log->info($this, 'New user registered', $user->toArray());
+        $this->log->info('New user registered', $user->toArray());
         return $user;
     }
 
@@ -204,7 +204,7 @@ class UserService extends Service
         $model = $this->userRepository->getByHash($user);
         $this->gatekeeper->mayI("promote", $model)->please();
         $this->setUserRole($model, 'admin');
-        $this->log->notice($this, "User {$model->email} promoted to administrator.");
+        $this->log->notice("User {$model->email} promoted to administrator.");
         return true;
     }
 
@@ -217,7 +217,7 @@ class UserService extends Service
         $model = $this->userRepository->getByHash($user);
         $this->gatekeeper->mayI("promote", $model)->please();
         $this->setUserRole($model, 'member');
-        $this->log->notice($this, "User {$model->email} demoted to member.");
+        $this->log->notice("User {$model->email} demoted to member.");
         return true;
     }
 
