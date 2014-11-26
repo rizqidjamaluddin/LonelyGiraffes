@@ -2,6 +2,7 @@
 
 
 use App;
+use Giraffe\Logging\Log;
 use Giraffe\Support\Transformer\Normalizers\CarbonNormalizer;
 use Giraffe\Support\Transformer\Normalizers\NativeNormalizer;
 use Giraffe\Support\Transformer\Presenter;
@@ -20,10 +21,16 @@ class Controller extends \Controller
 
     protected $key = 'data';
 
+    /**
+     * @var Log
+     */
+    protected $log;
+
 
     public function __construct()
     {
         $this->gatekeeper = App::make('Giraffe\Authorization\Gatekeeper');
+        $this->log = App::make(Log::class);
     }
 
     public function withItem($item, Transformer $transformer = null, $key = null)

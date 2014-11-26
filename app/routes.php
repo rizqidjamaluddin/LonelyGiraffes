@@ -33,9 +33,13 @@ Route::post('oauth', function()
 
 Route::when('*', 'access-control');
 
+Route::post('password/forgot', ['uses' => 'PasswordController@forgot']);
+Route::post('password/reset', ['uses' => 'PasswordController@reset']);
+
 Route::api(
      ['version' => 'v1'],
          function () {
+
 
              // additional feeds use query strings; GET /posts?feed=buddies
              Route::get('posts', ['uses' => 'PostController@index']);
