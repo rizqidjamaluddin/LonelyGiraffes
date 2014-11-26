@@ -15,7 +15,7 @@ return array(
     'logger' => function() {
         $logger = new Logger('lg');
 
-        $graylogHandler = new GelfHandler(new Publisher(new UdpTransport("127.0.0.1", 12201)), Logger::INFO);
+        $graylogHandler = new GelfHandler(new Publisher(new UdpTransport("172.21.0.3", 12201)), Logger::INFO);
         $flowdockHandler = new FlowdockChatHandler('014067cfe257dc4572f903b6b440f7ed', Logger::INFO);
         $flowdockHandler->setFormatter(new \Giraffe\Logging\FlowdockChatFormatter('014067cfe257dc4572f903b6b440f7ed'));
         $essentialHandler = new FingersCrossedHandler(new StreamHandler(storage_path() . '/essential/lg.log'), new ErrorLevelActivationStrategy(Logger::ERROR));
