@@ -12,7 +12,7 @@ use Monolog\Processor\WebProcessor;
 /**
  * @method bool debug($message, $meta = [])
  * @method bool info($message, $meta = [])
- * @method bool notice(  $message, $meta = [])
+ * @method bool notice($message, $meta = [])
  * @method bool warning($message, $meta = [])
  * @method bool error($message, $meta = [])
  * @method bool critical($message, $meta = [])
@@ -38,7 +38,12 @@ class Log
     public function __call($method, Array $arguments = [])
     {
         $message = $arguments[0];
-        $context = $arguments[1];
+
+        if (isset($arguments[1])) {
+            $context = $arguments[1];
+        } else {
+            $context = [];
+        }
         if (!is_array($context)) {
             $context = [$context];
         }
