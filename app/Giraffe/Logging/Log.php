@@ -35,7 +35,7 @@ class Log
         $this->logger = $logger;
     }
 
-    public function __call($method, Array $arguments)
+    public function __call($method, Array $arguments = [])
     {
         $message = $arguments[0];
         $context = $arguments[1];
