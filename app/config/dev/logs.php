@@ -13,10 +13,10 @@ use Monolog\Logger;
 return array(
 
     'logger' => function() {
-        $logger = new Logger('lg');
+        $logger = new Monolog\Logger('lg');
 
-        $graylogHandler = new GelfHandler(new Publisher(new UdpTransport("172.21.0.3", 514)), Logger::INFO);
-        $graylogHandler->setFormatter(new \Monolog\Formatter\GelfMessageFormatter());
+        $graylogHandler = new Monolog\Handler\GelfHandler(new Gelf\Publisher(new Gelf\Transport\UdpTransport("172.21.0.3", 514)), Monolog\Logger::INFO);
+        $graylogHandler->setFormatter(new \Monolog\Formatter\GelfMessageFormatter("LGv2-dev"));
         $flowdockHandler = new FlowdockChatHandler('014067cfe257dc4572f903b6b440f7ed', Logger::INFO);
         $flowdockHandler->setFormatter(new \Giraffe\Logging\FlowdockChatFormatter('014067cfe257dc4572f903b6b440f7ed'));
         $essentialHandler = new FingersCrossedHandler(new StreamHandler(storage_path() . '/essential/lg.log'), new ErrorLevelActivationStrategy(Logger::ERROR));
