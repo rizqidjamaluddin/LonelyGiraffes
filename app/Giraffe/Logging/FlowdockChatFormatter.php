@@ -27,7 +27,7 @@ class FlowdockChatFormatter implements FormatterInterface
         }
 
         $record['flowdockChat'] = array(
-            'content' => '',
+            'content' => $record['message'],
             'external_user_name' => $record['channel'],
             'tags' => ''
         );
