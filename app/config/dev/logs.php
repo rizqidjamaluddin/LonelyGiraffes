@@ -24,7 +24,7 @@ return array(
         $flowdockHandler->setFormatter(new \Giraffe\Logging\FlowdockChatFormatter('014067cfe257dc4572f903b6b440f7ed'));
         $essentialHandler = new FingersCrossedHandler(new StreamHandler(storage_path() . '/essential/lg.log'), new ErrorLevelActivationStrategy(Logger::ERROR));
 
-        $group = new GroupHandler([$syslogHandler, $flowdockHandler, $essentialHandler]);
+        $group = new GroupHandler([$graylogHandler, $syslogHandler, $flowdockHandler, $essentialHandler]);
 
         $logger->pushHandler($group);
         return $logger;
