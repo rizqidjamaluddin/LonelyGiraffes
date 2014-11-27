@@ -15,13 +15,16 @@ return array(
     'logger' => function() {
         $logger = new Monolog\Logger('lg');
 
-        $graylogHandler = new Monolog\Handler\GelfHandler(new Gelf\Publisher(new Gelf\Transport\UdpTransport("172.21.0.3", 514)), Monolog\Logger::INFO);
-        $graylogHandler->setFormatter(new \Monolog\Formatter\GelfMessageFormatter("LGv2-dev"));
+//        $graylogHandler = new Monolog\Handler\GelfHandler(new Gelf\Publisher(new Gelf\Transport\UdpTransport("172.21.0.3", 514)), Monolog\Logger::INFO);
+//        $graylogHandler->setFormatter(new \Monolog\Formatter\GelfMessageFormatter("LGv2-dev"));
+
+        $syslogHandler = new \Monolog\Handler\SyslogUdpHandler("172.21.0.3");
+
         $flowdockHandler = new FlowdockChatHandler('014067cfe257dc4572f903b6b440f7ed', Logger::INFO);
         $flowdockHandler->setFormatter(new \Giraffe\Logging\FlowdockChatFormatter('014067cfe257dc4572f903b6b440f7ed'));
         $essentialHandler = new FingersCrossedHandler(new StreamHandler(storage_path() . '/essential/lg.log'), new ErrorLevelActivationStrategy(Logger::ERROR));
 
-        $group = new GroupHandler([$graylogHandler, $flowdockHandler, $essentialHandler]);
+        $group = new GroupHandler([$syslogHandler, $flowdockHandler, $essentialHandler]);
 
         $logger->pushHandler($group);
         return $logger;
