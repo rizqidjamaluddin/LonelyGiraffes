@@ -27,6 +27,9 @@ return array(
         $group = new GroupHandler([$graylogHandler, $syslogHandler, $flowdockHandler, $essentialHandler]);
 
         $logger->pushHandler($group);
+
+        $logger->pushProcessor(new \Monolog\Processor\IntrospectionProcessor());
+        $logger->pushProcessor(new \Monolog\Processor\GitProcessor());
         return $logger;
     }
 
