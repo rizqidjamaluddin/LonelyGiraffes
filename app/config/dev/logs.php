@@ -15,8 +15,8 @@ return array(
     'logger' => function() {
         $logger = new Monolog\Logger('lg');
 
-//        $graylogHandler = new Monolog\Handler\GelfHandler(new Gelf\Publisher(new Gelf\Transport\UdpTransport("172.21.0.3", 514)), Monolog\Logger::INFO);
-//        $graylogHandler->setFormatter(new \Monolog\Formatter\GelfMessageFormatter("LGv2-dev"));
+        $graylogHandler = new Monolog\Handler\GelfHandler(new Gelf\Publisher(new Gelf\Transport\UdpTransport("172.21.0.3", 12201)), Monolog\Logger::INFO);
+        $graylogHandler->setFormatter(new \Monolog\Formatter\GelfMessageFormatter("LGv2-dev"));
 
         $syslogHandler = new \Monolog\Handler\SyslogUdpHandler("172.21.0.3");
 
