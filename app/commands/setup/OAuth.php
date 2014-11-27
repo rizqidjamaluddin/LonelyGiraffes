@@ -53,7 +53,7 @@ class SeedOAuth extends Command
 
         // start
         $this->info('Inserting base Lonely Giraffes data into OAuth tables.');
-        $this->log->info("initializing OAuth insertion");
+        $this->log->info("Initializing OAuth insertion.");
 
         // check tables migrated
         if (!Schema::hasTable('oauth_clients') || !Schema::hasTable('oauth_scopes')) {
@@ -104,6 +104,7 @@ class SeedOAuth extends Command
         };
 
         $this->info('Operation complete.');
+        $this->log->info("OAuth data verified and ready.");
 
     }
 
