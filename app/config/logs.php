@@ -9,6 +9,7 @@ return array(
      */
     'logger' => function() {
         $logger = new Logger('lg');
+        $logger->pushHandler(new \Monolog\Handler\NullHandler());
         return $logger;
     }
 
