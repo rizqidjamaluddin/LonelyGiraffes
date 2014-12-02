@@ -30,6 +30,9 @@ Artisan::add(new SeedLookup());
 Artisan::add(new RunTests());
 Artisan::add(new EmulateFail());
 
+// lg:migrate
+Artisan::add(new MigrateV1());
+
 // stickies
 Artisan::add(new PostSticky());
 Artisan::add(new ClearSticky());
