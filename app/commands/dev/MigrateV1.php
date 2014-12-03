@@ -39,13 +39,24 @@ class MigrateV1 extends Command
      */
     public function fire()
     {
-        $this->confirm("Note: this process is best done a blank database. Continue?");
+        if (DB::table('users')->exists()) {
+            $this->confirm("Note: this process is best done a blank database. Continue?");
+        } else {
+            $this->confirm("Migrating users, events, buddies and conversations from version 1. Continue?");
+        }
+        $this->info('Bumping up memory limit to 386M...');
+        ini_set('memory_limit', '368M');
         $this->migrateUsers();
     }
 
     protected function migrateUsers()
     {
         $this->info('Processing users...');
+
+        if (!Schema::hasTable('v1_users')) {
+            $this->error('No V1 user database found (please name it v1_users), aborting user import.');
+            return false;
+        }
 
         $users = DB::table('v1_users')->get();
         $count = DB::table('v1_users')->count();
