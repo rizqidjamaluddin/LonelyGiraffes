@@ -47,7 +47,7 @@ class Log
         if (!is_array($context)) {
             $context = [$context];
         }
-        return call_user_func([$this->logger, $method], $message, $context);
+        call_user_func([$this->logger, $method], $message, $context);
     }
 
 } 

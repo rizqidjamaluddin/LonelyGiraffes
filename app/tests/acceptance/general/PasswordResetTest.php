@@ -1,4 +1,6 @@
-<?php 
+<?php
+
+use Giraffe\Passwords\PasswordResetService;
 
 class PasswordResetTest extends AcceptanceCase
 {
@@ -32,8 +34,11 @@ class PasswordResetTest extends AcceptanceCase
         $mario = $this->registerMario();
         $this->callJson('POST', '/password/forgot', ['email' => $this->mario['email']]);
         $this->assertResponseOk();
+        
+        /** @var PasswordResetService $passwordResetService */
+        $passwordResetService = \App::make(PasswordResetService::class);
 
-        $this->callJson('POST', '/password/reset', ['password' => 'newpassword']);
+        $this->callJson('POST', '/password/reset', ['password' => 'newpassword', 'token']);
         $this->assertResponseOk();
 
         $this->markTestIncomplete();
