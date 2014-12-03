@@ -1,4 +1,4 @@
-<?php  namespace Giraffe\Buddies\Notifications\Support; 
+<?php  namespace Giraffe\Notifications\Support;
 use Giraffe\Notifications\NotificationModel;
 use Giraffe\Notifications\NotificationTransformer;
 use Giraffe\Sockets\Payload\AuthenticatedPayload;

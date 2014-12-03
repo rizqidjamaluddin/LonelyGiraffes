@@ -1,6 +1,6 @@
 <?php  namespace Giraffe\Notifications;
 
-use Giraffe\Buddies\Notifications\Support\NotificationPayload;
+use Giraffe\Notifications\Support\NotificationPayload;
 use Giraffe\Common\Internal\QueryFilter;
 use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
