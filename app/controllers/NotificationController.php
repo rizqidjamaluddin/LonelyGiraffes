@@ -33,7 +33,7 @@ class NotificationController extends Controller
         $options->set('before', Input::get('before'), null, $this->notificationRepository);
         $options->set('take', (int) Input::get('take'), 10, null, [1, 20]);
 
-        if (Input::exists('count-unread')) {
+        if (Input::exists('count')) {
             $count = $this->notificationService->getNumberOfUnreadUserNotifications($user);
             return ['count' => $count];
         }
