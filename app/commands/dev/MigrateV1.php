@@ -51,7 +51,7 @@ class MigrateV1 extends Command
             $this->confirm("Migrating users, events, buddies and conversations from version 1. Continue?");
         }
         $this->info('Bumping up memory limit to 386M...');
-        ini_set('memory_limit', '368M');
+        // ini_set('memory_limit', '368M');
         $this->migrateUsers();
         $this->migrateEvents();
     }
@@ -133,8 +133,6 @@ class MigrateV1 extends Command
                 $data['image_type_id'] = 1;
 
                 try {
-
-
                     $imageRepository->create($data);
 
                     if ($img->width() > 400 || $img->height() > 400) {
