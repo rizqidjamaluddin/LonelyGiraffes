@@ -85,7 +85,7 @@ class MigrateV1 extends Command
 
         foreach ($users as $user) {
             $user = json_decode(json_encode($user), true);
-            $name = $user['username'] ?: $user['firstname'] . ' ' . $user['lastname'];
+            $name = $user['username'] ?: $user['first_name'] . ' ' . $user['last_name'];
             $user = [
                 'name' => $name,
                 'email' => $user['email'],
