@@ -133,9 +133,19 @@ class MigrateV1 extends Command
 
                 $imageRepository->create($data);
 
-                if($img->width() > 400 || $img->height() > 400)
+                if ($img->width() > 400 || $img->height() > 400) {
                     $img->fit(400,400);
-                $img->save(storage_path() . '/image-staging/' . $data['hash'] . '/' . $data['extension']);
+                }
+
+                $img->save(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
+                $img->fit(100,100)->save(storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']);
+
+                $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
+                $image->put($data['hash'] . '.' . $data['extension'], $file);
+
+                $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']);
+                $image->put($data['hash'] . '_thumb.' . $data['extension'], $file);
+
             }
         }
 
