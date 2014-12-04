@@ -277,7 +277,7 @@ class NotificationTest extends AcceptanceCase
         Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 4']);
 
         $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/notifications?count-unread");
-
+        $this->assertResponseOk();
         $this->assertEquals(4, $fetch->count);
 
         $generated = $this->callJson('GET', "/api/users/{$mario->hash}/notifications")->notifications[1];
@@ -285,7 +285,12 @@ class NotificationTest extends AcceptanceCase
         $this->assertResponseStatus(200);
 
         $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/notifications?count-unread");
-
+        $this->assertResponseOk();
         $this->assertEquals(3, $fetch->count);
+
+        // other users can't access mario's count
+        $luigi = $this->registerAndLoginAsLuigi();
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/notifications?count-unread");
+        $this->assertResponseStatus(403);
     }
 } 
