@@ -84,6 +84,7 @@ class MigrateV1 extends Command
         $staging = $stagingFS();
 
         foreach ($users as $user) {
+            $user = json_decode(json_encode($user), true);
             $name = $user['username'] ?: $user['firstname'] . ' ' . $user['lastname'];
             $user = [
                 'name' => $name,
