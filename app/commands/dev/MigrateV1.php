@@ -1,5 +1,6 @@
 <?php
 
+use Giraffe\Common\DuplicateCreationException;
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationService;
 use Giraffe\Images\ImageRepository;
@@ -131,21 +132,30 @@ class MigrateV1 extends Command
                 $data['extension'] = $img->extension;
                 $data['image_type_id'] = 1;
 
-                $imageRepository->create($data);
+                try {
 
-                if ($img->width() > 400 || $img->height() > 400) {
-                    $img->fit(400, 400);
+
+                    $imageRepository->create($data);
+
+                    if ($img->width() > 400 || $img->height() > 400) {
+                        $img->fit(400, 400);
+                    }
+
+                    $img->save(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
+                    $big = $img->getEncoded();
+                    $img->fit(100, 100)->save(
+                        storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']
+                    );
+                    $small = $img->getEncoded();
+
+                    $image->put($data['hash'] . '.' . $data['extension'], $big);
+                    $image->put($data['hash'] . '_thumb.' . $data['extension'], $small);
+
+                } catch (DuplicateCreationException $e) {
+                    $this->error("Unable to upload avatar: " . $e->getMessage() . " - " . $e->getStatusCode());
+                } catch (Exception $e) {
+                    $this->error("Unable to upload avatar: " . $e->getMessage());
                 }
-
-                $img->save(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
-                $big = $img->getEncoded();
-                $img->fit(100, 100)->save(
-                    storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']
-                );
-                $small = $img->getEncoded();
-
-                $image->put($data['hash'] . '.' . $data['extension'], $big);
-                $image->put($data['hash'] . '_thumb.' . $data['extension'], $small);
 
             }
         }
@@ -159,19 +169,19 @@ class MigrateV1 extends Command
      * @param $password
      * @return string
      */
-    protected function handleLegacyCodeIgniterPassword($password)
+    public function handleLegacyCodeIgniterPassword($password)
     {
         if ($password[0] == '$') {
             return $password;
         }
+        return 'x';
         $key = '2a7af90c898ce26ea993398d966615bd'; // md5 of 'DXTDO4O3pxLTDo53LesTbtYsFXFFW2oV', it was CI's idea;
-        return '';
 
         $data = $this->removeCipherNoise($password, $key);
         $init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
         $init_vect = substr($data, 0, $init_size);
         $data = substr($data, $init_size);
-        return Hash::make(rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_CBC, $init_vect), "\0"));
+        return (rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_CBC, $init_vect), "\0"));
     }
 
     public function removeCipherNoise($data, $key)
