@@ -59,8 +59,8 @@ class MigrateV1 extends Command
     {
         $this->info('Processing users...');
 
-        $users = DB::connection('v1_mysql')->table('v1_users')->get();
-        $count = DB::connection('v1_mysql')->table('v1_users')->count();
+        $users = DB::connection('v1_mysql')->table('users')->get();
+        $count = DB::connection('v1_mysql')->table('users')->count();
 
         $this->info($count . ' users will be imported.');
 
