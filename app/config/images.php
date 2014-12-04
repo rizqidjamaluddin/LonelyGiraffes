@@ -8,7 +8,9 @@ return [
      * Path where files will be stored before they are sent up to the permanent
      * storage location. Attached to the end of /app/path.
      */
-    'staging_path' => 'images',
+    'staging' => function(){
+        return new Filesystem(new \League\Flysystem\Adapter\Local(storage_path() . '/image-staging'));
+    },
 
     /**
      * Permanent storage medium for avatars. Return a League\Flysystem\Filesystem instance.

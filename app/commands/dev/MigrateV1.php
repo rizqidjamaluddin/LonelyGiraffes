@@ -2,8 +2,13 @@
 
 use Giraffe\Geolocation\Location;
 use Giraffe\Geolocation\LocationService;
+use Giraffe\Images\ImageRepository;
+use Giraffe\Users\UserModel;
 use Giraffe\Users\UserRepository;
 use Illuminate\Console\Command;
+use Intervention\Image\Image;
+use Intervention\Image\ImageManagerStatic;
+use League\Flysystem\Filesystem;
 
 class MigrateV1 extends Command
 {
@@ -69,9 +74,20 @@ class MigrateV1 extends Command
         /** @var LocationService $locationService */
         $locationService = \App::make(LocationService::class);
 
+        /** @var ImageRepository $imageRepository */
+        $imageRepository = \App::make(ImageRepository::class);
+
+        /** @var Callable $imageFS */
+        $imageFS = Config::get('images.medium');
+        /** @var Filesystem $image */
+        $image = $imageFS();
+
+        /** @var Callable $stagingFS */
+        $stagingFS = Config::get('images.staging');
+        /** @var Filesystem $staging */
+        $staging = $stagingFS();
 
         foreach ($users as $user) {
-
             $name = $user['username'] ?: $user['firstname'] . ' ' . $user['lastname'];
             $user = [
                 'name' => $name,
@@ -96,13 +112,30 @@ class MigrateV1 extends Command
                 }
             }
 
-            // handle avatars
-
             try {
-                $userRepository->create($user);
+                /** @var UserModel $savedUser */
+                $savedUser = $userRepository->create($user);
                 $this->info('Created user for ' . $user['email'] . '.');
             } catch (Exception $e) {
                 $this->error('Unable to create user for ' . $user['email'] . ': ' . $e->getMessage());
+                continue;
+            }
+
+            // handle avatars
+            if ($user['profile_picture'] != '/images/default_picture.jpg') {
+                $img = ImageManagerStatic::make(storage_path() . '/old-avatars' . $user['profile_picture']);
+
+                $data = [];
+                $data['user_id'] = $savedUser->id;
+                $data['hash'] = Str::random(18);
+                $data['extension'] = $img->extension;
+                $data['image_type_id'] = 1;
+
+                $imageRepository->create($data);
+
+                if($img->width() > 400 || $img->height() > 400)
+                    $img->fit(400,400);
+                $img->save(storage_path() . '/image-staging/' . $data['hash'] . '/' . $data['extension']);
             }
         }
 
@@ -113,6 +146,7 @@ class MigrateV1 extends Command
      * I made 20 people on #laravel-offtopic go WTF at the CI encrypt library. SCORE.
      *
      * @param $password
+     * @return string
      */
     protected function handleLegacyCodeIgniterPassword($password)
     {
