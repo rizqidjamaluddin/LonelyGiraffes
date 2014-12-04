@@ -135,13 +135,15 @@ class MigrateV1 extends Command
                 }
 
                 $img->save(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
+$big = $img->getEncoded();
                 $img->fit(100,100)->save(storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']);
+$small = $img->getEncoded();
 
-                $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
-                $image->put($data['hash'] . '.' . $data['extension'], $file);
+               // $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
+                $image->put($data['hash'] . '.' . $data['extension'], $big);
 
-                $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']);
-                $image->put($data['hash'] . '_thumb.' . $data['extension'], $file);
+                // $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']);
+                $image->put($data['hash'] . '_thumb.' . $data['extension'], $small);
 
             }
         }

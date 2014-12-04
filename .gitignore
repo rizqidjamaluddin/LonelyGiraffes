@@ -15,3 +15,5 @@ Thumbs.db
 _ide_helper.php
 /reports
 .vagrant
+lgv2_migration_12-3-14.sql
+app/storage/*

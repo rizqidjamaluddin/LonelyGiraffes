@@ -21,7 +21,7 @@ return [
         $secretKey = 'EKORqpxRAeIZ0MVlLlQgNZJS7EN44MTO6/nc1qJD';
         $bucket = 'lonelygiraffes.com';
 
-        $client = S3Client::factory(['key' => $accessKey,'secret' => $secretKey]);
+        $client = S3Client::factory(['key' => $accessKey,'secret' => $secretKey,'region' => 'us-west-2']);
         $filesystem = new Filesystem(new AwsS3($client, $bucket, 'production'));
         return $filesystem;
     },
