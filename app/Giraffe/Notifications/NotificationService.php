@@ -133,4 +133,12 @@ class NotificationService extends Service
 
     }
 
+    public function getNumberOfUnreadUserNotifications($user)
+    {
+        $user = $this->userRepository->getByHash($user);
+        $this->gatekeeper->mayI('read_notifications', $user)->please();
+        $notifications = $this->repository->countUnreadForUser($user->id);
+        return $notifications;
+    }
+
 } 

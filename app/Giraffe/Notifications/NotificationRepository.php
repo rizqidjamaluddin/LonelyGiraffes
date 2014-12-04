@@ -57,4 +57,9 @@ class NotificationRepository extends EloquentRepository
         return $q;
     }
 
+    public function countUnreadForUser($id)
+    {
+        return $this->model->where('user_id', $id)->where('read', 0)->count();
+    }
+
 } 

@@ -264,4 +264,28 @@ class NotificationTest extends AcceptanceCase
         $this->assertEquals(1, count($fetch->notifications));
         $this->assertEquals('Test Notification 6', $fetch->notifications[0]->body);
     }
+
+    /**
+     * @test
+     */
+    public function clients_can_see_number_of_unread_notifications()
+    {
+        $mario = $this->registerAndLoginAsMario();
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 1']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 2']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 3']);
+        Artisan::call('lg:util:notify', ['hash' => $mario->hash, 'body' => 'Test Notification 4']);
+
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/notifications?count-unread");
+
+        $this->assertEquals(4, $fetch->count);
+
+        $generated = $this->callJson('GET', "/api/users/{$mario->hash}/notifications")->notifications[1];
+        $this->call('POST', "/api/users/{$mario->hash}/notifications/{$generated->hash}/dismiss");
+        $this->assertResponseStatus(200);
+
+        $fetch = $this->callJson('GET', "/api/users/{$mario->hash}/notifications?count-unread");
+
+        $this->assertEquals(3, $fetch->count);
+    }
 } 
