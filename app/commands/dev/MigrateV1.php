@@ -52,19 +52,15 @@ class MigrateV1 extends Command
         $this->info('Bumping up memory limit to 386M...');
         ini_set('memory_limit', '368M');
         $this->migrateUsers();
+        $this->migrateEvents();
     }
 
     protected function migrateUsers()
     {
         $this->info('Processing users...');
 
-        if (!Schema::hasTable('v1_users')) {
-            $this->error('No V1 user database found (please name it v1_users), aborting user import.');
-            return false;
-        }
-
-        $users = DB::table('v1_users')->get();
-        $count = DB::table('v1_users')->count();
+        $users = DB::connection('v1_mysql')->table('v1_users')->get();
+        $count = DB::connection('v1_mysql')->table('v1_users')->count();
 
         $this->info($count . ' users will be imported.');
 
@@ -190,6 +186,11 @@ class MigrateV1 extends Command
         }
 
         return $str;
+    }
+
+    protected function migrateEvents()
+    {
+
     }
 
     /**
