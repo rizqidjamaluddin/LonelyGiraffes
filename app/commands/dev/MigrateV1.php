@@ -179,6 +179,9 @@ class MigrateV1 extends Command
         $data = $this->removeCipherNoise(base64_decode($password), $key);
         $init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
         $init_vect = substr($data, 0, $init_size);
+        if (count($init_vect) != $init_size) {
+            return 'x';
+        }
         $data = substr($data, $init_size);
         return Hash::make(rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_CBC, $init_vect), "\0"));
     }
