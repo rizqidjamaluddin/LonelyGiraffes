@@ -174,14 +174,13 @@ class MigrateV1 extends Command
         if ($password[0] == '$') {
             return $password;
         }
-        return 'x';
         $key = '2a7af90c898ce26ea993398d966615bd'; // md5 of 'DXTDO4O3pxLTDo53LesTbtYsFXFFW2oV', it was CI's idea;
 
-        $data = $this->removeCipherNoise($password, $key);
+        $data = $this->removeCipherNoise(base64_decode($password), $key);
         $init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
         $init_vect = substr($data, 0, $init_size);
         $data = substr($data, $init_size);
-        return (rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_CBC, $init_vect), "\0"));
+        return Hash::make(rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_CBC, $init_vect), "\0"));
     }
 
     public function removeCipherNoise($data, $key)
