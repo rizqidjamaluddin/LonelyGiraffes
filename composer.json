@@ -15,7 +15,9 @@
         "intervention/image": "2.*",
         "cboden/ratchet": "0.3.*",
         "predis/predis-async": "dev-master",
-		"graylog2/gelf-php": "~1.0"
+		"graylog2/gelf-php": "~1.0",
+		"league/flysystem": "~0.5",
+		"aws/aws-sdk-php": "dev-master"
 	},
     "require-dev": {
         "barryvdh/laravel-ide-helper": "1.*",
