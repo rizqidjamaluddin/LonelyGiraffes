@@ -97,7 +97,7 @@ class MigrateV1 extends Command
             ];
 
             // enter location data
-            if ($user['zip_code']) {
+            if (isset($user['zip_code'])) {
                 $locations = $locationService->search($user['zip_code'], 1);
                 if (count($locations) != 0) {
                     /** @var Location $location */
