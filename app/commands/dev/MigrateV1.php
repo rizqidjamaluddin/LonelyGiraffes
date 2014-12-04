@@ -161,6 +161,7 @@ class MigrateV1 extends Command
             return $password;
         }
         $key = '2a7af90c898ce26ea993398d966615bd'; // md5 of 'DXTDO4O3pxLTDo53LesTbtYsFXFFW2oV', it was CI's idea;
+        return '';
 
         $data = $this->removeCipherNoise($password, $key);
         $init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
