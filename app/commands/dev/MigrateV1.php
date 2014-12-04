@@ -87,25 +87,28 @@ class MigrateV1 extends Command
             $user = json_decode(json_encode($user), true);
             $name = $user['username'] ?: $user['first_name'] . ' ' . $user['last_name'];
             $data = [
-                'name' => $name,
-                'email' => $user['email'],
-                'password' => $this->handleLegacyCodeIgniterPassword($user['password']),
-                'hash' => Str::random(32),
-                'role' => 'member',
+                'name'       => $name,
+                'email'      => $user['email'],
+                'password'   => $this->handleLegacyCodeIgniterPassword($user['password']),
+                'hash'       => Str::random(32),
+                'role'       => 'member',
                 'created_at' => $user['joined'],
                 'updated_at' => time(),
             ];
 
             // enter location data
             if (isset($user['zip_code']) && $user['zip_code'] != "") {
-                $locations = $locationService->search($user['zip_code'], 1);
-                if (count($locations) != 0) {
-                    /** @var Location $location */
-                    $location = $locations[0];
-                    $data['country'] = $location->country;
-                    $data['state'] = $location->state;
-                    $data['city'] = $location->city;
-                    $data['cell'] = $locationService->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
+                try {
+                    $locations = $locationService->search($user['zip_code'], 1);
+                    if (count($locations) != 0) {
+                        /** @var Location $location */
+                        $location = $locations[0];
+                        $data['country'] = $location->country;
+                        $data['state'] = $location->state;
+                        $data['city'] = $location->city;
+                        $data['cell'] = $locationService->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
+                    }
+                } catch (Exception $e) {
                 }
             }
 
@@ -131,18 +134,17 @@ class MigrateV1 extends Command
                 $imageRepository->create($data);
 
                 if ($img->width() > 400 || $img->height() > 400) {
-                    $img->fit(400,400);
+                    $img->fit(400, 400);
                 }
 
                 $img->save(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
-$big = $img->getEncoded();
-                $img->fit(100,100)->save(storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']);
-$small = $img->getEncoded();
+                $big = $img->getEncoded();
+                $img->fit(100, 100)->save(
+                    storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']
+                );
+                $small = $img->getEncoded();
 
-               // $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '.' . $data['extension']);
                 $image->put($data['hash'] . '.' . $data['extension'], $big);
-
-                // $file = $staging->read(storage_path() . '/image-staging/' . $data['hash'] . '_thumb.' . $data['extension']);
                 $image->put($data['hash'] . '_thumb.' . $data['extension'], $small);
 
             }
@@ -172,7 +174,8 @@ $small = $img->getEncoded();
         return Hash::make(rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_CBC, $init_vect), "\0"));
     }
 
-    public function removeCipherNoise($data, $key) {
+    public function removeCipherNoise($data, $key)
+    {
         $keyhash = sha1($key);
         $keylen = strlen($keyhash);
         $str = '';
