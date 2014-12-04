@@ -165,14 +165,14 @@ class MigrateV1 extends Command
         }
         $key = '2a7af90c898ce26ea993398d966615bd'; // md5 of 'DXTDO4O3pxLTDo53LesTbtYsFXFFW2oV', it was CI's idea;
 
-        $data = $this->_remove_cipher_noise($password, $key);
+        $data = $this->removeCipherNoise($password, $key);
         $init_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC);
         $init_vect = substr($data, 0, $init_size);
         $data = substr($data, $init_size);
         return Hash::make(rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $data, MCRYPT_MODE_CBC, $init_vect), "\0"));
     }
 
-    function _remove_cipher_noise($data, $key) {
+    public function removeCipherNoise($data, $key) {
         $keyhash = sha1($key);
         $keylen = strlen($keyhash);
         $str = '';
@@ -183,11 +183,9 @@ class MigrateV1 extends Command
             }
 
             $temp = ord($data[$i]) - ord($keyhash[$j]);
-
             if ($temp < 0) {
                 $temp = $temp + 256;
             }
-
             $str .= chr($temp);
         }
 
