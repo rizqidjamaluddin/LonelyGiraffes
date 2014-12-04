@@ -86,7 +86,7 @@ class MigrateV1 extends Command
         foreach ($users as $user) {
             $user = json_decode(json_encode($user), true);
             $name = $user['username'] ?: $user['first_name'] . ' ' . $user['last_name'];
-            $user = [
+            $data = [
                 'name' => $name,
                 'email' => $user['email'],
                 'password' => $this->handleLegacyCodeIgniterPassword($user['password']),
@@ -102,16 +102,16 @@ class MigrateV1 extends Command
                 if (count($locations) != 0) {
                     /** @var Location $location */
                     $location = $locations[0];
-                    $user['country'] = $location->country;
-                    $user['state'] = $location->state;
-                    $user['city'] = $location->city;
-                    $user['cell'] = $locationService->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
+                    $data['country'] = $location->country;
+                    $data['state'] = $location->state;
+                    $data['city'] = $location->city;
+                    $data['cell'] = $locationService->getDefaultNearbySearchStrategy()->getCacheMetadata($location);
                 }
             }
 
             try {
                 /** @var UserModel $savedUser */
-                $savedUser = $userRepository->create($user);
+                $savedUser = $userRepository->create($data);
                 $this->info('Created user for ' . $user['email'] . '.');
             } catch (Exception $e) {
                 $this->error('Unable to create user for ' . $user['email'] . ': ' . $e->getMessage());
