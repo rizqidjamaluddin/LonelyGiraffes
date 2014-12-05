@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'channel' => 'lg-bridge:pipeline-dev',
+    'port' => 8081,
+    'channel' => 'lg-bridge:pipeline-staging',
     'listen' => 'tcp://127.0.0.1:6379',
 
     'broadcast' => [

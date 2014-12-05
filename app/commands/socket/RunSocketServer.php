@@ -21,6 +21,7 @@ class RunSocketServer extends Command
         $loop = React\EventLoop\Factory::create();
         $server = new \Giraffe\Sockets\Server();
         $server->setDisplay($this);
+        $server->setListenChannel(Config::get('sockets.channel', 'lg-bridge:pipeline'));
 
         // attach memory reminder
         $loop->addPeriodicTimer(10, [$server, 'handleHeartbeat']);
@@ -30,7 +31,7 @@ class RunSocketServer extends Command
         $client->connect([$server, 'attachRedis']);
 
         $webSock = new React\Socket\Server($loop);
-        $webSock->listen(8080, '0.0.0.0');
+        $webSock->listen(Config::get('sockets.port', 8080), '0.0.0.0');
         $webServer = new Ratchet\Server\IoServer(
             new \Ratchet\Http\HttpServer(
                 new Ratchet\WebSocket\WsServer(

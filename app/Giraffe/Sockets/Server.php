@@ -16,6 +16,7 @@ class Server implements WampServerInterface
 
     protected $memoryAlert = 100000000;
     protected $highMemory = false;
+    protected $listenChannel;
 
     /**
      * @var Command
@@ -78,7 +79,7 @@ class Server implements WampServerInterface
         $this->displayOutput(
             'Connecting to redis ... ' . \Config::get('sockets.listen', 'tcp://127.0.0.1:6379') . ' ... '
         );
-        $client->pubsub('lg-bridge:pipeline', [$this, 'handleBridgeMessage']);
+        $client->pubsub($this->listenChannel, [$this, 'handleBridgeMessage']);
         $this->displayOutput("<fg=magenta> established.</fg=magenta>\n");
     }
 
@@ -280,5 +281,13 @@ class Server implements WampServerInterface
     protected function escape($output)
     {
         return preg_replace('/[^a-zA-Z0-9\/\?]/', '', $output);
+    }
+
+    /**
+     * @param string $listenChannel
+     */
+    public function setListenChannel($listenChannel)
+    {
+        $this->listenChannel = $listenChannel;
     }
 }
