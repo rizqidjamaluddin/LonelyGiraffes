@@ -24,13 +24,29 @@ $app = new Illuminate\Foundation\Application;
 |
 */
 
-$env = $app->detectEnvironment(array(
+$env = $app->detectEnvironment(
+    function () {
 
-	'vagrant' => ['vagrant', 'vagrant.dev'],
-    'dev' => ['dev-web1.thinkster.local', 'dev-web2.thinkster.local'],
-    'production' => ['webn01.thinkster.local', 'webn02.thinkster.local'],
+        $hostnames = array(
 
-));
+            'vagrant'    => ['vagrant', 'vagrant.dev'],
+            'dev'        => ['dev-web1.thinkster.local', 'dev-web2.thinkster.local'],
+            'production' => ['webn01.thinkster.local', 'webn02.thinkster.local'],
+        );
+
+        if ($env = @include(dirname(__FILE__) . '/../env.php')) {
+            return $env;
+        } else {
+            $host = gethostname();
+            foreach ($hostnames as $env => $hosts) {
+                if (in_array($host, $hosts)) {
+                    return $env;
+                }
+            }
+        }
+        return 'production';
+    }
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -43,7 +59,7 @@ $env = $app->detectEnvironment(array(
 |
 */
 
-$app->bindInstallPaths(require __DIR__.'/paths.php');
+$app->bindInstallPaths(require __DIR__ . '/paths.php');
 
 /*
 |--------------------------------------------------------------------------
@@ -56,9 +72,9 @@ $app->bindInstallPaths(require __DIR__.'/paths.php');
 |
 */
 
-$framework = $app['path.base'].'/vendor/laravel/framework/src';
+$framework = $app['path.base'] . '/vendor/laravel/framework/src';
 
-require $framework.'/Illuminate/Foundation/start.php';
+require $framework . '/Illuminate/Foundation/start.php';
 
 /*
 |--------------------------------------------------------------------------
