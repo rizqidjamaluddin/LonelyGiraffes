@@ -29,5 +29,5 @@ return [
     /**
      * Prefix to use when serving image URLs to clients.
      */
-    'url_prefix'   => 'http://lonelygiraffes.com.s3-website-us-west-2.amazonaws.com'
+    'url_prefix'   => 'http://s3-website-us-west-2.amazonaws.com/lonelygiraffes.com/production'
 ];
