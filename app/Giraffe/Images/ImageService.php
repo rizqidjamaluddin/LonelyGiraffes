@@ -37,6 +37,11 @@ class ImageService extends Service
         $this->userService = $userService;
     }
 
+    public function setMaxSizeLimit($limit)
+    {
+        $this->max_size = $limit;
+    }
+
     /**
      * @param UserModel $user
      * @param UploadedFile $file

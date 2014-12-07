@@ -4,6 +4,12 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\AwsS3;
 
 return [
+
+    /**
+     * Max size (in bytes) of user avatar uploads.
+     */
+    'max-size' => 10000000,
+
     /*
      * Path where files will be stored before they are sent up to the permanent
      * storage location. Attached to the end of /app/path.
