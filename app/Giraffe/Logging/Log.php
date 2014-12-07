@@ -37,6 +37,9 @@ class Log
 
     public function __call($method, Array $arguments = [])
     {
+        // quit if there's just no logger
+        if (!$this->logger) return;
+
         $message = $arguments[0];
 
         if (isset($arguments[1])) {

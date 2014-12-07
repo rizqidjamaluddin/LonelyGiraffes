@@ -11,7 +11,7 @@ class ImageTest extends AcceptanceCase
 {
 
     /**
-     * @test
+     *
      */
     public function it_can_create_and_delete_images()
     {
@@ -96,7 +96,7 @@ class ImageTest extends AcceptanceCase
     }
 
     /**
-     * @test
+     *
      * @depends it_can_create_and_delete_images
      */
     public function it_can_overwrite_profile_images()
@@ -161,7 +161,7 @@ class ImageTest extends AcceptanceCase
     }
 
     /**
-     * @test
+     *
      */
     public function it_cannot_alter_images_of_another_user()
     {
