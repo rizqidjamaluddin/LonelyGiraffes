@@ -19,22 +19,15 @@ class ImageService extends Service
      */
     private $imageRepository;
 
-    /**
-     * @var \Giraffe\Users\UserService
-     */
-    private $userService;
-
     private $valid_exts = array('jpeg', 'jpg', 'png', 'gif');
     private $max_size = 5000000;
     private $max_res = 400, $thumb_res = 100;
 
     public function __construct(
-        ImageRepository $imageRepository,
-        UserService $userService
+        ImageRepository $imageRepository
     ) {
         parent::__construct();
         $this->imageRepository = $imageRepository;
-        $this->userService = $userService;
     }
 
     public function setMaxSizeLimit($limit)
