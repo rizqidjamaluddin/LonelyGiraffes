@@ -13,4 +13,9 @@ class Mailer
     {
         $this->mailer = $illuminateMailer;
     }
+
+    public function sendTo($user, $email)
+    {
+
+    }
 } 

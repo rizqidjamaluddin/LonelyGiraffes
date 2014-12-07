@@ -1,4 +1,5 @@
-<?php  namespace Giraffe\Passwords; 
+<?php  namespace Giraffe\Passwords;
+
 class PasswordResetService 
 {
 
