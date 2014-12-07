@@ -57,8 +57,9 @@ class UserService extends Service
         $data['hash'] = Str::random(32);
         $data['role'] = 'member';
 
+        /** @var UserModel $user */
         $user = $this->userRepository->create($data);
-        $this->log->info('New user registered', $user->toArray());
+        $this->log->info("New user registered: {$user->name} ({$user->email})", $user->toArray());
         return $user;
     }
 
