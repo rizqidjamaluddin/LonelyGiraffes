@@ -268,7 +268,7 @@ class UserModel extends Eloquent implements UserInterface, Locatable,
 
     public function profilePic()
     {
-        $profile_pic = ImageTypeModel::where('name', '=', 'profile_pic')->first();;
+        $profile_pic = ImageTypeModel::where('name', '=', 'profile_pic')->first();
         return $this->images()->where('image_type_id', '=', $profile_pic->id)->first();
     }
 

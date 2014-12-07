@@ -1,5 +1,7 @@
 <?php
 
+use Giraffe\Mailer\Mailer;
+use Giraffe\Passwords\PasswordResetEmail;
 use Giraffe\Passwords\PasswordResetService;
 
 class PasswordResetTest extends AcceptanceCase
@@ -13,7 +15,15 @@ class PasswordResetTest extends AcceptanceCase
         $mario = $this->registerMario();
         $this->callJson('POST', '/password/forgot', ['email' => $this->mario['email']]);
         $this->assertResponseOk();
-        $this->markTestIncomplete();
+
+        /** @var Mailer $mailer */
+        $mailer = App::make(Giraffe\Mailer\Mailer::class);
+        $latest = $mailer->getLastSentMail();
+        $this->assertFalse($latest === null);
+        /** Email $latest */
+        $this->assertTrue($latest instanceof PasswordResetEmail);
+        $this->assertEquals($this->mario['email'], $latest->getDestination());
+        $this->assertEquals("LonelyGiraffes Password Reset", $latest->getSubject());
     }
 
     /**
@@ -34,9 +44,6 @@ class PasswordResetTest extends AcceptanceCase
         $mario = $this->registerMario();
         $this->callJson('POST', '/password/forgot', ['email' => $this->mario['email']]);
         $this->assertResponseOk();
-        
-        /** @var PasswordResetService $passwordResetService */
-        $passwordResetService = \App::make(PasswordResetService::class);
 
         $this->callJson('POST', '/password/reset', ['password' => 'newpassword', 'token']);
         $this->assertResponseOk();
