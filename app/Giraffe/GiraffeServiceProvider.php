@@ -12,6 +12,7 @@ use Giraffe\Notifications\NotificationRegistry;
 use Giraffe\Notifications\NotificationService;
 use Giraffe\Notifications\SystemNotification\SystemNotification;
 use Giraffe\Notifications\SystemNotification\SystemNotificationRepository;
+use Giraffe\Passwords\PasswordResetService;
 use Giraffe\Sockets\Pipeline;
 use Illuminate\Support\ServiceProvider;
 
@@ -39,6 +40,7 @@ class GiraffeServiceProvider extends ServiceProvider
         $this->app->singleton('Giraffe\Geolocation\Providers\GeonameLocationProvider');
         $this->app->singleton(Mailer\Mailer::class);
 
+        $this->app->singleton(PasswordResetService::class);
         $this->app->singleton('Giraffe\Users\UserService');
 
         $this->app->singleton(Pipeline::class);

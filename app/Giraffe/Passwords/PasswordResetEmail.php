@@ -12,6 +12,14 @@ class PasswordResetEmail extends Email
      */
     protected $token;
 
+    /**
+     * @return ResetTokenModel
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
     public static function makeFor(UserModel $user, ResetTokenModel $token)
     {
         $i = new static;
@@ -22,7 +30,7 @@ class PasswordResetEmail extends Email
 
     public function getBindings()
     {
-        return ['msg' => 'http://lonelygiraffes.com/reset/' . $this->token];
+        return ['msg' => 'http://lonelygiraffes.com/reset/' . $this->token->token];
     }
 
 

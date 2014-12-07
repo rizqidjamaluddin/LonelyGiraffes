@@ -2,6 +2,7 @@
 
 use Giraffe\Users\UserModel;
 use Illuminate\Mail\Mailer as IlluminateMailer;
+use Illuminate\Mail\Message;
 
 class Mailer
 {
@@ -30,8 +31,10 @@ class Mailer
 
     public function send(Email $email)
     {
-        $this->mailer->send($email->getTemplate(), $email->getBindings(), function ($mail) use ($email) {
-            $mail->to($email->getDestination())->from("support@lonelygiraffes.com", "LonelyGiraffes Support");
+        $this->mailer->send($email->getTemplate(), $email->getBindings(), function (Message $mail) use ($email) {
+            $mail->to($email->getDestination())
+                ->from("support@lonelygiraffes.com", "LonelyGiraffes Support")
+                ->subject($email->getSubject());
         });
         $this->lastSentEmail = $email;
     }
