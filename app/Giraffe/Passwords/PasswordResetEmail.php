@@ -5,7 +5,7 @@ use Giraffe\Users\UserModel;
 class PasswordResetEmail extends Email
 {
     protected $subject = 'LonelyGiraffes Password Reset';
-    protected $template = 'emails.blank';
+    protected $template = 'emails.reset';
 
     /**
      * @var ResetTokenModel
@@ -30,7 +30,7 @@ class PasswordResetEmail extends Email
 
     public function getBindings()
     {
-        return ['msg' => 'http://lonelygiraffes.com/reset/' . $this->token->token];
+        return ['resetUrl' => 'http://v2.develop.lonelygiraffes.com/#/password/reset/'.$this->token->token];
     }
 
 
