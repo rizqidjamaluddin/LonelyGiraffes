@@ -8,7 +8,6 @@ class PasswordController extends Controller
     public function forgot()
     {
         $email = Input::get('email');
-        $this->log->notice("Password reset requested for $email.");
 
         /** @var PasswordResetService $resetService */
         $resetService = \App::make(PasswordResetService::class);
