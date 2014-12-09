@@ -60,7 +60,6 @@ class ImageTest extends AcceptanceCase
     }
 
     /**
-     * @test
      * @depends it_can_create_and_delete_images
      */
     protected function it_cannot_create_forbidden_images()
