@@ -66,6 +66,10 @@ class BuddyRequestReceivedNotification implements Notifiable
     {
         $sender = $this->getSender();
 
+        if (!$sender) {
+            return "";
+        }
+
         return "{$sender->name} sent you a buddy request!";
     }
 
