@@ -13,7 +13,7 @@ class ImageTest extends AcceptanceCase
     /**
      *
      */
-    public function it_can_create_and_delete_images()
+    protected function it_can_create_and_delete_images()
     {
         // Setup
         $mario = $this->registerMario();
@@ -63,7 +63,7 @@ class ImageTest extends AcceptanceCase
      * @test
      * @depends it_can_create_and_delete_images
      */
-    public function it_cannot_create_forbidden_images()
+    protected function it_cannot_create_forbidden_images()
     {
         // Setup
         $mario = $this->registerMario();
@@ -99,7 +99,7 @@ class ImageTest extends AcceptanceCase
      *
      * @depends it_can_create_and_delete_images
      */
-    public function it_can_overwrite_profile_images()
+    protected function it_can_overwrite_profile_images()
     {
         // Setup
         $mario = $this->registerMario();
@@ -163,7 +163,7 @@ class ImageTest extends AcceptanceCase
     /**
      *
      */
-    public function it_cannot_alter_images_of_another_user()
+    protected function it_cannot_alter_images_of_another_user()
     {
         /////// Create ///////
         $mario = $this->registerMario();
