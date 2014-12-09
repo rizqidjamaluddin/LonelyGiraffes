@@ -98,6 +98,14 @@ class Pipeline
         $this->connected = true;
     }
 
+    /**
+     * @param string $channel
+     */
+    public function setChannel($channel)
+    {
+        $this->channel = $channel;
+    }
+
     protected function serializeForBridge($data)
     {
         return json_encode($data);

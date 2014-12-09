@@ -44,6 +44,7 @@ class GiraffeServiceProvider extends ServiceProvider
         $this->app->singleton('Giraffe\Users\UserService');
 
         $this->app->singleton(Pipeline::class);
+        $this->app[Pipeline::class]->setChannel(Config::get('sockets.channel', 'lg-bridge:pipeline'));
         $this->app->singleton(EventRelay::class);
     }
 
