@@ -27,7 +27,7 @@ class RunSocketServer extends Command
         $loop->addPeriodicTimer(10, [$server, 'handleHeartbeat']);
 
         // attach redis
-        $client = new \Predis\Async\Client(Config::get('sockets.listen', 'tcp://127.0.0.1:6379'), $loop);
+        $client = new \Predis\Async\Client(Config::get('sockets.listen', 'tcp://127.0.0.1:6379') . "?read_write_timeout=-1", $loop);
         $client->connect([$server, 'attachRedis']);
 
         $webSock = new React\Socket\Server($loop);
