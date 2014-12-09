@@ -11,6 +11,14 @@ class ImageTest extends AcceptanceCase
 {
 
     /**
+     * @test
+     */
+    public function goddammit_php_unit()
+    {
+        $this->assertTrue(true);
+    }
+
+    /**
      *
      */
     protected function it_can_create_and_delete_images()
