@@ -11,7 +11,7 @@ use Intervention\Image\Image;
 use Intervention\Image\ImageManagerStatic;
 use League\Flysystem\Filesystem;
 
-class MigrateV1 extends Command
+class MigrateUsers extends Command
 {
 
     /**
@@ -19,14 +19,14 @@ class MigrateV1 extends Command
      *
      * @var string
      */
-    protected $name = 'lg:migrate:v1';
+    protected $name = 'lg:migrate:users';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Migrate v1 data to new database';
+    protected $description = 'Migrate v1 users to new database';
 
     /**
      * Create a new command instance.
@@ -48,12 +48,9 @@ class MigrateV1 extends Command
         if (DB::table('users')->exists()) {
             $this->confirm("Note: this process is best done a blank database. Continue?");
         } else {
-            $this->confirm("Migrating users, events, buddies and conversations from version 1. Continue?");
+            $this->confirm("Migrating users from version 1. Continue?");
         }
-        $this->info('Bumping up memory limit to 386M...');
-        // ini_set('memory_limit', '368M');
         $this->migrateUsers();
-        $this->migrateEvents();
     }
 
     protected function migrateUsers()
@@ -203,11 +200,6 @@ class MigrateV1 extends Command
         }
 
         return $str;
-    }
-
-    protected function migrateEvents()
-    {
-
     }
 
     /**

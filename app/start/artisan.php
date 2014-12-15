@@ -31,7 +31,7 @@ Artisan::add(new RunTests());
 Artisan::add(new EmulateFail());
 
 // lg:migrate
-Artisan::add(new MigrateV1());
+Artisan::add(new MigrateUsers());
 
 // stickies
 Artisan::add(new PostSticky());
