@@ -98,11 +98,7 @@ class ImageService extends Service
         $thumb = Image::make($file)->fit($this->thumb_res, $this->thumb_res)->save($this->thumb_path($img_dir, $image));
         $small = $thumb->getEncoded();
 
-        /** @var Callable $imageFS */
-        $imageFS = \Config::get('images.medium');
-        /** @var Filesystem $image */
-        $image = $imageFS();
-        
+        $image = $this->getImageStorageMedium();
         $image->put($data['hash'] . '.' . $data['extension'], $big);
         $image->put($data['hash'] . '_thumb.' . $data['extension'], $small);
 
@@ -116,12 +112,18 @@ class ImageService extends Service
      */
     public function deleteImage($hash)
     {
+        /** @var ImageModel $image */
         $image = $this->imageRepository->getByHash($hash);
         $this->gatekeeper->mayI('delete', $image)->please();
         $img_dir = public_path()."/images/".$image->user()->first()->hash;
         $this->imageRepository->deleteByHash($hash);
         File::delete($this->image_path($img_dir, $image));
         File::delete($this->thumb_path($img_dir, $image));
+
+        $medium = $this->getImageStorageMedium();
+        $medium->delete($image->hash . '.' . $image->extension);
+        $medium->delete($image->hash . '_thumb.' . $image->extension);
+
         return $image;
     }
 
@@ -152,5 +154,17 @@ class ImageService extends Service
      */
     private function thumb_path($img_dir, $image) {
         return $img_dir."/".$image->hash."_thumb.".$image->extension;
+    }
+
+    /**
+     * @return Filesystem
+     */
+    protected function getImageStorageMedium()
+    {
+        /** @var Callable $imageFS */
+        $imageFS = \Config::get('images.medium');
+        /** @var Filesystem $image */
+        $image = $imageFS();
+        return $image;
     }
 }
