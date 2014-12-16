@@ -7,6 +7,7 @@ use Giraffe\Users\UserModel;
 use Giraffe\Users\UserService;
 use Hash;
 use Illuminate\Support\Facades\File;
+use League\Flysystem\Filesystem;
 use Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Intervention\Image\ImageManagerStatic as Image;
@@ -89,10 +90,22 @@ class ImageService extends Service
         $img = Image::make($file);
         if($img->width() > $this->max_res OR $img->height() > $this->max_res)
             $img->fit($this->max_res, $this->max_res);
+
         $img->save($this->image_path($img_dir, $image));
+        $big = $img->getEncoded();
 
         // Create the thumbnail image
-        Image::make($file)->fit($this->thumb_res, $this->thumb_res)->save($this->thumb_path($img_dir, $image));
+        $thumb = Image::make($file)->fit($this->thumb_res, $this->thumb_res)->save($this->thumb_path($img_dir, $image));
+        $small = $thumb->getEncoded();
+
+        /** @var Callable $imageFS */
+        $imageFS = \Config::get('images.medium');
+        /** @var Filesystem $image */
+        $image = $imageFS();
+        
+        $image->put($data['hash'] . '.' . $data['extension'], $big);
+        $image->put($data['hash'] . '_thumb.' . $data['extension'], $small);
+
         return $image;
     }
 
