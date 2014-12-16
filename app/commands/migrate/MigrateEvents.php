@@ -38,7 +38,7 @@ class MigrateEvents extends Command
         foreach ($events as $event) {
             $inc++;
             try {
-                $user =  $userRepository->getByEmail($oldUserLookup[$event['user_id']]['email']);
+                $user =  $userRepository->getByEmail($oldUserLookup[$event['user_id']]->email);
                 $shout = $shoutService->createShout($user, $event['text']);
                 $shout->timestamps = false;
                 $shout->created_at = $event['created_at'];
