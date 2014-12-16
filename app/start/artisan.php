@@ -32,6 +32,7 @@ Artisan::add(new EmulateFail());
 
 // lg:migrate
 Artisan::add(new MigrateUsers());
+Artisan::add(new MigrateEvents());
 
 // stickies
 Artisan::add(new PostSticky());

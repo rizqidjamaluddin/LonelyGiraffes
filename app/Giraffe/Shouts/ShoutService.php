@@ -1,6 +1,7 @@
 <?php  namespace Giraffe\Shouts;
 
 use Giraffe\Authorization\Gatekeeper;
+use Giraffe\Common\NotFoundModelException;
 use Giraffe\Common\Service;
 use Giraffe\Feed\PostGeneratorHelper;
 use Giraffe\Feed\PostRepository;
@@ -62,7 +63,10 @@ class ShoutService extends Service
      */
     public function createShout($user, $body)
     {
-        $user = $this->userRepository->getByHash($user);
+        try {
+            $user = $this->userRepository->getByHash($user);
+        } catch (NotFoundModelException $e) {}
+
         $this->gatekeeper->mayI('create', 'shout')->please();
 
         $body = trim($body);
