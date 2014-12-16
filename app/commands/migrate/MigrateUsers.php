@@ -81,6 +81,8 @@ class MigrateUsers extends Command
         /** @var Filesystem $staging */
         $staging = $stagingFS();
 
+        UserModel::$timestamps = false;
+
         foreach ($users as $user) {
             $user = json_decode(json_encode($user), true);
             $name = $user['username'] ?: $user['first_name'] . ' ' . $user['last_name'];
@@ -113,6 +115,12 @@ class MigrateUsers extends Command
             try {
                 /** @var UserModel $savedUser */
                 $savedUser = $userRepository->create($data);
+
+                // override created_at timestamp
+                $savedUser->timestamps = false;
+                $savedUser->created_at = $user['joined'];
+                $userRepository->save($savedUser);
+
                 $this->info('Created user for ' . $user['email'] . '.');
             } catch (Exception $e) {
                 $this->error('Unable to create user for ' . $user['email'] . ': ' . $e->getMessage());

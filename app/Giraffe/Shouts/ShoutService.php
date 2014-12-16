@@ -62,6 +62,7 @@ class ShoutService extends Service
      */
     public function createShout($user, $body)
     {
+        $user = $this->userRepository->getByHash($user);
         $this->gatekeeper->mayI('create', 'shout')->please();
 
         $body = trim($body);
