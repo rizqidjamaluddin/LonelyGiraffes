@@ -21,6 +21,10 @@ class MigrateEvents extends Command
         $oldUserLookup = (new \Illuminate\Support\Collection(DB::connection('v1_mysql')->table('users')->get(['id', 'email'])))->keyBy('id');
         $events = DB::connection('v1_mysql')->table('events')->get(['id', 'text', 'user_id', 'created_at']);
 
+        /** @var \Giraffe\Authorization\Gatekeeper $gatekeeper */
+        $gatekeeper = \App::make(\Giraffe\Authorization\Gatekeeper::class);
+        $gatekeeper->sudo();
+
         /** @var UserRepository $userRepository */
         $userRepository = \App::make(UserRepository::class);
 
