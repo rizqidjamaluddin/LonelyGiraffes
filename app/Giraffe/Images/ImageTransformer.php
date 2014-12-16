@@ -1,4 +1,5 @@
 <?php  namespace Giraffe\Images;
+use Config;
 use Giraffe\Support\Transformer\Transformer;
 use League\Fractal\TransformerAbstract;
 
@@ -25,7 +26,7 @@ class ImageTransformer extends Transformer
      * @return string
      */
     public function build_url($imageModel) {
-        return url("/images/".$imageModel->user()->first()->hash."/".$imageModel->hash.".".$imageModel->extension);
+        return url(Config::get('images.url_prefix') ."/".$imageModel->hash.".".$imageModel->extension);
     }
 
     /**
@@ -33,7 +34,8 @@ class ImageTransformer extends Transformer
      * @return string
      */
     public function build_thumb_url($imageModel) {
-        return url("/images/".$imageModel->user()->first()->hash."/".$imageModel->hash."_thumb.".$imageModel->extension);
+        return url(Config::get('images.url_prefix') ."/".$imageModel->hash."_thumb.".$imageModel->extension);
+
     }
 
 } 
