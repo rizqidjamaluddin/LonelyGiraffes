@@ -257,7 +257,6 @@ class Gatekeeper
     {
         $this->request = self::REQUEST_NOT_SET;
         $this->query = Array();
-        $this->sudo = false;
     }
 
 
