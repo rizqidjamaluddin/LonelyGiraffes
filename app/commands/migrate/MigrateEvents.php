@@ -48,7 +48,7 @@ class MigrateEvents extends Command
                 $this->info('Created event for '.$user->email. ': ' . Str::limit($event['text']));
             } catch (Exception $e) {
                 $fails++;
-                $this->error('Unable to create event (#'.$event['id'].'): ' . $e->getMessage());
+                $this->error('Unable to create event (#'.$event['id'].'): ' . get_class($e) . ' - ' . $e->getMessage());
             }
 
         }
