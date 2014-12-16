@@ -37,6 +37,7 @@ class MigrateEvents extends Command
         $inc = 0; $fails = 0;
         foreach ($events as $event) {
             $inc++;
+            $event = json_decode(json_encode($event), true);
             try {
                 $user =  $userRepository->getByEmail($oldUserLookup[$event['user_id']]->email);
                 $shout = $shoutService->createShout($user, $event['text']);
