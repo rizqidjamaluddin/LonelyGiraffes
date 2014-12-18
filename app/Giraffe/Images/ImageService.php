@@ -98,9 +98,9 @@ class ImageService extends Service
         $thumb = Image::make($file)->fit($this->thumb_res, $this->thumb_res)->save($this->thumb_path($img_dir, $image));
         $small = $thumb->getEncoded();
 
-        $image = $this->getImageStorageMedium();
-        $image->put($data['hash'] . '.' . $data['extension'], $big);
-        $image->put($data['hash'] . '_thumb.' . $data['extension'], $small);
+        $storageMedium = $this->getImageStorageMedium();
+        $storageMedium->put($data['hash'] . '.' . $data['extension'], $big);
+        $storageMedium->put($data['hash'] . '_thumb.' . $data['extension'], $small);
 
         return $image;
     }
